@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>wpfui-icon.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
+    <Company>NoThrottle</Company>
+    <Copyright>NoThrottle</Copyright>
+    <PackageProjectUrl>https://nothrottle.com</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="wpfui-icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="3.0.0-preview.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1 " />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1 " />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\default_dark.png" />
+    <None Remove="Assets\hsmc-icon-500.png" />
+    <None Remove="Assets\SplashArt-1000.png" />
+    <None Remove="Assets\wpfui-icon-1024.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\default_dark.png" />
+    <Resource Include="Assets\hsmc-icon-500.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\SplashArt-1000.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\wpfui-icon-1024.png" />
+  </ItemGroup>
+
+</Project>
