@@ -33,7 +33,7 @@
                     Orientation="Horizontal">
 
                     <ui:Button 
-                        Content="PLAY " 
+                        Content="{Binding ViewModel.PlayButtonText}" 
                         FontSize="28"
                         FontWeight="Bold"
                         Foreground="White"
@@ -43,9 +43,11 @@
                     
                         Icon="{ui:SymbolIcon Play16, Filled=True}"
                         Appearance="Primary" 
-                        Background="Orange" 
-                        PressedBackground="White" 
-                        MouseOverBackground="Yellow"/>
+                        Background="{Binding ViewModel.PlayButtonColor}" 
+                        PressedBackground="{Binding ViewModel.PlayButtonPressedColor}" 
+                        MouseOverBackground="{Binding ViewModel.PlayButtonHoverColor}"
+                        Command="{Binding ViewModel.PressedPlayCommand, Mode=OneWay}"
+                        PressedForeground="{Binding ViewModel.}"/>
 
                     <ui:Button
                         Content="Quick Start"

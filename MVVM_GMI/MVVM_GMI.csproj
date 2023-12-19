@@ -2,16 +2,21 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>wpfui-icon.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
-    <Company>NoThrottle</Company>
+    <Company>NoThrottle LLC</Company>
     <Copyright>NoThrottle</Copyright>
     <PackageProjectUrl>https://nothrottle.com</PackageProjectUrl>
+    <SignAssembly>False</SignAssembly>
+    <Title>HSMC Launcher</Title>
+    <Authors>NoThrottle</Authors>
+    <PackageTags>Minecraft, Gaming</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -27,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
+    <PackageReference Include="CmlLib.Core" Version="3.3.8" />
     <PackageReference Include="WPF-UI" Version="3.0.0-preview.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1 " />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1 " />
