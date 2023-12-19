@@ -22,6 +22,9 @@ namespace MVVM_GMI
     /// </summary>
     public partial class App
     {
+
+        SettingsStartupService startupService = new SettingsStartupService();
+
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -48,6 +51,14 @@ namespace MVVM_GMI
                 services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<ProfilePage>();
                 services.AddSingleton<ProfileViewModel>();
+
+                services.AddSingleton<MinecraftService>();
+                services.AddSingleton<IMinecraftSettings, MinecraftSettingsService>();
+                services.AddSingleton<ILauncherProperties>();
+                services.AddSingleton<ILauncherSettings, LauncherSettingsService>();
+                //services.AddSingleton<IUserProfile>();
+
+
             }).Build();
 
         /// <summary>

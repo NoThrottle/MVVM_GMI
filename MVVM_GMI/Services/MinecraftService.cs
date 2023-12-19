@@ -1,42 +1,54 @@
-﻿using CmlLib.Core.Auth;
+﻿using CmlLib.Core;
+using CmlLib.Core.Auth;
 using CmlLib.Core.Installer.FabricMC;
-using CmlLib.Core;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using MVVM_GMI.Views.Pages;
-using MVVM_GMI.Views.Windows;
 using System.Diagnostics;
-using System.Drawing.Imaging;
-using System.IO;
-using MVVM_GMI.ViewModels.Pages;
 
 namespace MVVM_GMI.Services
 {
-    public class MinecraftService : IMinecraftSettings
+    public class MinecraftService
     {
+
+        private readonly ILauncherSettings _launcherSettings;
+        private readonly IMinecraftSettings _minecraftSettings;
+
+        public MinecraftService(
+            IMinecraftSettings minecraftSettings,
+            ILauncherSettings launcherSettings)
+        {
+            _launcherSettings = launcherSettings;
+            _minecraftSettings = minecraftSettings;
+        }
+
+        //----------------//
+
+
         public event Action? TaskCompleted;
-        public event Action<int>? ProgressUpdated;
+        public event Action<MinecraftLoadingUpdate>? ProgressUpdated;
 
-        public bool MinecraftRunning = false;
+        private bool MinecraftRunning = false;
 
-        static MinecraftPath path = new MinecraftPath(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi")));
 
-        public async Task QuickLaunch()
+        public void QuickLaunch()
         {
 
-            
+            if (MinecraftRunning)
+            {
+                Console.WriteLine("Minecraft is already running");
+                return;
+            }
 
-            //UpdateStatus("Initializing", "Checking Minecraft Installation", 0, 100);
+            UpdateStatus(new MinecraftLoadingUpdate()
+            {
 
-            Console.WriteLine("Check Everything (Quick Launch)");
+                TextProgress = "Loading",
+                IntProgress = 0,
+                Intermediate = true,
+                Process = "Initializing",
+                ProcessDescription = "Checking Minecraft Installation"
 
-            //Application.Current.Dispatcher.Invoke(new Action(() => {
-            //    ProgressBar_Large.Visibility = Visibility.Visible;
-            //    ProgressBar_Large.IsIndeterminate = true;
-            //    Button_Join_States("Loading");
-           // }));
+            });
 
-            var launcher = new CMLauncher(path);
+            var launcher = new CMLauncher(_launcherSettings.MinecraftPath);
             launcher.GameFileCheckers.JavaFileChecker.CheckHash = false;
             launcher.GameFileCheckers.LibraryFileChecker.CheckHash = false;
             launcher.GameFileCheckers.LogFileChecker.CheckHash = false;
@@ -44,9 +56,140 @@ namespace MVVM_GMI.Services
             launcher.GameFileCheckers.AssetFileChecker.CheckHash = false;
 
             InitializeAsync(launcher);
-
-
         }
+
+        private void InitializeAsync(CMLauncher launcher)
+        {
+            System.Net.ServicePointManager.DefaultConnectionLimit = 256;
+
+            launcher.FileChanged += (e) => 
+            { 
+            
+                UpdateStatus(new MinecraftLoadingUpdate()
+                {
+
+                    TextProgress = "Loading",
+                    IntProgress = 0,
+                    Intermediate = false,
+                    CurrentProgress = e.ProgressedFileCount,
+                    MaxProgress = e.TotalFileCount,
+                    Process = "Initializing Minecraft: ",
+                    ProcessDescription = String.Format("[{0}] {1} - {2}/{3}", e.FileKind.ToString(), e.FileName, e.ProgressedFileCount, e.TotalFileCount)
+
+                });
+
+                if (e.FileName == "release")
+                {
+                    UpdateStatus("Loading",0,true,0,0,"","");
+                }
+            
+            };
+
+            Process process = null;
+
+            process = launcher.CreateProcess("fabric-loader-" + "0.14.21" + "-" + "1.19.4", new MLaunchOption
+            {
+
+                //ServerIp = serverAddress,
+
+                MaximumRamMb = _minecraftSettings.MaxRamAllocation,
+                MinimumRamMb = _minecraftSettings.MinRamAllocation,
+
+                ScreenWidth = _minecraftSettings.StartingWidth,
+                ScreenHeight = _minecraftSettings.StartingHeight,
+                FullScreen = _minecraftSettings.StartFullscreen,
+
+                VersionType = "HighSkyMC",
+                GameLauncherName = "HighSkyMC",
+                GameLauncherVersion = "2",
+
+                Session = MSession.CreateOfflineSession("Plenty"),//MAKE SURE TO ALLOW USERNAMES WHEN PROFILING IS ENABLED
+
+            }, checkAndDownload: false); ;
+
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.EnableRaisingEvents = true;
+            process.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
+
+
+            UpdateStatus("Loading", 0, true, 0, 0, "Initializing Minecraft: ", "Starting Minecraft Process");
+
+            bool check = true;
+
+            Console.WriteLine(process.StartInfo.FileName);
+            Console.WriteLine(process.StartInfo.Arguments);
+            var processUtil = new CmlLib.Utils.ProcessUtil(process);
+
+            processUtil.OutputReceived += (s, e) => 
+            {
+
+                Console.WriteLine(e);
+
+                if (check && e != null && e.Contains(@"Connecting to"))
+                {
+                    //Minimize but not yet implemented
+                    check = false;
+                    
+                }
+
+                if (e != null && e.Contains(@"Game Crashed! Crash report saved to:"))
+                {
+                    UpdateStatus(new MinecraftLoadingUpdate()
+                    {
+                        TextProgress = "Error",
+                        IntProgress = 3,
+                    });
+                }
+            };
+
+            processUtil.StartWithEvents();
+            MinecraftRunning = true;
+
+            UpdateStatus(new MinecraftLoadingUpdate()
+            {
+                TextProgress = "Running",
+                IntProgress = 1,
+            });
+
+            process.Exited += (s, a) => SetDefaultState();
+            processUtil.Exited += (sender, args) => SetDefaultState();
+            processUtil.Process.WaitForExit();
+
+            void SetDefaultState()
+            {
+                UpdateStatus(new MinecraftLoadingUpdate()
+                {
+                    TextProgress = "Idle",
+                    IntProgress = 4,
+                });
+
+                MinecraftRunning = false;
+            }
+        }
+
+        public void UpdateStatus(string textProgress, int intProgress, bool isIntermediate, int maxProgress, int currentProgress, string process, string processDescription)
+        {
+            MinecraftLoadingUpdate x = new MinecraftLoadingUpdate();
+            x.TextProgress = textProgress;
+            x.IntProgress = intProgress;
+            x.Intermediate = isIntermediate;
+            x.MaxProgress = maxProgress;
+            x.CurrentProgress = currentProgress;
+            x.Process = process;
+            x.ProcessDescription = processDescription;
+
+
+            ProgressUpdated?.Invoke(x);
+        }
+
+        public void UpdateStatus(MinecraftLoadingUpdate update)
+        {
+            ProgressUpdated?.Invoke(update);
+        }
+
+
+        //------OLD-------//
 
         public async Task CheckEverything()
         {
@@ -61,7 +204,7 @@ namespace MVVM_GMI.Services
             //    Button_Join_States("Loading");
             //}));
 
-            var launcher = new CMLauncher(path);
+            //var launcher = new CMLauncher(path);
             var install = true;
 
             //UpdateStatus("Initializing", "Checking for Fabric", 0, 100);
@@ -98,132 +241,12 @@ namespace MVVM_GMI.Services
 
         }
 
-        private CMLauncher SetSettings(CMLauncher launcher)
-        {
-
-
-            return launcher;
-        }
-
-        public void InitializeAsync(CMLauncher launcher)
-        {
-
-            System.Net.ServicePointManager.DefaultConnectionLimit = 256;
-
-            launcher.FileChanged += (e) =>
-            {
-                Application.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    //UpdateStatus("Initializing Minecraft: ", String.Format("[{0}] {1} - {2}/{3}", e.FileKind.ToString(), e.FileName, e.ProgressedFileCount, e.TotalFileCount), e.ProgressedFileCount, e.TotalFileCount);
-
-                }));
-
-                if (e.FileName == "release")
-                {
-                    //Application.Current.Dispatcher.Invoke(new Action(() => {
-                    //    SetUpdateText("", "");
-                    //    ProgressBar_Large.IsIndeterminate = true;
-                    //}));
-                }
-            };
-
-            Process process = null;
-
-            //process = launcher.CreateProcess("fabric-loader-" + FabricLoaderVersion + "-" + MinecraftVersion, new MLaunchOption
-            //{
-
-            //    //JavaPath = Path.Combine(toUse_JavaPath,"bin"),
-            //    ServerIp = serverAddress,
-
-            //    MaximumRamMb = set.Minecraft.ramAllocation,
-
-            //    ScreenWidth = 1280,
-            //    ScreenHeight = 720,
-
-            //    Session = MSession.GetOfflineSession(@set.Minecraft.username),
-            //});
-
-            process.StartInfo.RedirectStandardError = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.EnableRaisingEvents = true;
-            process.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
-
-            //UpdateStatus("Starting Minecraft:", "Waiting for game...", true);
-
-            bool check = true;
-
-            Console.WriteLine("Starting Minecraft Process");
-
-            Console.WriteLine(process.StartInfo.FileName);
-            Console.WriteLine(process.StartInfo.Arguments);
-            var processUtil = new CmlLib.Utils.ProcessUtil(process);
-
-            processUtil.OutputReceived += (s, e) =>
-            {
-                Console.WriteLine(e);
-
-                //if (check && e != null && e.Contains(@"Connecting to"))
-                //{
-                //    check = false;
-                //    Application.Current.Dispatcher.Invoke(new Action(() =>
-                //    {
-
-                //        SetUpdateText("hide", "");
-
-                //        Button_Join_States("Running");
-
-                //        ProgressBar_Large.IsIndeterminate = false;
-                //        ProgressBar_Large.Visibility = Visibility.Hidden;
-
-                //        if (this.WindowState != WindowState.Minimized)
-                //        {
-                //            this.WindowState = WindowState.Minimized;
-                //        }
-                //    }));
-                //}
-
-                if (e != null && e.Contains(@"Game Crashed! Crash report saved to:"))
-                {
-                    Application.Current.Dispatcher.Invoke(new Action(() =>
-                    {
-                        //SetDefaultState();
-                    }));
-
-                    MessageBox.Show("Game Crashed", "Error");
-                }
-            };
-
-            processUtil.StartWithEvents();
-
-            MinecraftRunning = true;
-
-            Console.ReadLine();
-
-            //process.Exited += (s, a) => SetDefaultState();
-
-            //processUtil.Exited += (sender, args) =>
-            //{
-            //    Application.Current.Dispatcher.Invoke(new Action(() =>
-            //    {
-            //        UpdateStatus("", "", false);
-            //        Button_Join_States("Join");
-            //        SetDefaultState();
-            //    }));
-
-            //    MinecraftRunning = false;
-            //};
-
-            processUtil.Process.WaitForExit();
-
-
-        }
-
         public async Task InstallFabric()
         {
 
             Console.WriteLine("Installing Fabric");
 
-            var launcher = new CMLauncher(path);
+            //var launcher = new CMLauncher(path);
 
             //launcher.FileChanged += (e) =>
             //{
@@ -320,7 +343,7 @@ namespace MVVM_GMI.Services
     /// <summary>
     /// Model for Minecraft Task Updates
     /// </summary>
-    class MinecraftLoadingUpdate
+    public class MinecraftLoadingUpdate
     {
         /// <summary>
         /// Word form of IntProgress
@@ -337,6 +360,13 @@ namespace MVVM_GMI.Services
         public int IntProgress { get; set; } = 4;
 
         /// <summary>
+        /// Display an intermediate progress bar instead of a min-max one.
+        /// Default is true.
+        /// Only visible when Loading (State 0)
+        /// </summary>
+        public bool Intermediate { get; set; } = true;
+
+        /// <summary>
         /// Returns the maximum for a loading bar
         /// </summary>
         public int MaxProgress {  get; set; } = 100;
@@ -349,12 +379,12 @@ namespace MVVM_GMI.Services
         /// <summary>
         /// Current process title by the task
         /// </summary>
-        public String? Process { get; set; }
+        public String? Process { get; set; } = "";
 
         /// <summary>
         /// Current process' description
         /// </summary>
-        public String? ProcessDescription {  get; set; }
+        public String? ProcessDescription { get; set; } = "";
 
     }
 

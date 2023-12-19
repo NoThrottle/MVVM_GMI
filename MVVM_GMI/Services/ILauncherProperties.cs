@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MVVM_GMI.Services
+﻿namespace MVVM_GMI.Services
 {
-    public interface ILauncherProperties
+    public class ILauncherProperties
     {
 
-        int LauncherVersion { get; set; }
+        /// <summary>
+        /// Current version of the installed Launcher
+        /// </summary>
+        int LauncherVersion { get; } = 0;
 
-        String LauncherVersionReadable { get; set; }
+
+        /// <summary>
+        /// Current version of the installed Launcher in a readable format
+        /// </summary>
+        String LauncherVersionReadable { get; } = "0.1.0";
 
 
     }

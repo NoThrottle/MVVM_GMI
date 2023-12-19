@@ -3,6 +3,7 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using CmlLib.Utils;
 using MVVM_GMI.Services;
 
 namespace MVVM_GMI.ViewModels.Pages
@@ -13,8 +14,8 @@ namespace MVVM_GMI.ViewModels.Pages
         private int _counter = 0;
 
         [ObservableProperty]
-        private string _whatsNewText = "New Things\n Old things\n More new things\nsome bugfixes\n uhuh\noooooo\nnoooooooooooo";
-
+        private string _whatsNewText = "";
+        
         //Play Button Properties
         [ObservableProperty]
         private string _playButtonColor = "Orange";
@@ -31,7 +32,32 @@ namespace MVVM_GMI.ViewModels.Pages
         [ObservableProperty]
         private string _playButtonPressedTextColor = "White";
 
+        #region Process
+        //PROCESS PROGRESS
 
+        [ObservableProperty]
+        private string _processVisibility = "Visible";
+
+        [ObservableProperty]
+        private string _processText = "";
+
+        [ObservableProperty]
+        private string _processDescription = "";
+
+        [ObservableProperty]
+        private string _loadingBarIntermediate = "True";
+
+        [ObservableProperty]
+        private string _loadingBarMaximumValue = "100";
+
+        [ObservableProperty]
+        private string _loadingBarCurrentValue = "0";
+        #endregion
+
+        public DashboardViewModel()
+        {
+            WhatsNewText = Task.Run(() => { return Changelogs.GetChangelogs().Result.GetChangelogHtml("1.20.4") + ""; }).Result;
+        }
 
         [RelayCommand]
         private void OnCounterIncrement()
@@ -40,50 +66,66 @@ namespace MVVM_GMI.ViewModels.Pages
         }
 
 
-        int x = 0;
+        bool Locked = false;
         [RelayCommand]
         void PressedPlay()
         {
-            PlayButtonState(x);
-            x++;
 
-            MinecraftService mc = new MinecraftService();
+            if (!Locked) { }
+
+            Locked = true;
+            var x = new MinecraftSettingsService();
+            var y = new LauncherSettingsService();
+
+
+            var z = new MinecraftService(x, y);
+
+            z.QuickLaunch();
+            z.ProgressUpdated += (s) => PressedPlay();
             
+            
+        }
+
+
+
+        void UpdateUI()
+        {
+
         }
 
         void PlayButtonState(int state)
         {
             switch (state)
             {
-                case 0: // Default
+                case 4: // Default
                     PlayButtonText = "PLAY ";
                     PlayButtonColor = "Orange";
                     PlayButtonHoverColor = "Yellow";
                     PlayButtonPressedColor = "White";
                     PlayButtonPressedTextColor = "Gray";
                     break;
-                case 1: // Loading
+                case 0: // Loading
                     PlayButtonText = "LOADING ";
                     PlayButtonColor = "Gray";
                     PlayButtonHoverColor = "Gray";
                     PlayButtonPressedColor = "Gray";
                     PlayButtonPressedTextColor = "White";
                     break;
-                case 2: // Playing
+                case 1: // Playing
                     PlayButtonText = "PLAYING ";
                     PlayButtonColor = "Green";
                     PlayButtonHoverColor = "Green";
                     PlayButtonPressedColor = "Green";
                     PlayButtonPressedTextColor = "White";
                     break;
-                case 3: // Error
+                case 2: // Error
                     PlayButtonText = "ERROR ";
                     PlayButtonColor = "Red";
                     PlayButtonHoverColor = "Red";
                     PlayButtonPressedColor = "Red";
                     PlayButtonPressedTextColor = "White";
                     break;
-                case 4: // No Connection
+                case 5: // No Connection
                     PlayButtonText = "CONNECTING ";
                     PlayButtonColor = "Blue";
                     PlayButtonHoverColor = "Blue";

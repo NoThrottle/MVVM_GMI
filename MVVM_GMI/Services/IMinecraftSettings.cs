@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Config.Net;
 
 namespace MVVM_GMI.Services
 {
@@ -48,21 +44,24 @@ namespace MVVM_GMI.Services
         /// </summary>
         string[]? JVMArguments { get; set; }
 
+        /// <summary>
+        /// True if the settings file has been constructed.
+        /// </summary>
+        bool WrittenToFile { get; set; }
+
     }
 
-    public class MinecraftSetting : IMinecraftSettings
+    public class MinecraftSettingsService : IMinecraftSettings
     {
-        int IMinecraftSettings.MaxRamAllocation { get; set; }
-        int IMinecraftSettings.MinRamAllocation { get; set; }
-        bool IMinecraftSettings.CapRamAllocation { get; set; }
-        bool IMinecraftSettings.StartFullscreen { get; set; }
-        int IMinecraftSettings.StartingWidth { get; set; }
-        int IMinecraftSettings.StartingHeight { get; set; }
-        bool IMinecraftSettings.EnableLogging { get; set; }
-        string[]? IMinecraftSettings.JVMArguments { get; set; }
-
-
-
-
+        public int MaxRamAllocation { get; set; }
+        public int MinRamAllocation { get; set; } = 128;
+        public bool CapRamAllocation { get; set; } = false;
+        public bool StartFullscreen { get; set; } = false;
+        public int StartingWidth { get; set; } = 1280;
+        public int StartingHeight { get; set; } = 720;
+        public bool EnableLogging { get; set; } = false;
+        public string[]? JVMArguments { get; set; }
+        public bool WrittenToFile { get; set; } = false;
     }
+
 }

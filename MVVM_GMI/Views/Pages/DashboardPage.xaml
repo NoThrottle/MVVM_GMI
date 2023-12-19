@@ -27,6 +27,31 @@
                     </Border.Background>
                 </Border>
 
+                <StackPanel HorizontalAlignment="Stretch" Margin="32,192,32,0" Visibility="{Binding ViewModel.ProcessVisibility}">
+
+                    <TextBlock
+                        Text="{Binding ViewModel.ProcessText}"
+                        FontSize="14"
+                        FontWeight="Medium" 
+                        Margin="0,0,0,8"
+                        />
+
+                    <ProgressBar
+                        IsIndeterminate="{Binding ViewModel.LoadingBarIntermediate}"
+                        Maximum="{Binding ViewModel.LoadingBarMaximumValue}"
+                        Minimum="0"
+                        Value="{Binding ViewModel.LoadingBarCurrentValue}"
+                        Margin="0,0,0,8"
+                        />
+
+                    <TextBlock
+                        Text="{Binding ViewModel.ProcessDescription}"
+                        Opacity="0.8"
+                        TextWrapping="Wrap"
+                        />
+
+                </StackPanel>
+                
                 <StackPanel
                     VerticalAlignment="Bottom"
                     Margin="32"
@@ -47,7 +72,7 @@
                         PressedBackground="{Binding ViewModel.PlayButtonPressedColor}" 
                         MouseOverBackground="{Binding ViewModel.PlayButtonHoverColor}"
                         Command="{Binding ViewModel.PressedPlayCommand, Mode=OneWay}"
-                        PressedForeground="{Binding ViewModel.}"/>
+                        PressedForeground="{Binding ViewModel.PlayButtonPressedTextColor}"/>
 
                     <ui:Button
                         Content="Quick Start"
