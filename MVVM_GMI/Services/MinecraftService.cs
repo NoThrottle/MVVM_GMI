@@ -48,6 +48,10 @@ namespace MVVM_GMI.Services
 
             });
 
+            Console.WriteLine("1");
+            Console.WriteLine(_launcherSettings.MinecraftPath);
+            Console.WriteLine("1");
+
             var launcher = new CMLauncher(_launcherSettings.MinecraftPath);
             launcher.GameFileCheckers.JavaFileChecker.CheckHash = false;
             launcher.GameFileCheckers.LibraryFileChecker.CheckHash = false;

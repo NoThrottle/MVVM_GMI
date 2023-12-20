@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using CmlLib.Utils;
+using Config.Net;
 using MVVM_GMI.Services;
 
 namespace MVVM_GMI.ViewModels.Pages
@@ -36,7 +37,7 @@ namespace MVVM_GMI.ViewModels.Pages
         //PROCESS PROGRESS
 
         [ObservableProperty]
-        private string _processVisibility = "Visible";
+        private string _processVisibility = "Collapsed";
 
         [ObservableProperty]
         private string _processText = "";
@@ -45,18 +46,25 @@ namespace MVVM_GMI.ViewModels.Pages
         private string _processDescription = "";
 
         [ObservableProperty]
-        private string _loadingBarIntermediate = "True";
+        private bool _loadingBarIntermediate = true;
 
         [ObservableProperty]
-        private string _loadingBarMaximumValue = "100";
+        private int _loadingBarMaximumValue = 100;
 
         [ObservableProperty]
-        private string _loadingBarCurrentValue = "0";
+        private int _loadingBarCurrentValue = 0;
         #endregion
 
         public DashboardViewModel()
         {
-            WhatsNewText = Task.Run(() => { return Changelogs.GetChangelogs().Result.GetChangelogHtml("1.20.4") + ""; }).Result;
+            WhatsNewText = Task.Run(async () => {
+
+                Changelogs x = await Changelogs.GetChangelogs();
+                var y = await x.GetChangelogHtml("1.20.4");
+                return y;
+            
+            
+            }).Result;
         }
 
         [RelayCommand]
@@ -71,25 +79,43 @@ namespace MVVM_GMI.ViewModels.Pages
         void PressedPlay()
         {
 
-            if (!Locked) { }
+            if (Locked) { return; }
+            new SettingsStartupService();
+
+            ILauncherSettings s = new ConfigurationBuilder<ILauncherSettings>().UseAppConfig().Build();
+            IMinecraftSettings r = new ConfigurationBuilder<IMinecraftSettings>().UseAppConfig().Build();
 
             Locked = true;
-            var x = new MinecraftSettingsService();
-            var y = new LauncherSettingsService();
+            var x = r;
+            var y = s;
 
 
             var z = new MinecraftService(x, y);
 
+            z.ProgressUpdated += (s) => UpdateUI(s);
             z.QuickLaunch();
-            z.ProgressUpdated += (s) => PressedPlay();
-            
-            
+
+            z.TaskCompleted += () => 
+            {
+
+                PlayButtonState(4);
+                Locked = false;
+
+            };
+
+
         }
 
 
 
-        void UpdateUI()
+        void UpdateUI(MinecraftLoadingUpdate mcu)
         {
+            PlayButtonState(mcu.IntProgress);
+            ProcessText = mcu.Process;
+            ProcessDescription = mcu.ProcessDescription;
+            LoadingBarIntermediate = mcu.Intermediate;
+            LoadingBarMaximumValue = mcu.MaxProgress;
+            LoadingBarCurrentValue = mcu.CurrentProgress;
 
         }
 
@@ -103,6 +129,7 @@ namespace MVVM_GMI.ViewModels.Pages
                     PlayButtonHoverColor = "Yellow";
                     PlayButtonPressedColor = "White";
                     PlayButtonPressedTextColor = "Gray";
+                    ProcessVisibility = "Collapsed";
                     break;
                 case 0: // Loading
                     PlayButtonText = "LOADING ";
@@ -110,6 +137,7 @@ namespace MVVM_GMI.ViewModels.Pages
                     PlayButtonHoverColor = "Gray";
                     PlayButtonPressedColor = "Gray";
                     PlayButtonPressedTextColor = "White";
+                    ProcessVisibility = "Visible";
                     break;
                 case 1: // Playing
                     PlayButtonText = "PLAYING ";
@@ -117,6 +145,7 @@ namespace MVVM_GMI.ViewModels.Pages
                     PlayButtonHoverColor = "Green";
                     PlayButtonPressedColor = "Green";
                     PlayButtonPressedTextColor = "White";
+                    ProcessVisibility = "Collapsed";
                     break;
                 case 2: // Error
                     PlayButtonText = "ERROR ";
@@ -124,6 +153,7 @@ namespace MVVM_GMI.ViewModels.Pages
                     PlayButtonHoverColor = "Red";
                     PlayButtonPressedColor = "Red";
                     PlayButtonPressedTextColor = "White";
+                    ProcessVisibility = "Collapsed";
                     break;
                 case 5: // No Connection
                     PlayButtonText = "CONNECTING ";
@@ -131,6 +161,7 @@ namespace MVVM_GMI.ViewModels.Pages
                     PlayButtonHoverColor = "Blue";
                     PlayButtonPressedColor = "Blue";
                     PlayButtonPressedTextColor = "White";
+                    ProcessVisibility = "Collapsed";
                     break;
 
             }

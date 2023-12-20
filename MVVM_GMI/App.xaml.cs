@@ -53,12 +53,6 @@ namespace MVVM_GMI
                 services.AddSingleton<ProfileViewModel>();
 
                 services.AddSingleton<MinecraftService>();
-                services.AddSingleton<IMinecraftSettings, MinecraftSettingsService>();
-                services.AddSingleton<ILauncherProperties>();
-                services.AddSingleton<ILauncherSettings, LauncherSettingsService>();
-                //services.AddSingleton<IUserProfile>();
-
-
             }).Build();
 
         /// <summary>
