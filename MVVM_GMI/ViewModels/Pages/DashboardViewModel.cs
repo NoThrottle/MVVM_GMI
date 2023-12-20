@@ -4,19 +4,26 @@
 // All Rights Reserved.
 
 using CmlLib.Utils;
-using Config.Net;
 using MVVM_GMI.Services;
+using MVVM_GMI.Views.Pages;
+using MVVM_GMI.Views.Windows;
+using Wpf.Ui;
 
 namespace MVVM_GMI.ViewModels.Pages
 {
     public partial class DashboardViewModel : ObservableObject
     {
+
+        IContentDialogService _dialogService;
+        INavigationService _navigationService;
+
         [ObservableProperty]
         private int _counter = 0;
 
         [ObservableProperty]
         private string _whatsNewText = "";
-        
+
+        #region Play Button
         //Play Button Properties
         [ObservableProperty]
         private string _playButtonColor = "Orange";
@@ -32,6 +39,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
         [ObservableProperty]
         private string _playButtonPressedTextColor = "White";
+        #endregion
 
         #region Process
         //PROCESS PROGRESS
@@ -55,8 +63,11 @@ namespace MVVM_GMI.ViewModels.Pages
         private int _loadingBarCurrentValue = 0;
         #endregion
 
-        public DashboardViewModel()
+        public DashboardViewModel(IContentDialogService contentDialogService, INavigationService navigationService)
         {
+            _dialogService = contentDialogService;
+            _navigationService = navigationService;
+
             WhatsNewText = Task.Run(async () => {
 
                 Changelogs x = await Changelogs.GetChangelogs();
@@ -67,10 +78,19 @@ namespace MVVM_GMI.ViewModels.Pages
             }).Result;
         }
 
+
+        [RelayCommand]
+        private void OpenMinecraftSettings()
+        {
+            _navigationService.Navigate(typeof(MinecraftSettingsPage));
+        }
+
+
         [RelayCommand]
         private void OnCounterIncrement()
         {
             Counter++;
+          
         }
 
 
@@ -78,35 +98,79 @@ namespace MVVM_GMI.ViewModels.Pages
         [RelayCommand]
         void PressedPlay()
         {
-
             if (Locked) { return; }
-            new SettingsStartupService();
 
-            ILauncherSettings s = new ConfigurationBuilder<ILauncherSettings>().UseAppConfig().Build();
-            IMinecraftSettings r = new ConfigurationBuilder<IMinecraftSettings>().UseAppConfig().Build();
-
-            Locked = true;
-            var x = r;
-            var y = s;
-
-
-            var z = new MinecraftService(x, y);
-
-            z.ProgressUpdated += (s) => UpdateUI(s);
-            z.QuickLaunch();
-
-            z.TaskCompleted += () => 
+            Task.Run(async () => 
             {
 
-                PlayButtonState(4);
-                Locked = false;
+                Locked = true;
+                var z = new MinecraftService();
 
-            };
+                z.ProgressUpdated += (s) => UpdateUI(s);
+                z.TaskCompleted += (a) =>
+                {
+                    
+                    PlayButtonState(4);
+                    Locked = false;
 
+                };
 
+                await z.DefaultStartupAsync();
+
+            });
+        }
+
+        [RelayCommand]
+        void PressedQuickLaunch()
+        {
+            if (Locked) { return; }
+
+            Task.Run(async () =>
+            {
+
+                Locked = true;
+                var z = new MinecraftService();
+
+                z.ProgressUpdated += (s) => UpdateUI(s);
+                z.TaskCompleted += async (a) =>
+                {
+                    PlayButtonState(4);
+                    Locked = false;
+
+                    if (a == false)
+                    {
+
+                        Application.Current.Dispatcher.Invoke((Action)async delegate {
+                            var x = await ShowDialogAsync("Quick Launch Note:", "Unable to launch Minecraft using quick launch. Launch normally instead?", "Sure", "", "Cancel");
+                            if (x == Wpf.Ui.Controls.ContentDialogResult.Primary)
+                            {
+                                PressedPlay();
+                            }
+                        });
+                    }
+                };
+
+                await z.QuickLaunchAsync();
+
+            });
         }
 
 
+        async Task<Wpf.Ui.Controls.ContentDialogResult> ShowDialogAsync(string Title, string Content, string PrimaryButtonText, string SecondaryButtonText, string CloseButtonText)
+        {
+            var x = await _dialogService.ShowSimpleDialogAsync(
+                    new SimpleContentDialogCreateOptions()
+                    {
+                        Title = Title,
+                        Content = Content,
+                        PrimaryButtonText = PrimaryButtonText,
+                        SecondaryButtonText = SecondaryButtonText,
+                        CloseButtonText = CloseButtonText
+                    }
+                    );
+
+            return x;
+        }
 
         void UpdateUI(MinecraftLoadingUpdate mcu)
         {

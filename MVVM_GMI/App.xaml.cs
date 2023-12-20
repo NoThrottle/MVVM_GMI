@@ -14,6 +14,7 @@ using MVVM_GMI.Views.Windows;
 using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
+using Wpf.Ui;
 
 namespace MVVM_GMI
 {
@@ -23,7 +24,7 @@ namespace MVVM_GMI
     public partial class App
     {
 
-        SettingsStartupService startupService = new SettingsStartupService();
+        ConfigurationService s = new ConfigurationService();
 
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
@@ -51,8 +52,11 @@ namespace MVVM_GMI
                 services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<ProfilePage>();
                 services.AddSingleton<ProfileViewModel>();
+                services.AddSingleton<MinecraftSettingsPage>();
+                services.AddSingleton<MinecraftSettingsViewModel>();
 
                 services.AddSingleton<MinecraftService>();
+                services.AddSingleton<ConfigurationService>();
             }).Build();
 
         /// <summary>

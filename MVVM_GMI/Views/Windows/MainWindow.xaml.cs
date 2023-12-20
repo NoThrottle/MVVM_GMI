@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using MVVM_GMI.ViewModels.Windows;
+using Wpf.Ui;
 using Wpf.Ui.Controls;
 
 namespace MVVM_GMI.Views.Windows
@@ -20,7 +21,7 @@ namespace MVVM_GMI.Views.Windows
             IContentDialogService contentDialogService
         )
         {
-            Wpf.Ui.Appearance.Watcher.Watch(this);
+            Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
 
             ViewModel = viewModel;
             DataContext = this;

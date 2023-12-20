@@ -3,11 +3,11 @@ using Wpf.Ui.Controls;
 
 namespace MVVM_GMI.Views.Pages
 {
-    public partial class SettingsPage : INavigableView<SettingsViewModel>
+    public partial class MinecraftSettingsPage : INavigableView<MinecraftSettingsViewModel>
     {
-        public SettingsViewModel ViewModel { get; }
+        public MinecraftSettingsViewModel ViewModel { get; }
 
-        public SettingsPage(SettingsViewModel viewModel)
+        public MinecraftSettingsPage(MinecraftSettingsViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;

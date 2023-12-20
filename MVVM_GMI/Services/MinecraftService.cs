@@ -2,40 +2,28 @@
 using CmlLib.Core.Auth;
 using CmlLib.Core.Installer.FabricMC;
 using System.Diagnostics;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using @get = MVVM_GMI.Services.ConfigurationService;
 
 namespace MVVM_GMI.Services
 {
     public class MinecraftService
     {
 
-        private readonly ILauncherSettings _launcherSettings;
-        private readonly IMinecraftSettings _minecraftSettings;
-
-        public MinecraftService(
-            IMinecraftSettings minecraftSettings,
-            ILauncherSettings launcherSettings)
+        public MinecraftService()
         {
-            _launcherSettings = launcherSettings;
-            _minecraftSettings = minecraftSettings;
+
         }
 
         //----------------//
 
 
-        public event Action? TaskCompleted;
+        public event Action<bool>? TaskCompleted;
         public event Action<MinecraftLoadingUpdate>? ProgressUpdated;
 
-        private bool MinecraftRunning = false;
-
-
-        public void QuickLaunch()
+        public async Task QuickLaunchAsync()
         {
-
-            if (MinecraftRunning)
-            {
-                Console.WriteLine("Minecraft is already running");
-                return;
-            }
 
             UpdateStatus(new MinecraftLoadingUpdate()
             {
@@ -48,21 +36,27 @@ namespace MVVM_GMI.Services
 
             });
 
-            Console.WriteLine("1");
-            Console.WriteLine(_launcherSettings.MinecraftPath);
-            Console.WriteLine("1");
+            try
+            {
+                var path = new MinecraftPath(get.Launcher.MinecraftPath);
+                var launcher = new CMLauncher(path);
 
-            var launcher = new CMLauncher(_launcherSettings.MinecraftPath);
-            launcher.GameFileCheckers.JavaFileChecker.CheckHash = false;
-            launcher.GameFileCheckers.LibraryFileChecker.CheckHash = false;
-            launcher.GameFileCheckers.LogFileChecker.CheckHash = false;
-            launcher.GameFileCheckers.ClientFileChecker.CheckHash = false;
-            launcher.GameFileCheckers.AssetFileChecker.CheckHash = false;
+                launcher.GameFileCheckers.JavaFileChecker.CheckHash = false;
+                launcher.GameFileCheckers.LibraryFileChecker.CheckHash = false;
+                launcher.GameFileCheckers.LogFileChecker.CheckHash = false;
+                launcher.GameFileCheckers.ClientFileChecker.CheckHash = false;
+                launcher.GameFileCheckers.AssetFileChecker.CheckHash = false;
 
-            InitializeAsync(launcher);
+                await InitializeAsync(launcher);
+            }
+            catch (Exception ex)
+            {
+                TaskCompleted?.Invoke(false);
+            }
+            
         }
 
-        private void InitializeAsync(CMLauncher launcher)
+        private async Task InitializeAsync(CMLauncher launcher)
         {
             System.Net.ServicePointManager.DefaultConnectionLimit = 256;
 
@@ -91,17 +85,17 @@ namespace MVVM_GMI.Services
 
             Process process = null;
 
-            process = launcher.CreateProcess("fabric-loader-" + "0.14.21" + "-" + "1.19.4", new MLaunchOption
+            process = await launcher.CreateProcessAsync("fabric-loader-" + "0.15.3" + "-" + "1.20.4", new MLaunchOption
             {
 
                 //ServerIp = serverAddress,
 
-                MaximumRamMb = _minecraftSettings.MaxRamAllocation,
-                MinimumRamMb = _minecraftSettings.MinRamAllocation,
+                MaximumRamMb = @get.Minecraft.MaxRamAllocation,
+                MinimumRamMb = @get.Minecraft.MinRamAllocation,
 
-                ScreenWidth = _minecraftSettings.StartingWidth,
-                ScreenHeight = _minecraftSettings.StartingHeight,
-                FullScreen = _minecraftSettings.StartFullscreen,
+                ScreenWidth = @get.Minecraft.StartingWidth,
+                ScreenHeight = @get.Minecraft.StartingHeight,
+                FullScreen = @get.Minecraft.StartFullscreen,
 
                 VersionType = "HighSkyMC",
                 GameLauncherName = "HighSkyMC",
@@ -109,7 +103,7 @@ namespace MVVM_GMI.Services
 
                 Session = MSession.CreateOfflineSession("Plenty"),//MAKE SURE TO ALLOW USERNAMES WHEN PROFILING IS ENABLED
 
-            }, checkAndDownload: false); ;
+            }, checkAndDownload: true); ;
 
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardOutput = true;
@@ -148,7 +142,6 @@ namespace MVVM_GMI.Services
             };
 
             processUtil.StartWithEvents();
-            MinecraftRunning = true;
 
             UpdateStatus(new MinecraftLoadingUpdate()
             {
@@ -168,7 +161,7 @@ namespace MVVM_GMI.Services
                     IntProgress = 4,
                 });
 
-                MinecraftRunning = false;
+                TaskCompleted?.Invoke(true);
             }
         }
 
@@ -193,90 +186,125 @@ namespace MVVM_GMI.Services
         }
 
 
-        //------OLD-------//
-
-        public async Task CheckEverything()
+        public async Task DefaultStartupAsync()
         {
+            UpdateStatus(new MinecraftLoadingUpdate()
+            {
 
-            //UpdateStatus("Initializing", "Checking Minecraft Installation", 0, 100);
+                TextProgress = "Loading",
+                IntProgress = 0,
+                Intermediate = true,
+                Process = "Initializing",
+                ProcessDescription = "Checking Minecraft Installation"
 
-            Console.WriteLine("Check Everything");
+            });
 
-            //Application.Current.Dispatcher.Invoke(new Action(() => {
-            //    ProgressBar_Large.Visibility = Visibility.Visible;
-            //    ProgressBar_Large.IsIndeterminate = true;
-            //    Button_Join_States("Loading");
-            //}));
-
-            //var launcher = new CMLauncher(path);
+            var path = new MinecraftPath(get.Launcher.MinecraftPath);
+            var launcher = new CMLauncher(path);
             var install = true;
 
-            //UpdateStatus("Initializing", "Checking for Fabric", 0, 100);
+            UpdateStatus(new MinecraftLoadingUpdate()
+            {
 
+                TextProgress = "Loading",
+                IntProgress = 0,
+                Intermediate = true,
+                Process = "Initializing",
+                ProcessDescription = "Checking for Fabric"
 
-            //var versions = await launcher.GetAllVersionsAsync();
-            //foreach (var v in versions)
-            //{
-            //    if (v.Name == "fabric-loader-" + FabricLoaderVersion + "-" + MinecraftVersion)
-            //    {
-            //        Console.WriteLine("Fabric is installed, continuing.");
+            });
 
-            //        install = false;
-
-            //        CheckMods();
-            //        InitializeAsync(launcher);
-
-            //        Console.WriteLine(4);
-
-            //        break;
-            //    }
-            //}
+            var versions = launcher.GetAllVersions();
+            foreach (var v in versions)
+            {
+                if (v.Name == "fabric-loader-" + "0.15.3" + "-" + "1.20.4")
+                {
+                    Console.WriteLine("Fabric is installed, continuing.");
+                    install = false;
+                    break;
+                }
+            }
 
             if (install)
             {
-                Console.WriteLine("Fabric is not installed, will be installed first.");
                 await InstallFabric();
-                await CheckEverything();
+                await DefaultStartupAsync();
             }
+            else
+            {
+                UpdateStatus(new MinecraftLoadingUpdate()
+                {
 
-            Console.WriteLine("Checked Everything");
+                    TextProgress = "Loading",
+                    IntProgress = 0,
+                    Intermediate = true,
+                    Process = "Initializing",
+                    ProcessDescription = "Finished Verifying Installation"
 
-            //UpdateStatus("Initializing", "Done Checking", 0, 100);
+                });
 
+                CheckMods();
+                await InitializeAsync(launcher);
+            }
         }
 
         public async Task InstallFabric()
         {
+            UpdateStatus(new MinecraftLoadingUpdate()
+            {
 
-            Console.WriteLine("Installing Fabric");
+                TextProgress = "Loading",
+                IntProgress = 0,
+                Intermediate = true,
+                Process = "Installing Fabric",
+                ProcessDescription = "Loading..."
 
-            //var launcher = new CMLauncher(path);
+            });
 
-            //launcher.FileChanged += (e) =>
-            //{
+            var path = new MinecraftPath(get.Launcher.MinecraftPath);
+            var launcher = new CMLauncher(path);
+            launcher.FileChanged += (e) => 
+            {
 
-            //    UpdateStatus(
-            //        "DL_Fabric",
-            //        String.Format("[{0}] {1} - {2}/{3}", e.FileKind.ToString(), e.FileName, e.ProgressedFileCount, e.TotalFileCount),
-            //        e.ProgressedFileCount,
-            //        e.TotalFileCount);
+                UpdateStatus(new MinecraftLoadingUpdate()
+                {
 
-            //};
+                    TextProgress = "Loading",
+                    IntProgress = 0,
+                    CurrentProgress = e.ProgressedFileCount,
+                    MaxProgress = e.TotalFileCount,
+                    Intermediate = false,
+                    Process = "Installing Fabric",
+                    ProcessDescription = String.Format("[{0}] {1} - {2}/{3}", e.FileKind.ToString(), e.FileName, e.ProgressedFileCount, e.TotalFileCount)
 
-            //Application.Current.Dispatcher.Invoke(new Action(() => {
-            //    SetUpdateText("", "");
-            //    ProgressBar_Large.IsIndeterminate = true;
-            //}));
+                });
+
+            };
+
+
+            UpdateStatus(new MinecraftLoadingUpdate()
+            {
+
+                TextProgress = "Loading",
+                IntProgress = 0,
+                Intermediate = true,
+                Process = "Loading Fabric",
+                ProcessDescription = ""
+
+            });
 
             // initialize fabric version loader
             var fabricVersionLoader = new FabricVersionLoader();
             var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
 
-            // install
-            //var fabric = fabricVersions.GetVersionMetadata("fabric-loader-" + FabricLoaderVersion + "-" + MinecraftVersion);
-            //await fabric.SaveAsync(path);
+            var fabric = fabricVersions.GetVersionMetadata("fabric-loader-" + "0.15.3" + "-" + "1.20.4");
+            await launcher.GetAllVersionsAsync();
+
+            await fabric.SaveAsync(path);
 
         }
+
+        //------OLD-------//
 
         public void CheckMods()
         {

@@ -4,12 +4,7 @@
 // All Rights Reserved.
 
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using Wpf.Ui.Common;
 using Wpf.Ui.Controls;
-using Image = Wpf.Ui.Controls.Image;
 
 namespace MVVM_GMI.ViewModels.Windows
 {
