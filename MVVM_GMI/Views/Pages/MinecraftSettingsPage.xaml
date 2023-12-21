@@ -28,6 +28,7 @@
                     FontSize="36"
                     Appearance="Transparent"
                     BorderBrush="Transparent"
+                    Command="{Binding ViewModel.GoBackCommand, Mode=OneWay}"
                     Margin="0,0,8,0"
                     />
 
@@ -71,7 +72,7 @@
                             </StackPanel>
                         </ui:CardControl.Header>
 
-                        <ui:ToggleSwitch/>
+                        <ui:ToggleSwitch IsChecked="{Binding ViewModel.Display_isFullscreen, Mode=TwoWay}"/>
                     </ui:CardControl>
 
 
@@ -93,7 +94,7 @@
                                     Text="Window Width" />
                             </StackPanel>
                         </ui:CardControl.Header>
-                        <ui:NumberBox Width="256" Minimum="100"/>
+                        <ui:NumberBox Width="256" Minimum="100" Value="{Binding ViewModel.Display_width, Mode=TwoWay}"/>
                     </ui:CardControl>
 
                     <ui:CardControl Icon="Whiteboard24">
@@ -105,7 +106,7 @@
                                     Text="Window Height" />
                             </StackPanel>
                         </ui:CardControl.Header>
-                        <ui:NumberBox Width="256" Minimum="100"/>
+                        <ui:NumberBox Width="256" Minimum="100" Value="{Binding ViewModel.Display_height, Mode=TwoWay}"/>
                     </ui:CardControl>
 
 
@@ -147,8 +148,8 @@
                             <ColumnDefinition Width="28"/>
                         </Grid.ColumnDefinitions>
 
-                        <Slider Grid.Column="0" Margin="0,16,16,16" TickFrequency="1024" Minimum="1024" Maximum="14400" IsSnapToTickEnabled="True" TickPlacement="BottomRight"/>
-                        <ui:NumberBox Grid.Column="1" Minimum="1024" ClearButtonEnabled="False"/>
+                        <Slider Grid.Column="0" Margin="0,16,16,16" TickFrequency="1024" Minimum="1024" Maximum="{Binding ViewModel.Ram_maximum, Mode=OneWay}" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}" IsSnapToTickEnabled="True" TickPlacement="BottomRight"/>
+                        <ui:NumberBox Grid.Column="1" Minimum="1024" ClearButtonEnabled="False" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}"/>
                         <TextBlock Grid.Column="2" Text="MB" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                     </Grid>
@@ -167,10 +168,10 @@
                             </StackPanel>
                         </ui:CardControl.Header>
 
-                        <ui:ToggleSwitch/>
+                        <ui:ToggleSwitch IsChecked="{Binding ViewModel.Ram_capped, Mode=TwoWay}"/>
                     </ui:CardControl>
 
-                    <ui:CardAction Margin="0,8,0,0" Icon="Whiteboard24" >
+                    <ui:CardAction Margin="0,8,0,0" Icon="Whiteboard24" Command="{Binding ViewModel.OpenGraphicsSettingsCommand, Mode=OneWay}">
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock
                                 FontSize="13"
@@ -209,7 +210,7 @@
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         Text="Modifies the properties of the JVM. Leave empty for Default.&#x0a;Might override any of the settings set above." />
 
-                    <ui:TextBox ClearButtonEnabled="True" PlaceholderText="Leave empty for default" Margin="0,8,0,8"/>
+                    <ui:TextBox ClearButtonEnabled="True" PlaceholderText="Leave empty for default" Margin="0,8,0,8" Text="{Binding ViewModel.JvmArguments, Mode=TwoWay}"/>
                 </StackPanel>
             </ui:CardExpander>
 

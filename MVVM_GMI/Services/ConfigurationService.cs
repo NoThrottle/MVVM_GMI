@@ -364,15 +364,45 @@ namespace MVVM_GMI.Services
         private void setProperty(string sender, object value)
         {
 
-            if (!QueueExists) { WriteQueueProcess(); }
+            WriteProperties();
+            //if (!QueueExists) { WriteQueueProcess(); }
 
-            QueueObjects.Add(new QueueObject { sender = sender, value = value });
+            //QueueObjects.Add(new QueueObject { sender = sender, value = value });
+
+        }
+
+        public static void WriteProperties()
+        {
+            using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
+            {
+                var p = new JavaProperties();
+
+                p.SetProperty("configVersion", ILauncherProperties.ConfigVersion.ToString());
+
+                p.SetProperty("MaxRamAllocation", Minecraft.MaxRamAllocation.ToString());
+                p.SetProperty("MinRamAllocation", Minecraft.MinRamAllocation.ToString());
+                p.SetProperty("CapRamAllocation", Minecraft.CapRamAllocation.ToString());
+                p.SetProperty("StartFullscreen", Minecraft.StartFullscreen.ToString());
+                p.SetProperty("StartingWidth", Minecraft.StartingWidth.ToString());
+                p.SetProperty("StartingHeight", Minecraft.StartingHeight.ToString());
+                p.SetProperty("EnableLogging", Minecraft.EnableLogging.ToString());
+                p.SetProperty("JVMArguments", Minecraft.JVMArguments.ToString());
+
+                p.SetProperty("LauncherPath", Launcher.LauncherPath);
+                p.SetProperty("MinecraftPath", Launcher.MinecraftPath);
+                p.SetProperty("AppTheme", Launcher.AppTheme.ToString());
+                p.SetProperty("AutoDownloadUpdates", Launcher.AutoDownloadUpdates.ToString());
+                p.SetProperty("AutoInstallUpdates", Launcher.AutoInstallUpdates.ToString());
+
+                p.Store(stream, "DO NOT TOUCH");
+
+            }
 
         }
 
         private static void WriteQueueProcess()
         {
-            Task.Run(() =>
+            Task.Run(async () =>
             {
 
                 QueueExists = true;
@@ -391,6 +421,7 @@ namespace MVVM_GMI.Services
                                 var prop = new JavaProperties();
 
                                 prop.SetProperty(x.sender, x.value.ToString());
+                                
 
                                 prop.Store(stream, "DO NOT TOUCH");
                             }
@@ -551,7 +582,7 @@ namespace MVVM_GMI.Services
                 {
                     ReadProperties();
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
                     WriteDefault();
                 }
