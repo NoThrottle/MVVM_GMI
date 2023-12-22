@@ -15,13 +15,7 @@ namespace MVVM_GMI.ViewModels.Pages
         private int _counter = 0;
 
         [ObservableProperty]
-        private string _whatsNewText = "New Things\n Old things\n More new things\nsome bugfixes\n uhuh\noooooo\nnoooooooooooo";
-
-        [RelayCommand]
-        private void OnCounterIncrement()
-        {
-            Counter++;
-        }
+        private string _username = MVVM_GMI.Services.UserProfileService.AuthorizedUsername ?? string.Empty;
 
         public void OnNavigatedTo()
         {

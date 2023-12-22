@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using @get = MVVM_GMI.Services.ConfigurationService;
+using @user = MVVM_GMI.Services.UserProfileService;
 
 namespace MVVM_GMI.Services
 {

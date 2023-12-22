@@ -30,13 +30,16 @@
                 <StackPanel
                     Orientation="Horizontal">
 
-                    <TextBlock
-                        Text="Username"
+                    <Viewbox Width="Auto" Height="56" HorizontalAlignment="Left" Margin="36,0,0,0">
+                        <TextBlock
+                        Text="{Binding ViewModel.Username}"
                         VerticalAlignment="Center"
                         FontSize="48"
-                        FontWeight="Bold"
-                        Margin="36,0,0,0"
+                        FontWeight="Bold"                     
                         />
+                    </Viewbox>
+
+
 
                     <ui:Button
                         Icon="{ui:SymbolIcon Edit24, Filled=False}"
@@ -47,7 +50,7 @@
 
                 </StackPanel>
 
-
+                <ui:Button Icon="{ui:SymbolIcon DoorArrowRight16}" Content="Log Out" Appearance="Danger" HorizontalAlignment="Right" Margin="32"/>
 
             </Grid>
 
@@ -74,18 +77,18 @@
                     </Border>
 
                     <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
-                            <Viewbox.Style>
-                                <Style TargetType="Viewbox">
-                                    <Setter Property="Width" Value="Auto"/>
-                                    <Setter Property="Height" Value="64"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Width" Value="Auto"/>
-                                            <Setter Property="Height" Value="210"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Viewbox.Style>
+                        <Viewbox.Style>
+                            <Style TargetType="Viewbox">
+                                <Setter Property="Width" Value="Auto"/>
+                                <Setter Property="Height" Value="64"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Width" Value="Auto"/>
+                                        <Setter Property="Height" Value="210"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Viewbox.Style>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Image 
                                 Height="96"
@@ -116,7 +119,7 @@
                     </Border>
 
                     <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
-                        
+
                         <TextBlock
                             Text="Standard User"
                             VerticalAlignment="Center"
@@ -125,7 +128,7 @@
                             Foreground="Black"
                             Margin="16"
                             />
-                        
+
                     </Viewbox>
                 </Grid>
 
@@ -169,33 +172,6 @@
 
 
             </Grid>
-            
-            
-            <Grid>
-
-
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <ui:Button
-                        Grid.Column="0"
-                        Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}"
-                        Content="Click me!"
-                        Icon="Fluent24" />
-
-                <TextBlock
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        VerticalAlignment="Center"
-                        Text="{Binding ViewModel.Counter, Mode=OneWay}" />
-
-            </Grid>
-
         </StackPanel>
-
-        
     </Grid>
 </Page>

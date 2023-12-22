@@ -52,6 +52,7 @@ namespace MVVM_GMI.Services.Database
                     var x = VerifySession(readText);
                     if (x != null)
                     {
+                        UpdateUserProfileService(x);
                         //Load user profile with username and go to dashboard
                         return x;
                     }
