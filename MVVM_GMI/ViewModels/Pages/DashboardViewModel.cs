@@ -7,6 +7,7 @@ using CmlLib.Utils;
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
+using System.Net.Sockets;
 using Wpf.Ui;
 
 namespace MVVM_GMI.ViewModels.Pages
@@ -68,14 +69,23 @@ namespace MVVM_GMI.ViewModels.Pages
             _dialogService = contentDialogService;
             _navigationService = navigationService;
 
-            WhatsNewText = Task.Run(async () => {
+            try
+            {
+                WhatsNewText = Task.Run(async () => {
 
-                Changelogs x = await Changelogs.GetChangelogs();
-                var y = await x.GetChangelogHtml("1.20.4");
-                return y;
+                    Changelogs x = await Changelogs.GetChangelogs();
+                    var y = await x.GetChangelogHtml("1.20.4");
+                    return y;
+
+
+                }).Result;
+            }
+            catch (Exception e)
+            {
+                ShowDialogAsync("Error","Unable to connect to the internet. Some functions may be unavailable.", "","","Ok");
+                WhatsNewText = "No Internet";
+            }
             
-            
-            }).Result;
         }
 
 

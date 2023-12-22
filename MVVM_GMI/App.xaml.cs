@@ -25,6 +25,8 @@ namespace MVVM_GMI
     {
 
         ConfigurationService s = new ConfigurationService();
+        
+
 
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
@@ -40,6 +42,10 @@ namespace MVVM_GMI
 
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<MainWindowViewModel>();
+
+                services.AddSingleton<AuthWindow>();
+                services.AddSingleton<AuthWindowViewModel>();
+
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IContentDialogService, ContentDialogService>();
@@ -54,6 +60,8 @@ namespace MVVM_GMI
                 services.AddSingleton<ProfileViewModel>();
                 services.AddSingleton<MinecraftSettingsPage>();
                 services.AddSingleton<MinecraftSettingsViewModel>();
+                services.AddSingleton<AuthPage>();
+                services.AddSingleton<AuthViewModel>();
 
                 services.AddSingleton<MinecraftService>();
                 services.AddSingleton<ConfigurationService>();
@@ -75,6 +83,7 @@ namespace MVVM_GMI
         /// </summary>
         private void OnStartup(object sender, StartupEventArgs e)
         {
+            FirestoreService.SetEnvironmentVariable();
             _host.Start();
         }
 

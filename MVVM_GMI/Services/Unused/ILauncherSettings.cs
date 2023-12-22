@@ -10,7 +10,7 @@
 //    {
 
 //        /// <summary>
-//        /// Path for the Launcher, defaults to User Roaming Appdata .gmi
+//        /// Path for the Launcher, defaults to UserCredential Roaming Appdata .gmi
 //        /// </summary>
 //        String LauncherPath { get; set; }
 

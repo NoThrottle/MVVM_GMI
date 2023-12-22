@@ -62,7 +62,7 @@ namespace MVVM_GMI.ViewModels.Pages
         [RelayCommand]
         private void OpenGraphicsSettings()
         {
-            Process.Start("explorer", "ms-settings:display-advancedgraphics-default");
+            Process.Start("explorer", "ms-settings:display-advancedgraphics");
         }
 
         [RelayCommand]
@@ -81,7 +81,7 @@ namespace MVVM_GMI.ViewModels.Pages
             Ram_maximum = SystemInfo.SystemRam();
             Ram_current = from.Minecraft.MaxRamAllocation;
             Ram_capped = from.Minecraft.CapRamAllocation.ToString();
-            //JvmArguments = String.Join(", ", from.Minecraft.JVMArguments);
+            JvmArguments = String.Join(", ", from.Minecraft.JVMArguments);
         }
 
         private void SaveValues()
@@ -94,7 +94,7 @@ namespace MVVM_GMI.ViewModels.Pages
             from.Minecraft.CapRamAllocation = bool.Parse(Ram_capped);
 
             from.WriteProperties();
-            //from.Minecraft.JVMArguments = JvmArguments.Split(", ");
+            from.Minecraft.JVMArguments = JvmArguments.Split(", ");
         }
 
     }

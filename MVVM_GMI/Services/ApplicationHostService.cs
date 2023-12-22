@@ -47,11 +47,18 @@ namespace MVVM_GMI.Services
         {
             await Task.CompletedTask;
 
-            if (!Application.Current.Windows.OfType<MainWindow>().Any())
+            //if (!Application.Current.Windows.OfType<MainWindow>().Any())
+            //{
+            //    var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            //    navigationWindow.Loaded += OnNavigationWindowLoaded;
+            //    navigationWindow.Show();
+            //}
+
+            if (!Application.Current.Windows.OfType<AuthWindow>().Any())
             {
-                var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
-                navigationWindow.Loaded += OnNavigationWindowLoaded;
-                navigationWindow.Show();
+                var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+                //authWindow.Loaded += AuthOnNavigationWindowLoaded;
+                authWindow.Show();
             }
         }
 
@@ -62,7 +69,7 @@ namespace MVVM_GMI.Services
                 return;
             }
 
-            navigationWindow.NavigationView.Navigate(typeof(DashboardPage));
+            navigationWindow.NavigationView.Navigate(typeof(MainWindow));
         }
     }
 }

@@ -232,7 +232,7 @@ namespace MVVM_GMI.Services
 
             private static string _LauncherPath { get; set; }
             /// <summary>
-            /// Path for the Launcher, defaults to User Roaming Appdata .gmi
+            /// Path for the Launcher, defaults to UserCredential Roaming Appdata .gmi
             /// </summary>
             public static String LauncherPath
             {

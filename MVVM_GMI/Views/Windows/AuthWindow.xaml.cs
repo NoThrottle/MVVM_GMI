@@ -4,12 +4,12 @@ using Wpf.Ui.Controls;
 
 namespace MVVM_GMI.Views.Windows
 {
-    public partial class MainWindow
+    public partial class AuthWindow
     {
-        public MainWindowViewModel ViewModel { get; }
+        public AuthWindowViewModel ViewModel { get; }
 
-        public MainWindow(
-            MainWindowViewModel viewModel,
+        public AuthWindow(
+            AuthWindowViewModel viewModel,
             INavigationService navigationService,
             IServiceProvider serviceProvider,
             ISnackbarService snackbarService,
@@ -23,11 +23,14 @@ namespace MVVM_GMI.Views.Windows
 
             InitializeComponent();
 
-            navigationService.SetNavigationControl(NavigationView);
-            snackbarService.SetSnackbarPresenter(SnackbarPresenter);
-            contentDialogService.SetContentPresenter(RootContentDialog);
+            contentDialogService.SetContentPresenter(AuthRootContentDialog);
 
-            NavigationView.SetServiceProvider(serviceProvider);
         }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", e.Uri.ToString());
+        }
+
     }
 }
