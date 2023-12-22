@@ -60,7 +60,7 @@
 
 
                 <Label Content="Password:"/>
-                <ui:TextBox Icon="{ui:SymbolIcon Key20, Filled=False}" PlaceholderEnabled="True" PlaceholderText="Type your Password" Text="{Binding ViewModel.LoginPassword, Mode=TwoWay}"/>
+                <ui:PasswordBox Icon="{ui:SymbolIcon Key20, Filled=False}" PlaceholderEnabled="True" PlaceholderText="Type your Password" Password="{Binding ViewModel.LoginPassword, Mode=TwoWay}"/>
 
                 <Grid Height="32"/>
 

@@ -3,10 +3,13 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using Google.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MVVM_GMI.Services.Database;
 using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
+using Authentication = MVVM_GMI.Services.Database.Authentication;
 
 namespace MVVM_GMI.Services
 {
@@ -47,18 +50,26 @@ namespace MVVM_GMI.Services
         {
             await Task.CompletedTask;
 
-            //if (!Application.Current.Windows.OfType<MainWindow>().Any())
-            //{
-            //    var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            //    navigationWindow.Loaded += OnNavigationWindowLoaded;
-            //    navigationWindow.Show();
-            //}
+            Authentication x = new Authentication();
+            var y = x.CheckSession();
 
-            if (!Application.Current.Windows.OfType<AuthWindow>().Any())
+            if (y != null)
             {
-                var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
-                //authWindow.Loaded += AuthOnNavigationWindowLoaded;
-                authWindow.Show();
+                if (!Application.Current.Windows.OfType<MainWindow>().Any())
+                {
+                    var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
+                    navigationWindow.Loaded += OnNavigationWindowLoaded;
+                    navigationWindow.Show();
+                }
+            }
+            else
+            {
+                if (!Application.Current.Windows.OfType<AuthWindow>().Any())
+                {
+                    var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+                    //authWindow.Loaded += AuthOnNavigationWindowLoaded;
+                    authWindow.Show();
+                }
             }
         }
 
@@ -69,7 +80,7 @@ namespace MVVM_GMI.Services
                 return;
             }
 
-            navigationWindow.NavigationView.Navigate(typeof(MainWindow));
+            navigationWindow.NavigationView.Navigate(typeof(DashboardPage));
         }
     }
 }

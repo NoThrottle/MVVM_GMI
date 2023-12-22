@@ -60,8 +60,6 @@ namespace MVVM_GMI
                 services.AddSingleton<ProfileViewModel>();
                 services.AddSingleton<MinecraftSettingsPage>();
                 services.AddSingleton<MinecraftSettingsViewModel>();
-                services.AddSingleton<AuthPage>();
-                services.AddSingleton<AuthViewModel>();
 
                 services.AddSingleton<MinecraftService>();
                 services.AddSingleton<ConfigurationService>();

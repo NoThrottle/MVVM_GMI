@@ -1,4 +1,6 @@
-﻿using MVVM_GMI.Models;
+﻿using Google.Cloud.Firestore;
+using MVVM_GMI.Models;
+using MVVM_GMI.Services;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
@@ -9,8 +11,58 @@ namespace MVVM_GMI.Helpers
 {
     public class OnlineRequest
     {
+        /// <summary>
+        /// Gets data from FireStore and parses it into a Type. Throws an exception if it cannot find it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Collection"></param>
+        /// <param name="Document"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static T GetFromDatabase<T>(string Collection, string Document)
+        {
+            var db = FirestoreService.Database;
+            DocumentReference docRef = db.Collection(Collection).Document(Document);
+            var res = docRef.GetSnapshotAsync().Result.ConvertTo<T>();
 
-        public static string Sheets_GetRequest(String sheetid, String range, String key)
+            if (res != null)
+            {
+                return res;
+            }
+
+            throw new Exception();
+        }
+
+        /// <summary>
+        /// Writes to Firestore. Passes any and all errors.
+        /// </summary>
+        /// <param name="Collection"></param>
+        /// <param name="Document"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static async Task<WriteResult> WriteToDatabaseAsync(string Collection, string Document, object data)
+        {
+            try
+            {
+                var db = FirestoreService.Database;
+                DocumentReference docRef = db.Collection(Collection).Document(Document);
+                return await docRef.SetAsync(data);
+            }
+            catch (Exception ex) 
+            {
+                throw;
+            }            
+        }
+
+
+
+
+
+
+
+
+
+        internal static string Sheets_GetRequest(String sheetid, String range, String key)
         {
             try
             {
@@ -31,7 +83,7 @@ namespace MVVM_GMI.Helpers
             }
         }
 
-        public static async Task<bool> Sheets_AppendRequestAsync(String sheetid, String range, String key, DefaultSheetsModel data)
+        internal static async Task<bool> Sheets_AppendRequestAsync(String sheetid, String range, String key, DefaultSheetsModel data)
         {
             try
             {
