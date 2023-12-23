@@ -52,8 +52,9 @@ namespace MVVM_GMI.Services
 
             Authentication x = new Authentication();
             var y = x.CheckSession();
+            var z = x.GetMembership(y).QualifiedMember;
 
-            if (y != null)
+            if (y != null && z)
             {
                 if (!Application.Current.Windows.OfType<MainWindow>().Any())
                 {

@@ -32,7 +32,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1" Width="1000">
+        <Grid Grid.Row="1" Width="1000" Visibility="{Binding ViewModel.AuthVisible}">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -140,6 +140,233 @@
 
         </Grid>
 
+        <Grid Grid.Row="1" Width="1000" Visibility="{Binding ViewModel.MembershipProcessVisible}">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ViewModel.OneMoreThingVisible}">
+
+                <TextBlock
+                    Text="One More Thing..."
+                    FontSize="36"
+                    FontWeight="Black"                    
+                    />
+
+                <Grid Height="16"/>
+
+                <TextBlock
+                    Text="HighSkyMC has a membership fee of $1."
+                    FontSize="18"
+                    
+                    />
+
+                <Grid Height="16"/>
+
+                <TextBlock
+                    Text="This small amount grants you a lifetime access to HighSkyMC. It also allows us, the developers, to offset the cost of running the server."
+                    TextWrapping="WrapWithOverflow"
+                    FontSize="18"
+                    />
+
+                <Grid Height="16"/>
+
+                <TextBlock
+                    TextWrapping="WrapWithOverflow"
+                    FontSize="14"
+                    FontWeight="Light"
+                    >
+                    
+                    Instructions: <LineBreak/>
+                    1. Open a QrPH-compatible app (GCash, Maya, BDO, etc.) <LineBreak/>
+                    2. Scan the QR Code on the right<LineBreak/>
+                    3. Pay the amount requested (PHP 56 or $1)<LineBreak/>
+                    4. Once the transaction is complete, input the reference number on the right.<LineBreak/>
+                    5. Input an email we can use to contact you. <LineBreak/>
+                    6. Press submit, and wait for a response.<LineBreak/>
+                    <LineBreak/>
+                    Note:<LineBreak/>
+                    This is a manual process, expect to be accepted within 24 hours.
+
+                </TextBlock>
+
+                <Grid Height="16"/>
+
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ViewModel.AwaitingResponseVisible}">
+
+                <TextBlock
+                    Text="Awaiting Response..."
+                    FontSize="36"
+                    FontWeight="Black"                    
+                    />
+
+                <Grid Height="32"/>
+
+                <TextBlock
+                    Text="You already have submitted and paid the membership fee. Please wait patiently and check back here or on your email every few hours."
+                    TextWrapping="Wrap"
+                    FontSize="18"                    
+                    />
+
+                <Grid Height="48"/>
+
+
+                <Label Content="Reference Code/No.:"/>
+                <TextBlock
+                    Text="{Binding ViewModel.SubmittedReferenceCode}"
+                    FontSize="18"                    
+                    />
+
+                <Grid Height="16"/>
+
+
+                <Label Content="Email Address:"/>
+                <TextBlock
+                    Text="{Binding ViewModel.SubmittedEmail}"
+                    FontSize="18"                    
+                    />
+
+                <Grid Height="48"/>
+
+                <TextBlock
+                    Text="If you submitted erroneously, you may submit another request on the right. Doing so will delete your previous request. Submitting multiple requests will not speed up the process."
+                    TextWrapping="Wrap"
+                    Opacity="0.6"
+                    FontSize="12"                    
+                    />
+
+
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ViewModel.RejectedVisible}">
+
+                <TextBlock
+                    Text="Request Rejected!"
+                    FontSize="36"
+                    FontWeight="Black"                    
+                    />
+
+                <Grid Height="32"/>
+
+                <TextBlock
+                    Text="You may have submitted erroneous data. We cannot find your payment or match you to a reference number/code."
+                    TextWrapping="Wrap"
+                    FontSize="18"                    
+                    />
+
+                <Grid Height="48"/>
+
+
+                <Label Content="Reference Code/No.:"/>
+                <TextBlock
+                    Text="PCJ8HDAGD826DD1"
+                    FontSize="18"                    
+                    />
+
+                <Grid Height="16"/>
+
+
+                <Label Content="Email Address:"/>
+                <TextBlock
+                    Text="emmanuel.em@gmail.com"
+                    FontSize="18"                    
+                    />
+
+                <Grid Height="48"/>
+
+                <TextBlock
+                    Text="If you submitted erroneously, you may submit another request on the right. Doing so will delete your previous request. Submitting multiple requests will not speed up the process."
+                    TextWrapping="Wrap"
+                    Opacity="0.6"
+                    FontSize="12"                    
+                    />
+
+
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+
+                <ui:Image Source="https://i.ibb.co/x5bVsJT/qrcode.png" Width="256"/>
+
+                <Grid Height="16"/>
+
+                <Label Content="Reference Code / Number:"/>
+                <ui:TextBox
+                    Width="256"
+                    PlaceholderEnabled="True"
+                    PlaceholderText="Enter code"
+                    Text="{Binding ViewModel.ToSubmitReferenceCode, Mode=TwoWay}"
+                    />
+
+                <Grid Height="16"/>
+
+                <Label Content="Email Address:"/>
+                <ui:TextBox
+                    Width="256"
+                    PlaceholderEnabled="True"
+                    PlaceholderText="Enter a valid email address"
+                    Text="{Binding ViewModel.ToSubmitEmail, Mode=TwoWay}"
+                    />
+
+                <Grid Height="32"/>
+
+                <ui:Button Width="256" Content="Submit" Appearance="Primary" Command="{Binding ViewModel.SubmitMembershipRequestCommand}"/>
+
+                <Grid Height="8"/>
+
+
+                <ui:Button Width="256" Content="Submitted Already? Click here to refresh" Appearance="Transparent" BorderBrush="Transparent" Opacity="0.6" FontWeight="Light" Command="{Binding ViewModel.RefreshMembershipCommand}"/>
+
+                <Grid Height="16"/>
+
+                <ui:Button Width="256" Content="Log Out" Appearance="Transparent" BorderBrush="Transparent" Opacity="0.6" FontWeight="Light" Command="{Binding ViewModel.LogOutCommand}"/>
+
+
+            </StackPanel>
+
+        </Grid>
+
+        <Grid Grid.Row="1" Width="Auto" Visibility="{Binding ViewModel.WelcomeScreenVisible}" Margin="64" HorizontalAlignment="Center">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="512"/>
+                <ColumnDefinition MaxWidth="512"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" MaxWidth="512" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                <TextBlock
+                    Text="Welcome!"
+                    FontSize="36"
+                    FontWeight="Black"                    
+                    />
+
+                <Grid Height="8"/>
+
+                <TextBlock
+                    Text="You are now an official member of HighSkyMC!"
+                    TextWrapping="Wrap"
+                    FontSize="18"                    
+                    />
+
+                <Grid Height="32"/>
+
+                <ui:Button Content="Continue" Appearance="Primary" Command="{Binding ViewModel.WelcomeCommand}"/>
+
+            </StackPanel>
+
+            <ui:Image Grid.Column="1" Source="pack://application:,,,/Assets/Login_Art.png" MaxWidth="512" MinWidth="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+
+        </Grid>
+
         <ContentPresenter
             x:Name="AuthRootContentDialog"
             Grid.Row="0"
@@ -155,7 +382,6 @@
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/Assets/hsmc-icon-500.png" />
             </ui:TitleBar.Icon>
-
         </ui:TitleBar>
 
     </Grid>

@@ -34,6 +34,67 @@ namespace MVVM_GMI.Services.Database
             
         }
 
+        internal Membership GetMembership(string Username)
+        {
+            var x = online.GetFromDatabase<UserCredential>("UserData", Username);
+            return x.UserMembership;
+        }
+
+        internal void UpdateMembership(string Username, bool QualifiedMember, bool hasError, bool hasSubmitted, bool isWelcomed)
+        {
+            var x = online.GetFromDatabase<UserCredential>("UserData", Username);
+
+            var newMem = new Membership()
+            {
+                QualifiedMember = QualifiedMember,
+                hasErrorResponse = hasError,
+                hasSubmitted = hasSubmitted,
+                isWelcomed = isWelcomed
+            };
+
+            var update = new UserCredential()
+            {
+                Name = x.Name,
+                InviteCodeUsed = x.InviteCodeUsed,
+                HashedPW = x.HashedPW,
+                Pepper = x.Pepper,
+                UserMembership = newMem
+            };
+
+            online.WriteToDatabaseAsync("UserData",Username,update);
+        }
+
+        internal async Task<bool> SubmitMembershipRequestAsync(string Username, string Reference, string Email)
+        {
+            var x = new MembershipRequest()
+            {
+                Email = Email,
+                ReferenceCode = Reference,
+                Username = Username,
+            };
+
+            try
+            {
+                await online.WriteToDatabaseAsync("MembershipRequest", Username, x);
+                UpdateMembership(Username,false,false,true,false);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns the membership request of the user (if it exists)
+        /// </summary>
+        /// <param name="Username"></param>
+        /// <returns></returns>
+        internal MembershipRequest? GetMembershipRequest(string Username)
+        {
+            return online.GetFromDatabase<MembershipRequest>("MembershipRequest", Username);
+        }
+
         /// <summary>
         /// Checks if a session already exists, verifies that it isn't expired: <br/>
         /// If it is expired, or doesn't exist, redirects the user to login <br/>
@@ -202,13 +263,23 @@ namespace MVVM_GMI.Services.Database
                     return result;
                 }
 
+                var mem = new Membership()
+                {
+                    QualifiedMember = false,
+                    hasSubmitted = false,
+                    isWelcomed = false,
+                    hasErrorResponse = false,
+                };
+
                 var x = Pepper();
                 var data = new UserCredential()
                 {
                     Name = Username,
                     HashedPW = GetSha512Hash(x + Password + Salt),
                     Pepper = x,
-                    InviteCodeUsed = Code
+                    InviteCodeUsed = Code,
+                    UserMembership = mem,
+                    
                 };
 
                 _ = online.WriteToDatabaseAsync("UserData", data.Name, data);
@@ -221,9 +292,6 @@ namespace MVVM_GMI.Services.Database
 
             return result;
         }
-
-
-
 
         public bool Login(string Username, string Password)
         {
@@ -258,7 +326,6 @@ namespace MVVM_GMI.Services.Database
 
             return false;
         }
-
 
         bool CheckIfUserAlreadyExists(string Username)
         {
@@ -306,56 +373,6 @@ namespace MVVM_GMI.Services.Database
             return regex.IsMatch(input);
         }
 
-        void UpdateData()
-        {
-            _users = GetUsers();
-        }
-
-        List<UserCredential> GetUsers()
-        {
-            List<UserCredential> UC = new List<UserCredential>();
-
-            var x = GetData();
-
-            foreach(var y in x.Values)
-            {
-                var user = new UserCredential();
-                user.Name = y[0];
-                user.HashedPW = y[1];
-                user.Pepper = y[2];
-                user.InviteCodeUsed = y[3];
-
-                UC.Add(user);
-            }
-
-            return _users;
-        }
-
-        DefaultSheetsModel? GetData()
-        {
-
-            try
-            {
-                string response = OnlineRequest.Sheets_GetRequest(SheetID, "Authentication!A2:D100", SheetsKey);
-                var CONFIG_JSON_RESPONSE = JsonConvert.DeserializeObject<MVVM_GMI.Models.DefaultSheetsModel>(response);
-
-                if (response != null)
-                {
-                    return CONFIG_JSON_RESPONSE;
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message + " Taken Place at GetConfigList", "Error");
-                return null;
-            }
-        }
-
     }
 
     [FirestoreData]
@@ -372,6 +389,39 @@ namespace MVVM_GMI.Services.Database
 
         [FirestoreProperty]
         public string InviteCodeUsed { get; set; }
+
+        [FirestoreProperty]
+        public Membership UserMembership {  get; set; }
+
+    }
+
+    [FirestoreData]
+    internal class Membership
+    {
+        [FirestoreProperty]
+        public bool QualifiedMember { get; set; }
+
+        [FirestoreProperty]
+        public bool hasErrorResponse { get; set; }
+
+        [FirestoreProperty]
+        public bool isWelcomed { get; set; }
+
+        [FirestoreProperty]
+        public bool hasSubmitted { get; set; }
+    }
+
+    [FirestoreData]
+    internal class MembershipRequest
+    {
+        [FirestoreProperty]
+        public string Username { get; set; }
+
+        [FirestoreProperty]
+        public string ReferenceCode { get; set; }
+
+        [FirestoreProperty]
+        public string Email { get; set; }
 
     }
 

@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MVVM_GMI.Services.Database;
+using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Security.Authentication.OnlineId;
 using Wpf.Ui;
 
 namespace MVVM_GMI.ViewModels.Windows
@@ -22,6 +24,7 @@ namespace MVVM_GMI.ViewModels.Windows
             _navigationService = navigationService;
             _serviceProvider = serviceProvider;
             _contentDialogService = contentDialogService;
+
         }
 
 
@@ -34,6 +37,8 @@ namespace MVVM_GMI.ViewModels.Windows
         [ObservableProperty]
         private string _signupVisible = "Collapsed";
 
+        [ObservableProperty]
+        private string _authVisible = "Visible";
 
         //Login
 
@@ -63,6 +68,138 @@ namespace MVVM_GMI.ViewModels.Windows
         [ObservableProperty]
         private string _signupEnabled = "False";
 
+        //Process
+
+        [ObservableProperty]
+        private string _membershipProcessVisible = "Collapsed";
+
+        [ObservableProperty]
+        private string _awaitingResponseVisible = "Collapsed";
+
+        [ObservableProperty]
+        private string _oneMoreThingVisible = "Collapsed";
+
+        [ObservableProperty]
+        private string _rejectedVisible = "Collapsed";
+
+        [ObservableProperty]
+        private string _submittedReferenceCode = "";
+
+        [ObservableProperty]
+        private string _submittedEmail = "";
+
+        [ObservableProperty]
+        private string _toSubmitReferenceCode = "False";
+
+        [ObservableProperty]
+        private string _toSubmitEmail = "False";
+
+        //WelcomeScreen
+
+        [ObservableProperty]
+        private string _welcomeScreenVisible = "Collapsed";
+
+
+        [RelayCommand]
+        void SubmitMembershipRequest()
+        {
+            var x = new Authentication();
+            x.SubmitMembershipRequestAsync(Services.UserProfileService.AuthorizedUsername, ToSubmitReferenceCode, ToSubmitEmail);
+        }
+
+        [RelayCommand]
+        void LogOut()
+        {
+            var x = new Authentication();
+            x.LogOut();
+            ClearFields();
+            SwitchToLogin();
+            AuthVisible = "Visible";
+            MembershipProcessVisible = "Collapsed";           
+        }
+
+
+        [RelayCommand]
+        void RefreshMembership()
+        {
+            ClearFields();
+
+            MembershipProcessVisible = "Collapsed";
+            AuthVisible = "Collapsed";
+            WelcomeScreenVisible = "Collapsed";
+            AwaitingResponseVisible = "Collapsed";
+            OneMoreThingVisible = "Collapsed";
+            RejectedVisible = "Collapsed";
+
+            SubmittedReferenceCode = "";
+            SubmittedEmail = "";
+
+            ToSubmitEmail = "";
+            ToSubmitReferenceCode = "";
+
+            ProcessUserMembership(MVVM_GMI.Services.UserProfileService.AuthorizedUsername);
+        }
+
+        [RelayCommand]
+        void Welcome()
+        {
+            var x = new Authentication();
+            x.UpdateMembership(Services.UserProfileService.AuthorizedUsername, true, false, true, true);
+            GoToMainWindowPage<DashboardPage>();
+        }
+
+        void ProcessUserMembership(string Username)
+        {
+            var x = new Authentication();
+            var mem = x.GetMembership(Username);
+
+
+            if (mem.QualifiedMember && mem.isWelcomed)
+            {
+                GoToMainWindowPage<DashboardPage>();
+                return;
+            }
+
+            if (mem.QualifiedMember && !mem.isWelcomed) 
+            {
+
+                WelcomeScreenVisible = "Visible";
+                return;
+            
+            }
+
+            MembershipProcessVisible = "Visible";
+
+
+            try
+            {
+                var memReq = x.GetMembershipRequest(Username);
+                SubmittedReferenceCode = memReq.ReferenceCode;
+                SubmittedEmail = memReq.Email;
+            }
+            catch
+            {
+
+            }
+
+            if (mem.hasSubmitted && mem.hasErrorResponse)
+            {
+                RejectedVisible = "Visible";
+            }
+
+            if (mem.hasSubmitted && !mem.hasErrorResponse)
+            {
+                AwaitingResponseVisible = "Visible";
+            }
+
+            if (!mem.hasSubmitted)
+            {
+                OneMoreThingVisible = "Visible";
+            }
+
+
+        }
+
 
         [RelayCommand]
         async Task LoginAsync()
@@ -76,24 +213,9 @@ namespace MVVM_GMI.ViewModels.Windows
                 return;
             }
 
-            if (!Application.Current.Windows.OfType<MVVM_GMI.Views.Windows.MainWindow>().Any())
-            {
-                var navigationWindow = _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.MainWindow>();
-                navigationWindow.Loaded += (sender, e) =>
-                {
+            RefreshMembership();
+            LoginVisible = "False";
 
-                    if (sender is not MVVM_GMI.Views.Windows.MainWindow navigationWindow)
-                    {
-                        return;
-                    }
-
-                    navigationWindow.NavigationView.Navigate(typeof(MVVM_GMI.Views.Pages.DashboardPage));
-
-                };
-                navigationWindow.Show();
-
-                _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.AuthWindow>().Close();
-            }
         }
 
         [RelayCommand]
@@ -104,24 +226,9 @@ namespace MVVM_GMI.ViewModels.Windows
 
             if(y == null)
             {
-                if (!Application.Current.Windows.OfType<MVVM_GMI.Views.Windows.MainWindow>().Any())
-                {
-                    var navigationWindow = _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.MainWindow>();
-                    navigationWindow.Loaded += (sender, e) =>
-                    {
 
-                        if (sender is not MVVM_GMI.Views.Windows.MainWindow navigationWindow)
-                        {
-                            return;
-                        }
-
-                        navigationWindow.NavigationView.Navigate(typeof(MVVM_GMI.Views.Pages.ProfilePage));
-
-                    };
-                    navigationWindow.Show();
-
-                    _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.AuthWindow>().Close();
-                }
+                RefreshMembership();
+                SignupVisible = "False";
             }
             else
             {
@@ -180,6 +287,9 @@ namespace MVVM_GMI.ViewModels.Windows
 
             LoginUsername = "";
             LoginPassword = "";
+
+            ToSubmitEmail = "";
+            ToSubmitReferenceCode = "";
         }
 
         async Task<Wpf.Ui.Controls.ContentDialogResult> ShowDialogAsync(string Title, string Content, string PrimaryButtonText, string SecondaryButtonText, string CloseButtonText)
@@ -196,6 +306,28 @@ namespace MVVM_GMI.ViewModels.Windows
                     );
 
             return x;
+        }
+
+        void GoToMainWindowPage<Page>()
+        {
+            if (!Application.Current.Windows.OfType<MVVM_GMI.Views.Windows.MainWindow>().Any())
+            {
+                var navigationWindow = _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.MainWindow>();
+                navigationWindow.Loaded += (sender, e) =>
+                {
+
+                    if (sender is not MVVM_GMI.Views.Windows.MainWindow navigationWindow)
+                    {
+                        return;
+                    }
+
+                    navigationWindow.NavigationView.Navigate(typeof(Page));
+
+                };
+                navigationWindow.Show();
+
+                _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.AuthWindow>().Close();
+            }
         }
 
     }

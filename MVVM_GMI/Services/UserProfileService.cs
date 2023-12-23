@@ -26,11 +26,11 @@ namespace MVVM_GMI.Services
         /// Username returned by the database which matches the InstallationID and AuthKey
         /// </summary>
         public static String? AuthorizedUsername 
-        { get 
+        {   
+            get 
             {
                 return _authorizeUsername;
-            } 
-            
+            }             
             set 
             { 
                 _authorizeUsername = value;

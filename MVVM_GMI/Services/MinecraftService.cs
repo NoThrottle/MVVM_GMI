@@ -86,13 +86,24 @@ namespace MVVM_GMI.Services
 
             Process process = null;
 
+            var minRam = 0;
+
+            if (get.Minecraft.CapRamAllocation)
+            {
+                minRam = get.Minecraft.MaxRamAllocation;
+            }
+            else
+            {
+                minRam = get.Minecraft.MinRamAllocation;
+            }
+
             process = await launcher.CreateProcessAsync("fabric-loader-" + "0.15.3" + "-" + "1.20.4", new MLaunchOption
             {
 
                 //ServerIp = serverAddress,
 
                 MaximumRamMb = @get.Minecraft.MaxRamAllocation,
-                MinimumRamMb = @get.Minecraft.MinRamAllocation,
+                MinimumRamMb = minRam,
 
                 ScreenWidth = @get.Minecraft.StartingWidth,
                 ScreenHeight = @get.Minecraft.StartingHeight,
@@ -102,7 +113,7 @@ namespace MVVM_GMI.Services
                 GameLauncherName = "HighSkyMC",
                 GameLauncherVersion = "2",
 
-                Session = MSession.CreateOfflineSession("Plenty"),//MAKE SURE TO ALLOW USERNAMES WHEN PROFILING IS ENABLED
+                Session = MSession.CreateOfflineSession(user.AuthorizedUsername),//MAKE SURE TO ALLOW USERNAMES WHEN PROFILING IS ENABLED
 
             }, checkAndDownload: true); ;
 
