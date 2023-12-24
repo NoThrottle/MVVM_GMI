@@ -2,13 +2,11 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>wpfui-icon.ico</ApplicationIcon>
+    <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <Company>NoThrottle LLC</Company>
     <Copyright>NoThrottle</Copyright>
     <PackageProjectUrl>https://nothrottle.com</PackageProjectUrl>
@@ -17,6 +15,10 @@
     <Authors>NoThrottle</Authors>
     <PackageTags>Minecraft, Gaming</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
+    <StartupObject></StartupObject>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <ApplicationIcon>wpfui-icon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -57,6 +59,15 @@
       <VersionMinor>4</VersionMinor>
       <VersionMajor>2</VersionMajor>
       <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
+    </COMReference>
+    <COMReference Include="ComctlLib">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>3</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>6b7e6392-850a-101b-afc0-4210102a8da7</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
     <COMReference Include="{bee4bfec-6683-3e67-9167-3c0cbc68f40a}">
       <WrapperTool>tlbimp</WrapperTool>

@@ -1,5 +1,6 @@
 ﻿using Kajabity.Tools.Java;
 using MVVM_GMI.Helpers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,12 +9,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
+using WinRT;
 
 namespace MVVM_GMI.Services
 {
     public class ConfigurationService : ILauncherProperties
     {
-        public static string pathLauncherSettings = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi")), "config.props");
+        private static string pathLauncherSettings = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "config.props");
+        private static string pathLauncherJSON = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "config.json");
+        private static string pathLauncher = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi");
 
         private static ConfigurationService instance;
         private static readonly object lockObject = new object();
@@ -230,7 +234,7 @@ namespace MVVM_GMI.Services
         public static class Launcher
         {
 
-            private static string _LauncherPath { get; set; }
+            private static string _LauncherPath { get; set; } = pathLauncher;
             /// <summary>
             /// Path for the Launcher, defaults to UserCredential Roaming Appdata .gmi
             /// </summary>
@@ -321,6 +325,23 @@ namespace MVVM_GMI.Services
                 }
             }
 
+
+            private static int _ModUpdateIndex { get; set; }
+            public static int ModUpdateIndex
+            {
+                get
+                {
+                    return _ModUpdateIndex;
+                }
+                set
+                {
+                    _ModUpdateIndex = value;
+                    Instance.setProperty("ModUpdateIndex", value);
+
+                }
+            }
+
+
             /// <summary>
             /// UNUSED: True if the settings file has been constructed.
             /// </summary>
@@ -339,17 +360,62 @@ namespace MVVM_GMI.Services
                                                 string MinecraftPath,
                                                 bool AppTheme,
                                                 bool AutoDownloadUpdates,
-                                                bool AutoInstallUpdates)
+                                                bool AutoInstallUpdates,
+                                                int ModUpdateIndex)
             {
                 _LauncherPath = LauncherPath;
                 _MinecraftPath = MinecraftPath;
                 _AppTheme = AppTheme;
                 _AutoDownloadUpdates = AutoDownloadUpdates;
                 _AutoInstallUpdates = AutoInstallUpdates;
+                _ModUpdateIndex = ModUpdateIndex;
             }
         }
 
         //--------------------------------------------------//
+
+
+        private void SetProperty<T>(string key, object value, object defaultValue)
+        {
+            JSONPropsExist();
+
+            string jsonString = File.ReadAllText(pathLauncherJSON);
+            JObject obj = JObject.Parse(jsonString);
+
+            if (obj.ContainsKey(key))
+            {                
+
+                if (obj[key] is JValue && value is not IEnumerable<T>)
+                {
+                    obj[key] = value.ToString();
+                }
+                else if (obj[key] is JContainer && value is IEnumerable<T>)
+                {
+                    obj[key] = (JArray)value;
+                }
+
+            }
+
+            string edited = obj.ToString();
+            File.WriteAllText(pathLauncherJSON, edited);
+        }
+
+        /// <summary>
+        /// Create the JSON File. Returns true if it exists, false if it doesnt but creates it anyway.
+        /// </summary>
+        /// <returns></returns>
+        private bool JSONPropsExist()
+        {
+            if (File.Exists(pathLauncherJSON))
+            {
+                return true;
+            }
+            else
+            {
+                File.Create(pathLauncherJSON);
+                return false;
+            }
+        }
 
         static List<QueueObject> QueueObjects = new List<QueueObject>();
         static bool QueueExists = false;
@@ -373,6 +439,8 @@ namespace MVVM_GMI.Services
 
         public static void WriteProperties()
         {
+            Directory.CreateDirectory(pathLauncher);
+
             using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
             {
                 var p = new JavaProperties();
@@ -393,6 +461,7 @@ namespace MVVM_GMI.Services
                 p.SetProperty("AppTheme", Launcher.AppTheme.ToString());
                 p.SetProperty("AutoDownloadUpdates", Launcher.AutoDownloadUpdates.ToString());
                 p.SetProperty("AutoInstallUpdates", Launcher.AutoInstallUpdates.ToString());
+                p.SetProperty("ModUpdateIndex", Launcher.ModUpdateIndex.ToString());
 
                 p.Store(stream, "DO NOT TOUCH");
 
@@ -459,6 +528,7 @@ namespace MVVM_GMI.Services
                 {
                     x[0] = int.Parse(p.GetProperty("MaxRamAllocation"));
                 }
+
                 if (p.ContainsKey("MinRamAllocation"))
                 {
                     x[1] = int.Parse(p.GetProperty("MinRamAllocation"));
@@ -510,14 +580,46 @@ namespace MVVM_GMI.Services
                 {
                     y[4] = bool.Parse(p.GetProperty("AutoInstallUpdates"));
                 }
-
+                if (p.ContainsKey("ModUpdateIndex"))
+                {
+                    y[5] = int.Parse(p.GetProperty("ModUpdateIndex"));
+                }
+                else
+                {
+                    Launcher.ModUpdateIndex = 0;
+                }
             }
 
+            //y[5] = UpdateValue(p, "ModUpdateIndex", 0);
+
             Minecraft.SetInitialValues((int)x[0], (int)x[1], (bool)x[2], (bool)x[3], (int)x[4], (int)x[5], (bool)x[6], (string[])x[7]);
-            Launcher.SetInitialValues((string)y[0], (string)y[1], (bool)y[2], (bool)y[3], (bool)y[4]);
+            Launcher.SetInitialValues((string)y[0], (string)y[1], (bool)y[2], (bool)y[3], (bool)y[4], (int)y[5]);
             
         }
 
+        private T UpdateValue<T>(JavaProperties java, string PropertyName, T DefaultValue)
+        {
+
+            if(java.ContainsKey(PropertyName))
+            {
+                return java.GetProperty(PropertyName).As<T>();
+            }
+            else
+            {
+                Directory.CreateDirectory(pathLauncher);
+                Stream S = File.OpenRead(pathLauncherSettings);
+
+                using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
+                {
+                    var p = new JavaProperties();
+                    p.Load(S);
+                    p.SetProperty(PropertyName, DefaultValue.ToString());
+                    p.Store(stream, "DO NOT TOUCH");
+                }
+
+                return DefaultValue;
+            }
+        }
 
         /// <summary>
         /// Writes the default values for all the settings
@@ -540,8 +642,8 @@ namespace MVVM_GMI.Services
 
             try
             {
-
-                using(FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
+                Directory.CreateDirectory(pathLauncher);
+                using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
                 {
                     var p = new JavaProperties();
 
@@ -569,12 +671,12 @@ namespace MVVM_GMI.Services
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.StackTrace, "Error"); // REPLACE THIS WiTH NOTIFICATION SERVICE
+                MessageBox.Show(e.Message + e.StackTrace, "Error"); // REPLACE THIS WiTH NOTIFICATION SERVICE
 
             }
         }
 
-        bool PropertiesExist()
+        public bool PropertiesExist()
         {
             if (File.Exists(pathLauncherSettings))
             {

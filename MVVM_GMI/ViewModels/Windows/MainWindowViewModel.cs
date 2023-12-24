@@ -26,9 +26,9 @@ namespace MVVM_GMI.ViewModels.Windows
             },
             new NavigationViewItem()
             {
-                Content = "Docs",
+                Content = "Mods",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
-                TargetPageType = typeof(Views.Pages.DataPage)
+                TargetPageType = typeof(Views.Pages.ADMINModManagerPage)
             }
             ,
             new NavigationViewItem()

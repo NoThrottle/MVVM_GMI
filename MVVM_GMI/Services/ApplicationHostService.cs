@@ -50,9 +50,25 @@ namespace MVVM_GMI.Services
         {
             await Task.CompletedTask;
 
+            _ = ConfigurationService.Instance.PropertiesExist();
+
             Authentication x = new Authentication();
             var y = x.CheckSession();
-            var z = x.GetMembership(y).QualifiedMember;
+            bool z = false;
+
+            try
+            {
+                var t = x.GetMembership(y).QualifiedMember;
+                if (z != null)
+                {
+                    z = t;
+                }
+            }
+            catch
+            {
+
+            }
+            
 
             if (y != null && z)
             {

@@ -31,18 +31,18 @@ namespace MVVM_GMI.Services.Database
 
         public Authentication() 
         {
-            
+            ConfigurationService.Instance.PropertiesExist();
         }
 
         internal Membership GetMembership(string Username)
         {
-            var x = online.GetFromDatabase<UserCredential>("UserData", Username);
+            var x = online.GetFromDatabaseAsync<UserCredential>("UserData", Username).Result;
             return x.UserMembership;
         }
 
         internal void UpdateMembership(string Username, bool QualifiedMember, bool hasError, bool hasSubmitted, bool isWelcomed)
         {
-            var x = online.GetFromDatabase<UserCredential>("UserData", Username);
+            var x = online.GetFromDatabaseAsync<UserCredential>("UserData", Username).Result;
 
             var newMem = new Membership()
             {
@@ -92,7 +92,7 @@ namespace MVVM_GMI.Services.Database
         /// <returns></returns>
         internal MembershipRequest? GetMembershipRequest(string Username)
         {
-            return online.GetFromDatabase<MembershipRequest>("MembershipRequest", Username);
+            return online.GetFromDatabaseAsync<MembershipRequest>("MembershipRequest", Username).Result;
         }
 
         /// <summary>
@@ -102,6 +102,8 @@ namespace MVVM_GMI.Services.Database
         /// </summary>
         public string? CheckSession()
         {
+            var t = new ConfigurationService();
+            t.PropertiesExist();
 
             String path = Path.Combine(from.LauncherPath, "session.tkn");
 
@@ -308,7 +310,7 @@ namespace MVVM_GMI.Services.Database
 
             try
             {
-                var x = online.GetFromDatabase<UserCredential>("UserData", Username);
+                var x = online.GetFromDatabaseAsync<UserCredential>("UserData", Username).Result;
                 if (x != null)
                 {
                     if (x.HashedPW == GetSha512Hash(x.Pepper + Password + Salt))
