@@ -83,121 +83,193 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Margin="16,0,0,0" MinWidth="400">
+        <TabControl Grid.Column="1" Margin="16,0,0,0">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Margin="0,0,6,0" Symbol="XboxConsole24" />
+                        <TextBlock Text="Auto Creation" />
+                    </StackPanel>
+                </TabItem.Header>
+                <StackPanel MinWidth="400">
 
-            <Label Content="Project ID:"/>
-            <StackPanel Orientation="Horizontal">
-                <ui:TextBox MinWidth="260" Text="{Binding ViewModel.ProjectID, Mode=TwoWay}"/>
-                <ui:Button Margin="8,0,0,0" Content="Search" Command="{Binding ViewModel.SearchModCommand}"/>
-                <ui:ToggleSwitch  Margin="8,0,0,0" Content="Modrinth" IsChecked="{Binding ViewModel.IsModrinth, Mode=TwoWay}"/>
-            </StackPanel>
+                    <Label Content="Project ID:"/>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:TextBox MinWidth="260" Text="{Binding ViewModel.ProjectID, Mode=TwoWay}"/>
+                        <ui:Button Margin="8,0,0,0" Content="Search" Command="{Binding ViewModel.SearchModCommand}"/>
+                        <ui:ToggleSwitch  Margin="8,0,0,0" Content="Modrinth" IsChecked="{Binding ViewModel.IsModrinth, Mode=TwoWay}"/>
+                    </StackPanel>
 
-            <Grid Height="16"/>
-            <Label Content="Result:"/>
-            <StackPanel Orientation="Horizontal">
+                    <Grid Height="16"/>
+                    <Label Content="Result:"/>
+                    <StackPanel Orientation="Horizontal">
 
-                <Image Source="{Binding ViewModel.IconURL}" Height="96" Margin="16"/>
-                <StackPanel Margin="16" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding ViewModel.ModName}" FontSize="18" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding ViewModel.ModDescription}" MaxWidth="400" TextWrapping="Wrap"/>
-                </StackPanel>
-                
-            </StackPanel>
+                        <Image Source="{Binding ViewModel.IconURL}" Height="96" Margin="16"/>
+                        <StackPanel Margin="16" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding ViewModel.ModName}" FontSize="18" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding ViewModel.ModDescription}" MaxWidth="400" TextWrapping="Wrap"/>
+                        </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+                    </StackPanel>
 
-                <StackPanel Width="120" Margin="16">
-                    <Label Content="Category:"/>
-                    <TextBlock Text="{Binding ViewModel.Category}" TextWrapping="Wrap"/>
-                </StackPanel>
+                    <StackPanel Orientation="Horizontal">
 
-                <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsClientSide, Mode=TwoWay}" Content="Client Side"/>
-                <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsServerSide, Mode=TwoWay}" Content="Server Side"/>
-            </StackPanel>
+                        <StackPanel Width="120" Margin="16">
+                            <Label Content="Category:"/>
+                            <TextBlock Text="{Binding ViewModel.Category}" TextWrapping="Wrap"/>
+                        </StackPanel>
 
-            <Grid Height="1" Background="White" Opacity="0.5"/>
+                        <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsClientSide, Mode=TwoWay}" Content="Client Side"/>
+                        <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsServerSide, Mode=TwoWay}" Content="Server Side"/>
+                    </StackPanel>
 
-            <Grid Width="Auto" Margin="0,16,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                    <Grid Height="1" Background="White" Opacity="0.5"/>
 
-                <StackPanel Grid.Column="0" Margin="8,0,8,0">
-                    <Label Content="Client"/>
-                    <ComboBox ItemsSource="{Binding ViewModel.ClientLoaders}" SelectedIndex="{Binding ViewModel.SelIndexLoaders, Mode=TwoWay}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Margin="8,0,8,0">
-                    <Label Content="Minecraft Version"/>
-                    <ComboBox ItemsSource="{Binding ViewModel.MinecraftVersions}" SelectedIndex="{Binding ViewModel.SelIndexMinecraftVersions, Mode=TwoWay}"/>
-                </StackPanel>
-
-                <ui:Button Margin="8,0,8,0" Content="Search" Grid.Column="2" VerticalAlignment="Center" Command="{Binding ViewModel.GetVersionsCommand}" />
-
-            </Grid>
-
-            <Grid Height="16"/>
-
-            <Grid Width="Auto" Background="#11FFFFFF" Height="256">
-
-                <StackPanel Margin="16">
-                    <Grid>
+                    <Grid Width="Auto" Margin="0,16,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0">
-                            <Label Content="Mod Version"/>
-                            <ComboBox ItemsSource="{Binding ViewModel.ModVersions}" SelectedIndex="{Binding ViewModel.SelIndexModVersions, Mode=TwoWay}"/>
+                        <StackPanel Grid.Column="0" Margin="8,0,8,0">
+                            <Label Content="Client"/>
+                            <ComboBox ItemsSource="{Binding ViewModel.ClientLoaders}" SelectedIndex="{Binding ViewModel.SelIndexLoaders, Mode=TwoWay}"/>
                         </StackPanel>
 
-                        <ui:Button Margin="8,0,8,4" Content="Query" Grid.Column="1" VerticalAlignment="Bottom" Command="{Binding ViewModel.QueryVersionCommand}"/>
-                        <ui:Button Margin="0,0,0,4" Content="Publish" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Primary" Command="{Binding ViewModel.AddModToListCommand}"/>
+                        <StackPanel Grid.Column="1" Margin="8,0,8,0">
+                            <Label Content="Minecraft Version"/>
+                            <ComboBox ItemsSource="{Binding ViewModel.MinecraftVersions}" SelectedIndex="{Binding ViewModel.SelIndexMinecraftVersions, Mode=TwoWay}"/>
+                        </StackPanel>
+
+                        <ui:Button Margin="8,0,8,0" Content="Search" Grid.Column="2" VerticalAlignment="Center" Command="{Binding ViewModel.GetVersionsCommand}" />
+
+                    </Grid>
+
+                    <Grid Height="16"/>
+
+                    <Grid Width="Auto" Background="#11FFFFFF" Height="256">
+
+                        <StackPanel Margin="16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <Label Content="Mod Version"/>
+                                    <ComboBox ItemsSource="{Binding ViewModel.ModVersions}" SelectedIndex="{Binding ViewModel.SelIndexModVersions, Mode=TwoWay}"/>
+                                </StackPanel>
+
+                                <ui:Button Margin="8,0,8,4" Content="Query" Grid.Column="1" VerticalAlignment="Bottom" Command="{Binding ViewModel.QueryVersionCommand}"/>
+                                <ui:Button Margin="0,0,0,4" Content="Publish" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Primary" Command="{Binding ViewModel.AddModToListCommand}"/>
+                            </Grid>
+
+                            <Grid Height="8"/>
+                            <Grid Height="1" Background="White" Opacity="0.5"/>
+                            <Grid Height="16"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <Label Content="Size:"/>
+                                    <TextBlock Text="{Binding ViewModel.FileSize}"/>
+                                    <Grid Height="8"/>
+
+                                    <Label Content="Date Published:"/>
+                                    <TextBlock Text="{Binding ViewModel.DatePublished}"/>
+                                    <Grid Height="8"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+
+                                    <ui:ToggleSwitch Content="Is Required" IsChecked="{Binding ViewModel.IsRequired, Mode=TwoWay}"/>
+
+                                </StackPanel>
+
+                            </Grid>
+
+
+
+
+                        </StackPanel>
+
+
+
+
+                    </Grid>
+
+                </StackPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Margin="0,0,6,0" Symbol="XboxConsole24" />
+                        <TextBlock Text="Custom Creation" />
+                    </StackPanel>
+                </TabItem.Header>
+                <StackPanel MinWidth="400" MaxWidth="800">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="156"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0">
+                            <Label Content="Mod Name:"/>
+                            <ui:TextBox/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <Label Content="Category:"/>
+                            <ComboBox/>
+                        </StackPanel>
                     </Grid>
 
                     <Grid Height="8"/>
-                    <Grid Height="1" Background="White" Opacity="0.5"/>
-                    <Grid Height="16"/>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <Label Content="Description"/>
+                        <ui:TextBox/>
+                    </StackPanel>
+                    
+                    <Grid Height="8"/>
 
-                        <StackPanel Grid.Column="0">
-                            <Label Content="Size:"/>
-                            <TextBlock Text="{Binding ViewModel.FileSize}"/>
-                            <Grid Height="8"/>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsClientSide, Mode=TwoWay}" Content="Client Side"/>
+                        <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsServerSide, Mode=TwoWay}" Content="Server Side"/>
+                    </StackPanel>
+                    
+                    <Grid Height="8"/>
 
-                            <Label Content="Date Published:"/>
-                            <TextBlock Text="{Binding ViewModel.DatePublished}"/>
-                            <Grid Height="8"/>
-                        </StackPanel>
+                    <StackPanel>
+                        <Label Content="Timestamp"/>
+                        <ui:TextBox/>
+                    </StackPanel>
 
-                        <StackPanel Grid.Column="1">
+                    <Grid Height="8"/>
 
-                            <ui:ToggleSwitch Content="Is Required" IsChecked="{Binding ViewModel.IsRequired, Mode=TwoWay}"/>
+                    <StackPanel>
+                        <Label Content="Icon URL"/>
+                        <ui:TextBox/>
+                    </StackPanel>
 
-                        </StackPanel>
-                        
-                    </Grid>
 
 
 
 
                 </StackPanel>
-                
+            </TabItem>
+        </TabControl>
+        
 
-                
-
-            </Grid>
-            
-        </StackPanel>
         
 
 

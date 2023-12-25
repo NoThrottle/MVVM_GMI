@@ -1,13 +1,8 @@
-﻿using MVVM_GMI.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using online = MVVM_GMI.Helpers.OnlineRequest;
-using from = MVVM_GMI.Services.ConfigurationService;
+﻿using Google.Cloud.Firestore;
+using MVVM_GMI.Models;
 using System.IO;
-using static Grpc.Core.Metadata;
+using from = MVVM_GMI.Services.ConfigurationService;
+using online = MVVM_GMI.Helpers.OnlineRequest;
 
 namespace MVVM_GMI.Services
 {
@@ -16,6 +11,8 @@ namespace MVVM_GMI.Services
 
         public event Action<bool>? TaskCompleted;
         public event Action<MinecraftLoadingUpdate>? ProgressUpdated;
+
+        #region Boiler plate
 
         private static ModDownloadService instance;
         private static readonly object lockObject = new object();
@@ -43,17 +40,49 @@ namespace MVVM_GMI.Services
             }
         }
 
-        
+        #endregion Boiler plate
 
-        async Task DownloadModsAsync()
+        public async Task<bool> CheckInstalledModVersion()
         {
+            UpdateStatus(new MinecraftLoadingUpdate() 
+            { 
+                IntProgress = 0,
+                TextProgress = "Loading",
+                Intermediate = true,
+                Process = "Getting mod version",
+                ProcessDescription = ""
+                       
+            });
+
+            int x = from.Instance.fromLauncher.ModUpdateIndex;
+            var y = await online.GetFromDatabaseAsync<ModsProperties>("ServerProperties","mods");
+            int z = y.updateIndex;
+
+            if (x != z)
+            {
+                var df = await DownloadModsAsync();
+                from.Instance.fromLauncher.ModUpdateIndex = z;
+            }
+
+            return true;
+            //TaskCompleted?.Invoke(true);
+            
+        }
+
+
+        async Task<bool> DownloadModsAsync()
+        {
+
+            Directory.Delete(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"),true);
+            Directory.CreateDirectory(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"));
+
             var x = await online.GetAllFromDatabaseAsync<ModEntry>("Mods");
-            //halfLength + (length % 2)
-            var x1 = x.GetRange(0, (x.Count-1)/2 + (x.Count%2));
-            var x2 = x.GetRange((x.Count - 1) / 2 + (x.Count % 2), x.Count-1);
+
+            var x1 = x.GetRange(0, (x.Count - 1) / 2 + (x.Count % 2));
+            var x2 = x.GetRange((x.Count - 1) / 2 + (x.Count % 2), (x.Count + 1) / 2);
 
             string entryName = "";
-            int max = x.Count();
+            int max = x.Count()-1;
             int prog = 0;
 
             _ = Task.Run(async () => 
@@ -61,29 +90,40 @@ namespace MVVM_GMI.Services
                 foreach (var entry in x1)
                 {
                     entryName = entry.Name;
-                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name) + "_'-" + string.Join("", entry.DatePublished) + ".jar");
+                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name.Split(" ")) + "_'-" + string.Join("", entry.DatePublished.Replace("/", "").Replace(":", "").Replace(" ", "")) + ".jar");
                     await online.DownloadFileAsync(entry.DownloadURL, o);
                     prog++;
 
                 }
+
             });
 
             _ = Task.Run(async () =>
             {
+
                 foreach (var entry in x2)
                 {
-
                     entryName = entry.Name;
-                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name) + "_'-" + string.Join("", entry.DatePublished) + ".jar");
+                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name.Split(" ")) + "_'-" + string.Join("", entry.DatePublished.Replace("/", "").Replace(":", "").Replace(" ", "")) + ".jar");
                     await online.DownloadFileAsync(entry.DownloadURL, o);
                     prog++;
-
                 }
+
             });
-            while (true)
+
+
+            while (prog != max)
             {
-                UpdateStatus("Downloading", 0, false, x.Count(), prog, "Downloading Mods: ", prog + "/" + x.Count() + " - Mod: " + entryName);
+                Application.Current.Dispatcher.Invoke((Action)async delegate {
+
+                    UpdateStatus("Downloading", 0, false, x.Count(), prog, "Downloading Mods: ", prog + "/" + x.Count() + " - Mod: " + entryName);
+
+                });
+                
+                Thread.Sleep(100);
             }
+
+            return true;
         }
 
 
@@ -105,6 +145,17 @@ namespace MVVM_GMI.Services
         public void UpdateStatus(MinecraftLoadingUpdate update)
         {
             ProgressUpdated?.Invoke(update);
+        }
+
+        [FirestoreData]
+        class ModsProperties
+        {
+
+            [FirestoreProperty]
+            public int updateIndex { get; set; }
+
+            [FirestoreProperty]
+            public bool forceUpdate { get; set; }
         }
 
     }

@@ -101,9 +101,6 @@ namespace MVVM_GMI.Services.Database
         /// </summary>
         public string? CheckSession()
         {
-            var t = new ConfigurationService();
-            //t.PropertiesExist();
-
             String path = Path.Combine(ConfigurationService.Instance.fromLauncher.LauncherPath, "session.tkn");
 
             if (File.Exists(path)){

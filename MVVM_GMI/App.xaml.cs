@@ -25,8 +25,6 @@ namespace MVVM_GMI
     public partial class App
     {
 
-        ConfigurationService s = new ConfigurationService();
-
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection

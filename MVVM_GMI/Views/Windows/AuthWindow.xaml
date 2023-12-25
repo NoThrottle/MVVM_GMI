@@ -262,10 +262,9 @@
 
                 <Grid Height="48"/>
 
-
                 <Label Content="Reference Code/No.:"/>
                 <TextBlock
-                    Text="PCJ8HDAGD826DD1"
+                    Text="{Binding ViewModel.SubmittedReferenceCode}"
                     FontSize="18"                    
                     />
 
@@ -274,7 +273,7 @@
 
                 <Label Content="Email Address:"/>
                 <TextBlock
-                    Text="emmanuel.em@gmail.com"
+                    Text="{Binding ViewModel.SubmittedEmail}"
                     FontSize="18"                    
                     />
 

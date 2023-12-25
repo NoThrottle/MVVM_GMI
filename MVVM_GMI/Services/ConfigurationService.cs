@@ -9,15 +9,17 @@ namespace MVVM_GMI.Services
         private static string pathLauncherJSON = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "config.json");
         private static string pathLauncher = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi");
 
+        #region Boiler plate
+
         private static ConfigurationService instance;
         private static readonly object lockObject = new object();
 
         public Launcher fromLauncher { get; set; }
         public Minecraft fromMinecraft { get; set; }
 
-        public ConfigurationService()
+        private ConfigurationService()
         {
-            //PropertiesExist();
+            JSONPropsExist();
         }
 
         public static ConfigurationService Instance
@@ -39,6 +41,9 @@ namespace MVVM_GMI.Services
                 return instance;
             }
         }
+
+
+        #endregion
 
         public class Minecraft
         {
@@ -343,6 +348,8 @@ namespace MVVM_GMI.Services
         internal object GetValue<T>(string key, T defaultValue)
         {
 
+            
+
             JSONPropsExist();
 
             using (Stream stream = File.Open(pathLauncherJSON, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -471,19 +478,53 @@ namespace MVVM_GMI.Services
 
         /// <summary>
         /// Create the JSON File. Returns true if it exists, false if it doesnt but creates it anyway.
+        /// Throws error if something went wrong in creating the JSON file
         /// </summary>
         /// <returns></returns>
         private bool JSONPropsExist()
         {
+
+            Directory.CreateDirectory(pathLauncher);
+
+
             if (File.Exists(pathLauncherJSON))
             {
                 return true;
+               
             }
-            else
+
+            using (FileStream fileStream = File.Create(pathLauncherJSON))
             {
-                File.Create(pathLauncherJSON);
-                return false;
+                
             }
+
+            var x = 0;
+            var hasError = true;
+
+            while(hasError)
+            {
+                try
+                {
+                    using(Stream stream = File.OpenRead(pathLauncherJSON))
+                    {
+                        hasError = false;
+                        break;
+                    }
+
+                }
+                catch
+                {
+                    x++;
+                    Thread.Sleep(1000);
+                }
+
+                if (x >= 10)
+                {
+                    throw new Exception("Something Went Wrong in creating the JSON FIle");
+                }
+            }
+
+            return false;
         }
     }
 }

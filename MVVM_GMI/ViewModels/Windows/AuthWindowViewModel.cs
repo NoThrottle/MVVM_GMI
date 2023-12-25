@@ -101,10 +101,19 @@ namespace MVVM_GMI.ViewModels.Windows
 
 
         [RelayCommand]
-        void SubmitMembershipRequest()
+        async Task SubmitMembershipRequestAsync()
         {
-            var x = new Authentication();
-            x.SubmitMembershipRequestAsync(Services.UserProfileService.AuthorizedUsername, ToSubmitReferenceCode, ToSubmitEmail);
+            try
+            {
+                var x = new Authentication();
+                await x.SubmitMembershipRequestAsync(Services.UserProfileService.AuthorizedUsername, ToSubmitReferenceCode, ToSubmitEmail);
+            }
+            catch
+            {
+                await ShowDialogAsync("Error","Unable to connect to the internet. Ensure you have a proper connection","","","Okay");
+                
+            }
+            
         }
 
         [RelayCommand]
@@ -120,7 +129,7 @@ namespace MVVM_GMI.ViewModels.Windows
 
 
         [RelayCommand]
-        void RefreshMembership()
+        async Task RefreshMembershipAsync()
         {
             ClearFields();
 
@@ -137,11 +146,20 @@ namespace MVVM_GMI.ViewModels.Windows
             ToSubmitEmail = "";
             ToSubmitReferenceCode = "";
 
-            ProcessUserMembership(MVVM_GMI.Services.UserProfileService.AuthorizedUsername);
+            try
+            {
+                ProcessUserMembership(MVVM_GMI.Services.UserProfileService.AuthorizedUsername);
+            }
+            catch
+            {
+                await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
+                LogOut();
+                SwitchToCreating();
+            }
         }
 
         [RelayCommand]
-        void Welcome()
+        async Task WelcomeAsync()
         {
             var x = new Authentication();
             x.UpdateMembership(Services.UserProfileService.AuthorizedUsername, true, false, true, true);
@@ -204,17 +222,26 @@ namespace MVVM_GMI.ViewModels.Windows
         [RelayCommand]
         async Task LoginAsync()
         {
+            
             var x = new Authentication();
-            bool y = x.Login(LoginUsername, LoginPassword);
 
-            if (!y)
+            try
             {
-                await ShowDialogAsync("Login Error:", "Incorrect Username or Password", "", "", "Okay");
-                return;
-            }
+                bool y = x.Login(LoginUsername, LoginPassword);
 
-            RefreshMembership();
-            LoginVisible = "False";
+                if (!y)
+                {
+                    await ShowDialogAsync("Login Error:", "Incorrect Username or Password", "", "", "Okay");
+                    return;
+                }
+
+                RefreshMembershipAsync();
+                LoginVisible = "False";
+            }
+            catch
+            {
+                await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
+            }
 
         }
 
@@ -222,19 +249,32 @@ namespace MVVM_GMI.ViewModels.Windows
         async Task CreateAccountAsync()
         {
             var x = new Authentication();
-            List<String>? y = x.SignUp(SignupUsername, SignupPassword, SignupCode);
 
-            if(y == null)
-            {
+            List<String>? y = null;
 
-                RefreshMembership();
-                SignupVisible = "False";
-            }
-            else
+            try
             {
-                await ShowDialogAsync("Sign-up Error:", String.Join(Environment.NewLine,y), "", "", "Okay");
-                return;
+                y = x.SignUp(SignupUsername, SignupPassword, SignupCode);
+
+                if (y == null)
+                {
+
+                    RefreshMembershipAsync();
+                    SignupVisible = "False";
+                }
+                else
+                {
+                    await ShowDialogAsync("Sign-up Error:", String.Join(Environment.NewLine, y), "", "", "Okay");
+                    return;
+                }
+
             }
+            catch
+            {
+                await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
+            }
+
+
         }
 
         [RelayCommand]

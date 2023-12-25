@@ -1,16 +1,21 @@
 ﻿using CmlLib.Core;
 using CmlLib.Core.Auth;
 using CmlLib.Core.Installer.FabricMC;
+using Google.Cloud.Firestore;
 using System.Diagnostics;
 using System.Formats.Tar;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using @user = MVVM_GMI.Services.UserProfileService;
+using online = MVVM_GMI.Helpers.OnlineRequest;
 
 namespace MVVM_GMI.Services
 {
     public class MinecraftService
     {
+
+        private string minecraftVersion = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties","gameLoad").Result.minecraftVersion;
+        private string fabricVersion = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties","gameLoad").Result.fabricVersion;
 
         public MinecraftService()
         {
@@ -48,10 +53,15 @@ namespace MVVM_GMI.Services
                 launcher.GameFileCheckers.ClientFileChecker.CheckHash = false;
                 launcher.GameFileCheckers.AssetFileChecker.CheckHash = false;
 
+                var l = ModDownloadService.Instance;
+                l.ProgressUpdated += (s) => { UpdateStatus(s); };
+                var t = await l.CheckInstalledModVersion();
+
                 await InitializeAsync(launcher);
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.Source + ex.Message + ex.StackTrace);
                 TaskCompleted?.Invoke(false);
             }
             
@@ -97,7 +107,7 @@ namespace MVVM_GMI.Services
                 minRam = ConfigurationService.Instance.fromMinecraft.MinRamAllocation;
             }
 
-            process = await launcher.CreateProcessAsync("fabric-loader-" + "0.15.3" + "-" + "1.20.4", new MLaunchOption
+            process = await launcher.CreateProcessAsync("fabric-loader-" + fabricVersion + "-" + minecraftVersion, new MLaunchOption
             {
 
                 //ServerIp = serverAddress,
@@ -229,7 +239,7 @@ namespace MVVM_GMI.Services
             var versions = launcher.GetAllVersions();
             foreach (var v in versions)
             {
-                if (v.Name == "fabric-loader-" + "0.15.3" + "-" + "1.20.4")
+                if (v.Name == "fabric-loader-" + fabricVersion + "-" + minecraftVersion)
                 {
                     Console.WriteLine("Fabric is installed, continuing.");
                     install = false;
@@ -255,7 +265,10 @@ namespace MVVM_GMI.Services
 
                 });
 
-                CheckMods();
+                var l = ModDownloadService.Instance;
+                l.ProgressUpdated += (s) => { UpdateStatus(s); };
+                await l.CheckInstalledModVersion();
+
                 await InitializeAsync(launcher);
             }
         }
@@ -309,77 +322,13 @@ namespace MVVM_GMI.Services
             var fabricVersionLoader = new FabricVersionLoader();
             var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
 
-            var fabric = fabricVersions.GetVersionMetadata("fabric-loader-" + "0.15.3" + "-" + "1.20.4");
+            var fabric = fabricVersions.GetVersionMetadata("fabric-loader-" + fabricVersion + "-" + minecraftVersion);
             await launcher.GetAllVersionsAsync();
 
             await fabric.SaveAsync(path);
 
         }
-
-        //------OLD-------//
-
-        public void CheckMods()
-        {
-
-
-
-            //var x = new EditMods()
-            //{
-
-            //    ModListSheetsName = ModListSheetsName,
-            //    ModListRange = ModListRange,
-            //    GMIType = GMIType,
-            //    defaultUserAgent = defaultUserAgent,
-            //    accountableUserAgent = accountableUserAgent,
-            //    modsDir = GetClientPaths.mods,
-            //    infoDir = GetClientPaths.gmi,
-            //    SheetID = SheetID,
-            //    APIKey = APIKey,
-            //    cfKey = cfKey
-
-            //};
-
-            //x.StatusChanged += (e, s) =>
-            //{
-
-            //    Application.Current.Dispatcher.Invoke(new Action(() => {
-            //        ProgressBar_Large.IsIndeterminate = s.StatusIntermediate;
-            //        ProgressBar_Large.Minimum = 0;
-            //        ProgressBar_Large.Value = s.StatusCurrent;
-            //        ProgressBar_Large.Maximum = s.StatusMax;
-
-            //        SetUpdateText(s.StatusName + s.StatusMessage, "");
-            //    }));
-
-            //};
-
-            //if (ThisUpdateMods != LastUpdateMods)
-            //{
-            //    var xw = false;
-            //    Task.Run(() =>
-            //    {
-
-            //        UpdateStatus("Mods:", "", 0, 100);
-
-
-            //        while (!x.ForceUpdateMods())
-            //        {
-
-            //        }
-
-            //        xw = true;
-            //    });
-
-
-            //    while (!xw)
-            //    {
-            //        Thread.Sleep(150);
-            //    }
-
-            //    set.Launcher.modsTimestamp = int.Parse(LastUpdateMods);
-            //}
-
-        }
+        
 
     }
 
@@ -432,5 +381,13 @@ namespace MVVM_GMI.Services
 
     }
 
-    
+    [FirestoreData]
+    public class GameLoadProperties
+    {
+        [FirestoreProperty]
+        public string fabricVersion { get; set; }
+
+        [FirestoreProperty]
+        public string minecraftVersion { get; set; }
+    }
 }
