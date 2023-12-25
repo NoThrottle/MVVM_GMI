@@ -61,7 +61,7 @@ namespace MVVM_GMI.Services
                 foreach (var entry in x1)
                 {
                     entryName = entry.Name;
-                    var o = Path.Combine(from.Launcher.MinecraftPath, "mods", string.Join("_", entry.Name) + "_'-" + string.Join("", entry.DatePublished) + ".jar");
+                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name) + "_'-" + string.Join("", entry.DatePublished) + ".jar");
                     await online.DownloadFileAsync(entry.DownloadURL, o);
                     prog++;
 
@@ -74,7 +74,7 @@ namespace MVVM_GMI.Services
                 {
 
                     entryName = entry.Name;
-                    var o = Path.Combine(from.Launcher.MinecraftPath, "mods", string.Join("_", entry.Name) + "_'-" + string.Join("", entry.DatePublished) + ".jar");
+                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name) + "_'-" + string.Join("", entry.DatePublished) + ".jar");
                     await online.DownloadFileAsync(entry.DownloadURL, o);
                     prog++;
 

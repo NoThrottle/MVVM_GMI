@@ -2,9 +2,9 @@
 using CmlLib.Core.Auth;
 using CmlLib.Core.Installer.FabricMC;
 using System.Diagnostics;
+using System.Formats.Tar;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using @get = MVVM_GMI.Services.ConfigurationService;
 using @user = MVVM_GMI.Services.UserProfileService;
 
 namespace MVVM_GMI.Services
@@ -14,7 +14,7 @@ namespace MVVM_GMI.Services
 
         public MinecraftService()
         {
-
+            
         }
 
         //----------------//
@@ -39,7 +39,7 @@ namespace MVVM_GMI.Services
 
             try
             {
-                var path = new MinecraftPath(get.Launcher.MinecraftPath);
+                var path = new MinecraftPath(ConfigurationService.Instance.fromLauncher.MinecraftPath);
                 var launcher = new CMLauncher(path);
 
                 launcher.GameFileCheckers.JavaFileChecker.CheckHash = false;
@@ -88,13 +88,13 @@ namespace MVVM_GMI.Services
 
             var minRam = 0;
 
-            if (get.Minecraft.CapRamAllocation)
+            if (ConfigurationService.Instance.fromMinecraft.CapRamAllocation)
             {
-                minRam = get.Minecraft.MaxRamAllocation;
+                minRam = ConfigurationService.Instance.fromMinecraft.MaxRamAllocation;
             }
             else
             {
-                minRam = get.Minecraft.MinRamAllocation;
+                minRam = ConfigurationService.Instance.fromMinecraft.MinRamAllocation;
             }
 
             process = await launcher.CreateProcessAsync("fabric-loader-" + "0.15.3" + "-" + "1.20.4", new MLaunchOption
@@ -102,12 +102,12 @@ namespace MVVM_GMI.Services
 
                 //ServerIp = serverAddress,
 
-                MaximumRamMb = @get.Minecraft.MaxRamAllocation,
+                MaximumRamMb = ConfigurationService.Instance.fromMinecraft.MaxRamAllocation,
                 MinimumRamMb = minRam,
 
-                ScreenWidth = @get.Minecraft.StartingWidth,
-                ScreenHeight = @get.Minecraft.StartingHeight,
-                FullScreen = @get.Minecraft.StartFullscreen,
+                ScreenWidth = ConfigurationService.Instance.fromMinecraft.StartingWidth,
+                ScreenHeight = ConfigurationService.Instance.fromMinecraft.StartingHeight,
+                FullScreen = ConfigurationService.Instance.fromMinecraft.StartFullscreen,
 
                 VersionType = "HighSkyMC",
                 GameLauncherName = "HighSkyMC",
@@ -211,7 +211,7 @@ namespace MVVM_GMI.Services
 
             });
 
-            var path = new MinecraftPath(get.Launcher.MinecraftPath);
+            var path = new MinecraftPath(ConfigurationService.Instance.fromLauncher.MinecraftPath);
             var launcher = new CMLauncher(path);
             var install = true;
 
@@ -273,7 +273,7 @@ namespace MVVM_GMI.Services
 
             });
 
-            var path = new MinecraftPath(get.Launcher.MinecraftPath);
+            var path = new MinecraftPath(ConfigurationService.Instance.fromLauncher.MinecraftPath);
             var launcher = new CMLauncher(path);
             launcher.FileChanged += (e) => 
             {

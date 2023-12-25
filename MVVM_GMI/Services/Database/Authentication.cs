@@ -9,7 +9,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using @from = MVVM_GMI.Services.ConfigurationService.Launcher;
 using @user = MVVM_GMI.Services.UserProfileService;
 using online = MVVM_GMI.Helpers.OnlineRequest;
 using Google.Protobuf.WellKnownTypes;
@@ -31,7 +30,7 @@ namespace MVVM_GMI.Services.Database
 
         public Authentication() 
         {
-            ConfigurationService.Instance.PropertiesExist();
+            //ConfigurationService.Instance.PropertiesExist();
         }
 
         internal Membership GetMembership(string Username)
@@ -103,9 +102,9 @@ namespace MVVM_GMI.Services.Database
         public string? CheckSession()
         {
             var t = new ConfigurationService();
-            t.PropertiesExist();
+            //t.PropertiesExist();
 
-            String path = Path.Combine(from.LauncherPath, "session.tkn");
+            String path = Path.Combine(ConfigurationService.Instance.fromLauncher.LauncherPath, "session.tkn");
 
             if (File.Exists(path)){
 
@@ -128,7 +127,7 @@ namespace MVVM_GMI.Services.Database
 
         public void LogOut()
         {
-            File.Delete(Path.Combine(from.LauncherPath, "session.tkn"));
+            File.Delete(Path.Combine(ConfigurationService.Instance.fromLauncher.LauncherPath, "session.tkn"));
         }
 
         /// <summary>
@@ -159,7 +158,7 @@ namespace MVVM_GMI.Services.Database
             DocumentReference docRef = db.Collection("SessionTokens").Document(token);
             await docRef.SetAsync(data);
 
-            File.WriteAllText(Path.Combine(from.LauncherPath, "session.tkn"), token);
+            File.WriteAllText(Path.Combine(ConfigurationService.Instance.fromLauncher.LauncherPath, "session.tkn"), token);
 
         }
 

@@ -1,4 +1,5 @@
-﻿using Kajabity.Tools.Java;
+﻿using ComctlLib;
+using Kajabity.Tools.Java;
 using MVVM_GMI.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -22,9 +23,12 @@ namespace MVVM_GMI.Services
         private static ConfigurationService instance;
         private static readonly object lockObject = new object();
 
+        public Launcher fromLauncher { get; set; }
+        public Minecraft fromMinecraft { get; set; }
+
         public ConfigurationService()
         {
-            PropertiesExist();
+            //PropertiesExist();
         }
 
         public static ConfigurationService Instance
@@ -38,6 +42,8 @@ namespace MVVM_GMI.Services
                         if (instance == null)
                         {
                             instance = new ConfigurationService();
+                            instance.fromLauncher = new Launcher();
+                            instance.fromMinecraft = new Minecraft();
                         }
                     }
                 }
@@ -45,14 +51,26 @@ namespace MVVM_GMI.Services
             }
         }
 
-        public static class Minecraft
+        public class Minecraft
         {
 
-            private static int _MaxRamAllocation;
+            static int defaultRAM()
+            {
+                if (SystemInfo.SystemRam() > 6000)
+                {
+                    return 2048;
+                }
+                else
+                {
+                    return 1560;
+                }
+            }
+
+            private int _MaxRamAllocation = int.Parse((string)instance.GetValue("MaxRamAllocation", defaultRAM()));
             /// <summary>
             /// Maximum RAM allocated for Minecraft (not the JVM)
             /// </summary>
-            public static int MaxRamAllocation
+            public int MaxRamAllocation
             {
                 get
                 {
@@ -66,11 +84,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static int _MinRamAllocation { get; set; }
+            private int _MinRamAllocation = int.Parse((string)instance.GetValue("MinRamAllocation", 128));
             /// <summary>
             /// Minimum RAM allocated for Minecraft (not the JVM) if it is not capped
             /// </summary>
-            public static int MinRamAllocation
+            public int MinRamAllocation
             {
                 get
                 {
@@ -84,11 +102,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static bool _CapRamAllocation { get; set; }
+            private bool _CapRamAllocation = bool.Parse((string)instance.GetValue("CapRamAllocation", false));
             /// <summary>
             /// Makes the minimum ram allocation the same as the maximum. May help with lag
             /// </summary>
-            public static bool CapRamAllocation
+            public bool CapRamAllocation
             {
                 get
                 {
@@ -102,11 +120,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static bool _StartFullscreen { get; set; }
+            private bool _StartFullscreen = bool.Parse((string)instance.GetValue("StartFullscreen", false));
             /// <summary>
             /// Starts Minecraft in fullscreen in the current active screen
             /// </summary>
-            public static bool StartFullscreen
+            public bool StartFullscreen
             {
                 get
                 {
@@ -121,11 +139,11 @@ namespace MVVM_GMI.Services
             }
 
 
-            private static int _StartingWidth { get; set; }
+            private int _StartingWidth = int.Parse((string)instance.GetValue("StartingWidth", 1280));
             /// <summary>
             /// Starts Minecraft in this Width if not in fullscreen
             /// </summary>
-            public static int StartingWidth
+            public int StartingWidth
             {
                 get
                 {
@@ -139,11 +157,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static int _StartingHeight { get; set; }
+            private int _StartingHeight = int.Parse((string)instance.GetValue("StartingHeight", 720));
             /// <summary>
             /// Starts Minecraft in this Height if not in fullscreen
             /// </summary>
-            public static int StartingHeight
+            public int StartingHeight
             {
                 get
                 {
@@ -157,11 +175,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static bool _EnableLogging { get; set; }
+            private bool _EnableLogging = bool.Parse((string)instance.GetValue("EnableLogging", false));
             /// <summary>
             /// Enables log output in Minecraft, may be laggy
             /// </summary>
-            public static bool EnableLogging
+            public bool EnableLogging
             {
                 get
                 {
@@ -175,11 +193,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static string[]? _JVMArguments { get; set; }
+            private string? _JVMArguments = (string)instance.GetValue("JVMArguments", "");
             /// <summary>
             /// JVM Arguments to start Minecraft with
             /// </summary>
-            public static string[]? JVMArguments
+            public string? JVMArguments
             {
                 get
                 {
@@ -197,52 +215,22 @@ namespace MVVM_GMI.Services
             /// <summary>
             /// UNUSED: True if the settings file has been constructed.
             /// </summary>
-            public static bool WrittenToFile { get; set; }
-
-            /// <summary>
-            /// Sets the initial value of the variables.
-            /// Bypasses a stack overflow when editing the value of the public variables
-            /// </summary>
-            /// <param name="MaxRamAllocation"></param>
-            /// <param name="MinRamAllocation"></param>
-            /// <param name="CapRamAllocation"></param>
-            /// <param name="StartFullscreen"></param>
-            /// <param name="StartingWidth"></param>
-            /// <param name="StartingHeight"></param>
-            /// <param name="EnableLogging"></param>
-            /// <param name="JVMArguments"></param>
-            public static void SetInitialValues(int MaxRamAllocation,
-                                                int MinRamAllocation,
-                                                bool CapRamAllocation,
-                                                bool StartFullscreen,
-                                                int StartingWidth,
-                                                int StartingHeight,
-                                                bool EnableLogging,
-                                                string[] JVMArguments)
-            {
-                _MaxRamAllocation = MaxRamAllocation;
-                _MinRamAllocation = MinRamAllocation;
-                _CapRamAllocation = CapRamAllocation;
-                _StartFullscreen = StartFullscreen;
-                _StartingWidth = StartingWidth;
-                _StartingHeight = StartingHeight;
-                _EnableLogging = EnableLogging;
-                _JVMArguments = JVMArguments;
-            }
+            public bool WrittenToFile { get; set; }
         }
 
-        public static class Launcher
+        public class Launcher
         {
 
-            private static string _LauncherPath { get; set; } = pathLauncher;
+            private string _LauncherPath = (string)instance.GetValue("LauncherPath", pathLauncher);
             /// <summary>
             /// Path for the Launcher, defaults to UserCredential Roaming Appdata .gmi
             /// </summary>
-            public static String LauncherPath
+            public string LauncherPath
             {
                 get
                 {
                     return _LauncherPath;
+                    //return "";
                 }
                 set
                 {
@@ -252,11 +240,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static string _MinecraftPath { get; set; }
+            private string _MinecraftPath = (string)instance.GetValue("MinecraftPath", Path.Combine(pathLauncher, "mc"));
             /// <summary>
             /// Path for Minecraft, defaults to LauncherPath .../mc/
             /// </summary>
-            public static String MinecraftPath
+            public String MinecraftPath
             {
                 get
                 {
@@ -270,11 +258,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static bool _AppTheme { get; set; }
+            private bool _AppTheme = bool.Parse((string)instance.GetValue("AppTheme", false));
             /// <summary>
             /// Defaults to Dark Mode (0). Light Mode is = 1
             /// </summary>
-            public static bool AppTheme
+            public bool AppTheme
             {
                 get
                 {
@@ -288,11 +276,11 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static bool _AutoDownloadUpdates { get; set; }
+            private bool _AutoDownloadUpdates = bool.Parse((string)instance.GetValue("AutoDownloadUpdates", false));
             /// <summary>
             /// Default to True
             /// </summary>
-            public static bool AutoDownloadUpdates
+            public bool AutoDownloadUpdates
             {
                 get
                 {
@@ -306,12 +294,12 @@ namespace MVVM_GMI.Services
                 }
             }
 
-            private static bool _AutoInstallUpdates { get; set; }
+            private bool _AutoInstallUpdates = bool.Parse((string)instance.GetValue("AutoInstallUpdates", false));
 
             /// <summary>
             /// Defaults to True
             /// </summary>
-            public static bool AutoInstallUpdates
+            public bool AutoInstallUpdates
             {
                 get
                 {
@@ -326,8 +314,8 @@ namespace MVVM_GMI.Services
             }
 
 
-            private static int _ModUpdateIndex { get; set; }
-            public static int ModUpdateIndex
+            private int _ModUpdateIndex = int.Parse((string)instance.GetValue("ModUpdateIndex", 0));
+            public int ModUpdateIndex
             {
                 get
                 {
@@ -345,59 +333,151 @@ namespace MVVM_GMI.Services
             /// <summary>
             /// UNUSED: True if the settings file has been constructed.
             /// </summary>
-            public static bool WrittenToFile { get; set; }
-
-            /// <summary>
-            /// Sets the initial value of the variables.
-            /// Bypasses a stack overflow when editing the value of the public variables
-            /// </summary>
-            /// <param name="LauncherPath"></param>
-            /// <param name="MinecraftPath"></param>
-            /// <param name="AppTheme"></param>
-            /// <param name="AutoDownloadUpdates"></param>
-            /// <param name="AutoInstallUpdates"></param>
-            public static void SetInitialValues(string LauncherPath,
-                                                string MinecraftPath,
-                                                bool AppTheme,
-                                                bool AutoDownloadUpdates,
-                                                bool AutoInstallUpdates,
-                                                int ModUpdateIndex)
-            {
-                _LauncherPath = LauncherPath;
-                _MinecraftPath = MinecraftPath;
-                _AppTheme = AppTheme;
-                _AutoDownloadUpdates = AutoDownloadUpdates;
-                _AutoInstallUpdates = AutoInstallUpdates;
-                _ModUpdateIndex = ModUpdateIndex;
-            }
+            public bool WrittenToFile { get; set; }
         }
 
         //--------------------------------------------------//
 
 
-        private void SetProperty<T>(string key, object value, object defaultValue)
+        void setProperty<T>(string key, T value)
+        {
+            Update<T>(key, value);
+        }
+
+        /// <summary>
+        /// Gets the Value from the key if it exists, otherwise returns the default value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        internal object GetValue<T>(string key, T defaultValue)
+        {
+
+            JSONPropsExist();
+
+            using (Stream stream = File.Open(pathLauncherJSON, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (StreamReader streamReader = new StreamReader(stream))
+            {
+                JObject obj = null;
+
+                try
+                {
+                    obj = JObject.Parse(streamReader.ReadToEnd());
+
+                    if (obj.ContainsKey(key))
+                    {
+
+                        JToken val = obj[key];
+
+                        if (val is JValue jval)
+                        {
+                            return val.ToString();
+                        }
+                        else if (val is JArray jarr)
+                        {
+                            List<string> stringArray = jarr.ToObject<List<string>>();
+                            return stringArray.ToString();
+
+                        }
+                    }
+                }
+                catch
+                {
+
+                }
+
+
+            }
+
+            Update<T>(key, defaultValue);
+            return defaultValue.ToString();
+
+
+        }
+
+        //to do, remove default value and fix logic
+
+        /// <summary>
+        /// Writes the value to the JSON file. Creates the key if it doesn't exist.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        private void Update<T>(string key, T value)
         {
             JSONPropsExist();
 
             string jsonString = File.ReadAllText(pathLauncherJSON);
+
+            if (jsonString.Length == 0)
+            {
+                JObject sobj = new JObject();
+
+                if (value is IEnumerable<T>)
+                {
+                    var arr = new JArray();
+
+                    foreach (var t in ((IEnumerable<T>)value))
+                    {
+                        arr.Add(t);
+                    }
+
+                    sobj.Add(key, arr);
+                }
+                else
+                {
+                    sobj.Add(key, value.ToString());
+                }
+
+                File.WriteAllText(pathLauncherJSON, sobj.ToString());
+                return;
+            }
+
             JObject obj = JObject.Parse(jsonString);
 
             if (obj.ContainsKey(key))
-            {                
+            {
 
                 if (obj[key] is JValue && value is not IEnumerable<T>)
                 {
                     obj[key] = value.ToString();
                 }
-                else if (obj[key] is JContainer && value is IEnumerable<T>)
+                else if (obj[key] is JArray && value is IEnumerable<T>)
                 {
-                    obj[key] = (JArray)value;
+                    ((JArray)obj[key]).Add((IEnumerable<T>)value);
                 }
 
-            }
+                string edited = obj.ToString();
+                File.WriteAllText(pathLauncherJSON, edited);
+                return;
 
-            string edited = obj.ToString();
-            File.WriteAllText(pathLauncherJSON, edited);
+            }
+            else
+            {
+                if (value is IEnumerable<T>)
+                {
+                    var arr = new JArray();
+
+                    foreach (var t in ((IEnumerable<T>)value))
+                    {
+                        arr.Add(t);
+                    }
+
+                    obj.Add(key, arr);
+                }
+                else
+                {
+                    obj.Add(key, value.ToString());
+                }
+
+                string edited = obj.ToString();
+                File.WriteAllText(pathLauncherJSON, edited);
+                return;
+
+            }
         }
 
         /// <summary>
@@ -415,287 +495,6 @@ namespace MVVM_GMI.Services
                 File.Create(pathLauncherJSON);
                 return false;
             }
-        }
-
-        static List<QueueObject> QueueObjects = new List<QueueObject>();
-        static bool QueueExists = false;
-        static bool QueueWriting = false;
-
-        private class QueueObject
-        {
-            public string sender { get; set; }
-            public object value { get; set; }
-        }
-
-        private void setProperty(string sender, object value)
-        {
-
-            WriteProperties();
-            //if (!QueueExists) { WriteQueueProcess(); }
-
-            //QueueObjects.Add(new QueueObject { sender = sender, value = value });
-
-        }
-
-        public static void WriteProperties()
-        {
-            Directory.CreateDirectory(pathLauncher);
-
-            using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
-            {
-                var p = new JavaProperties();
-
-                p.SetProperty("configVersion", ILauncherProperties.ConfigVersion.ToString());
-
-                p.SetProperty("MaxRamAllocation", Minecraft.MaxRamAllocation.ToString());
-                p.SetProperty("MinRamAllocation", Minecraft.MinRamAllocation.ToString());
-                p.SetProperty("CapRamAllocation", Minecraft.CapRamAllocation.ToString());
-                p.SetProperty("StartFullscreen", Minecraft.StartFullscreen.ToString());
-                p.SetProperty("StartingWidth", Minecraft.StartingWidth.ToString());
-                p.SetProperty("StartingHeight", Minecraft.StartingHeight.ToString());
-                p.SetProperty("EnableLogging", Minecraft.EnableLogging.ToString());
-                p.SetProperty("JVMArguments", Minecraft.JVMArguments.ToString());
-
-                p.SetProperty("LauncherPath", Launcher.LauncherPath);
-                p.SetProperty("MinecraftPath", Launcher.MinecraftPath);
-                p.SetProperty("AppTheme", Launcher.AppTheme.ToString());
-                p.SetProperty("AutoDownloadUpdates", Launcher.AutoDownloadUpdates.ToString());
-                p.SetProperty("AutoInstallUpdates", Launcher.AutoInstallUpdates.ToString());
-                p.SetProperty("ModUpdateIndex", Launcher.ModUpdateIndex.ToString());
-
-                p.Store(stream, "DO NOT TOUCH");
-
-            }
-
-        }
-
-        private static void WriteQueueProcess()
-        {
-            Task.Run(async () =>
-            {
-
-                QueueExists = true;
-                while (true)
-                {
-                    Thread.Sleep(100);
-
-                    if (QueueObjects.Count != 0)
-                    {
-                        QueueWriting = true;
-                        var x = QueueObjects[0];
-                        try
-                        {
-                            using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
-                            {
-                                var prop = new JavaProperties();
-
-                                prop.SetProperty(x.sender, x.value.ToString());
-                                
-
-                                prop.Store(stream, "DO NOT TOUCH");
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show(e.StackTrace, "Error");
-                        }
-                        QueueObjects.RemoveAt(0);
-                        QueueWriting = false;
-                    }
-                }
-            });
-        }
-
-
-        /// <summary>
-        /// Reads the properties files and updates the values in memory
-        /// </summary>
-        private void ReadProperties()
-        {
-
-            Console.WriteLine("Reading Properties");
-
-            var p = new JavaProperties();
-
-            Object[] x = new object[8];
-            Object[] y = new object[5];
-
-            using (Stream stream = File.OpenRead(pathLauncherSettings))
-            {
-                p.Load(stream);
-
-                if (p.ContainsKey("MaxRamAllocation"))
-                {
-                    x[0] = int.Parse(p.GetProperty("MaxRamAllocation"));
-                }
-
-                if (p.ContainsKey("MinRamAllocation"))
-                {
-                    x[1] = int.Parse(p.GetProperty("MinRamAllocation"));
-                }
-                if (p.ContainsKey("CapRamAllocation"))
-                {
-                    x[2] = bool.Parse(p.GetProperty("CapRamAllocation"));
-                }
-                if (p.ContainsKey("StartFullscreen"))
-                {
-                    x[3] = bool.Parse(p.GetProperty("StartFullscreen"));
-                }
-                if (p.ContainsKey("StartingWidth"))
-                {
-                    x[4] = int.Parse(p.GetProperty("StartingWidth"));
-                }
-                if (p.ContainsKey("StartingHeight"))
-                {
-                    x[5] = int.Parse(p.GetProperty("StartingHeight"));
-                }
-                if (p.ContainsKey("EnableLogging"))
-                {
-                    x[6] = bool.Parse(p.GetProperty("EnableLogging"));
-                }
-                if (p.ContainsKey("JVMArguments"))
-                {
-                    x[7] = p.GetProperty("JVMArguments").Split(',');
-                }
-
-                //---------------//
-
-                if (p.ContainsKey("LauncherPath"))
-                {
-                    y[0] = p.GetProperty("LauncherPath");
-                }
-                if (p.ContainsKey("MinecraftPath"))
-                {
-                    y[1] = p.GetProperty("MinecraftPath");
-                }
-                if (p.ContainsKey("AppTheme"))
-                {
-                    y[2] = bool.Parse(p.GetProperty("AppTheme"));
-                }
-                if (p.ContainsKey("AutoDownloadUpdates"))
-                {
-                    y[3] = bool.Parse(p.GetProperty("AutoDownloadUpdates"));
-                }
-                if (p.ContainsKey("AutoInstallUpdates"))
-                {
-                    y[4] = bool.Parse(p.GetProperty("AutoInstallUpdates"));
-                }
-                if (p.ContainsKey("ModUpdateIndex"))
-                {
-                    y[5] = int.Parse(p.GetProperty("ModUpdateIndex"));
-                }
-                else
-                {
-                    Launcher.ModUpdateIndex = 0;
-                }
-            }
-
-            //y[5] = UpdateValue(p, "ModUpdateIndex", 0);
-
-            Minecraft.SetInitialValues((int)x[0], (int)x[1], (bool)x[2], (bool)x[3], (int)x[4], (int)x[5], (bool)x[6], (string[])x[7]);
-            Launcher.SetInitialValues((string)y[0], (string)y[1], (bool)y[2], (bool)y[3], (bool)y[4], (int)y[5]);
-            
-        }
-
-        private T UpdateValue<T>(JavaProperties java, string PropertyName, T DefaultValue)
-        {
-
-            if(java.ContainsKey(PropertyName))
-            {
-                return java.GetProperty(PropertyName).As<T>();
-            }
-            else
-            {
-                Directory.CreateDirectory(pathLauncher);
-                Stream S = File.OpenRead(pathLauncherSettings);
-
-                using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
-                {
-                    var p = new JavaProperties();
-                    p.Load(S);
-                    p.SetProperty(PropertyName, DefaultValue.ToString());
-                    p.Store(stream, "DO NOT TOUCH");
-                }
-
-                return DefaultValue;
-            }
-        }
-
-        /// <summary>
-        /// Writes the default values for all the settings
-        /// </summary>
-        public void WriteDefault()
-        {
-            Console.WriteLine("Writing Default Properties");
-
-            int defaultRAM()
-            {
-                if (SystemInfo.SystemRam() > 6000)
-                {
-                    return 2048;
-                }
-                else
-                {
-                    return 1560;
-                }
-            }
-
-            try
-            {
-                Directory.CreateDirectory(pathLauncher);
-                using (FileStream stream = new FileStream(pathLauncherSettings, FileMode.Create))
-                {
-                    var p = new JavaProperties();
-
-                    p.SetProperty("configVersion", ILauncherProperties.ConfigVersion.ToString());
-
-                    p.SetProperty("MaxRamAllocation",defaultRAM().ToString());
-                    p.SetProperty("MinRamAllocation","128");
-                    p.SetProperty("CapRamAllocation", "false");
-                    p.SetProperty("StartFullscreen", "false");
-                    p.SetProperty("StartingWidth", "1280");
-                    p.SetProperty("StartingHeight", "720");
-                    p.SetProperty("EnableLogging", "false");
-                    p.SetProperty("JVMArguments", "");
-
-                    p.SetProperty("LauncherPath", Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi")));
-                    p.SetProperty("MinecraftPath", Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "mc"));
-                    p.SetProperty("AppTheme", "false");
-                    p.SetProperty("AutoDownloadUpdates", "true");
-                    p.SetProperty("AutoInstallUpdates", "true");
-
-                    p.Store(stream, "DO NOT TOUCH");
-
-                }
-
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message + e.StackTrace, "Error"); // REPLACE THIS WiTH NOTIFICATION SERVICE
-
-            }
-        }
-
-        public bool PropertiesExist()
-        {
-            if (File.Exists(pathLauncherSettings))
-            {
-                try
-                {
-                    ReadProperties();
-                }
-                catch (Exception e)
-                {
-                    WriteDefault();
-                }
-                return true;
-            }
-            else
-            {
-                WriteDefault();
-                return true;
-            }
-
         }
     }
 }

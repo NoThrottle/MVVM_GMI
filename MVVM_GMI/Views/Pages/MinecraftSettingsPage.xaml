@@ -94,7 +94,7 @@
                                     Text="Window Width" />
                             </StackPanel>
                         </ui:CardControl.Header>
-                        <ui:NumberBox Width="256" Minimum="100" Value="{Binding ViewModel.Display_width, Mode=TwoWay}"/>
+                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_width, Mode=TwoWay}" />
                     </ui:CardControl>
 
                     <ui:CardControl Icon="Whiteboard24">
@@ -106,7 +106,7 @@
                                     Text="Window Height" />
                             </StackPanel>
                         </ui:CardControl.Header>
-                        <ui:NumberBox Width="256" Minimum="100" Value="{Binding ViewModel.Display_height, Mode=TwoWay}"/>
+                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_height, Mode=TwoWay}"/>
                     </ui:CardControl>
 
 

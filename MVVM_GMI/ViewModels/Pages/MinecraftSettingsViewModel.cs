@@ -1,4 +1,5 @@
 ﻿using MVVM_GMI.Helpers;
+using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
 using System.Diagnostics;
 using System.Security.Policy;
@@ -74,27 +75,26 @@ namespace MVVM_GMI.ViewModels.Pages
 
         private void InitializeValues()
         {
-            Display_isFullscreen = from.Minecraft.StartFullscreen.ToString();
-            Display_width = from.Minecraft.StartingWidth;
-            Display_height = from.Minecraft.StartingHeight;
+            Display_isFullscreen = from.Instance.fromMinecraft.StartFullscreen.ToString();
+            Display_width = ConfigurationService.Instance.fromMinecraft.StartingWidth;
+            Display_height = ConfigurationService.Instance.fromMinecraft.StartingHeight;
 
             Ram_maximum = SystemInfo.SystemRam();
-            Ram_current = from.Minecraft.MaxRamAllocation;
-            Ram_capped = from.Minecraft.CapRamAllocation.ToString();
-            JvmArguments = String.Join(", ", from.Minecraft.JVMArguments);
+            Ram_current = ConfigurationService.Instance.fromMinecraft.MaxRamAllocation;
+            Ram_capped = from.Instance.fromMinecraft.CapRamAllocation.ToString();
+            JvmArguments = String.Join(", ", from.Instance.fromMinecraft.JVMArguments);
         }
 
         private void SaveValues()
         {
-            from.Minecraft.StartFullscreen = bool.Parse(Display_isFullscreen);
-            from.Minecraft.StartingWidth = Display_width;
-            from.Minecraft.StartingHeight = Display_height;
+            from.Instance.fromMinecraft.StartFullscreen = bool.Parse(Display_isFullscreen);
+            from.Instance.fromMinecraft.StartingWidth = Display_width;
+            from.Instance.fromMinecraft.StartingHeight = Display_height;
 
-            from.Minecraft.MaxRamAllocation = Ram_current;
-            from.Minecraft.CapRamAllocation = bool.Parse(Ram_capped);
-
-            from.WriteProperties();
-            from.Minecraft.JVMArguments = JvmArguments.Split(", ");
+            from.Instance.fromMinecraft.MaxRamAllocation = Ram_current;
+            from.Instance.fromMinecraft.CapRamAllocation = bool.Parse(Ram_capped);
+            //from.WriteProperties();
+            from.Instance.fromMinecraft.JVMArguments = JvmArguments;
         }
 
     }

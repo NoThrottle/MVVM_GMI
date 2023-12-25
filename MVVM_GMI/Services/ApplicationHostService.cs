@@ -50,7 +50,7 @@ namespace MVVM_GMI.Services
         {
             await Task.CompletedTask;
 
-            _ = ConfigurationService.Instance.PropertiesExist();
+            //_ = ConfigurationService.Instance.PropertiesExist();
 
             Authentication x = new Authentication();
             var y = x.CheckSession();
