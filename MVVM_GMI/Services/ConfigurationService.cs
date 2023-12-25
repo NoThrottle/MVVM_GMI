@@ -1,22 +1,11 @@
-﻿using ComctlLib;
-using Kajabity.Tools.Java;
-using MVVM_GMI.Helpers;
+﻿using MVVM_GMI.Helpers;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
-using WinRT;
 
 namespace MVVM_GMI.Services
 {
     public class ConfigurationService : ILauncherProperties
     {
-        private static string pathLauncherSettings = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "config.props");
         private static string pathLauncherJSON = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "config.json");
         private static string pathLauncher = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi");
 
