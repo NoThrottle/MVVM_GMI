@@ -3,6 +3,7 @@ using MVVM_GMI.Models;
 using System.IO;
 using from = MVVM_GMI.Services.ConfigurationService;
 using online = MVVM_GMI.Helpers.OnlineRequest;
+using static MVVM_GMI.Helpers.Extensions;
 
 namespace MVVM_GMI.Services
 {
@@ -72,14 +73,21 @@ namespace MVVM_GMI.Services
 
         async Task<bool> DownloadModsAsync()
         {
+            try
+            {
+                Directory.Delete(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"),true);
+            }
+            catch
+            {
 
-            Directory.Delete(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"),true);
+            }
+
             Directory.CreateDirectory(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"));
 
-            var x = await online.GetAllFromDatabaseAsync<ModEntry>("Mods");
+            var x = await online.GetAllFromDatabaseAsync<ModEntry>("Mods","ServerSide",true);
 
-            var x1 = x.GetRange(0, (x.Count - 1) / 2 + (x.Count % 2));
-            var x2 = x.GetRange((x.Count - 1) / 2 + (x.Count % 2), (x.Count + 1) / 2);
+            int MaxQueue = 10;
+            int inQueue = 0;
 
             string entryName = "";
             int max = x.Count()-1;
@@ -87,30 +95,31 @@ namespace MVVM_GMI.Services
 
             _ = Task.Run(async () => 
             {
-                foreach (var entry in x1)
+                foreach (var entry in x)
                 {
-                    entryName = entry.Name;
-                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name.Split(" ")) + "_'-" + string.Join("", entry.DatePublished.Replace("/", "").Replace(":", "").Replace(" ", "")) + ".jar");
-                    await online.DownloadFileAsync(entry.DownloadURL, o);
-                    prog++;
+
+                    while(inQueue > MaxQueue)
+                    {
+                        Thread.Sleep(250);
+                    }
+
+                    Task.Run(async () => 
+                    {
+
+                        inQueue += 1;
+
+                        entryName = entry.Name;
+                        var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", entry.Name + entry.projectID + entry.versionID + ".jar");
+                        await online.DownloadFileAsync(entry.DownloadURL, o);
+                        prog++;
+
+                        inQueue--;
+
+                    });
 
                 }
 
             });
-
-            _ = Task.Run(async () =>
-            {
-
-                foreach (var entry in x2)
-                {
-                    entryName = entry.Name;
-                    var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", string.Join("_", entry.Name.Split(" ")) + "_'-" + string.Join("", entry.DatePublished.Replace("/", "").Replace(":", "").Replace(" ", "")) + ".jar");
-                    await online.DownloadFileAsync(entry.DownloadURL, o);
-                    prog++;
-                }
-
-            });
-
 
             while (prog != max)
             {

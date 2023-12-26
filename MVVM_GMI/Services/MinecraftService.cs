@@ -239,6 +239,7 @@ namespace MVVM_GMI.Services
             var versions = launcher.GetAllVersions();
             foreach (var v in versions)
             {
+
                 if (v.Name == "fabric-loader-" + fabricVersion + "-" + minecraftVersion)
                 {
                     Console.WriteLine("Fabric is installed, continuing.");
@@ -320,6 +321,7 @@ namespace MVVM_GMI.Services
 
             // initialize fabric version loader
             var fabricVersionLoader = new FabricVersionLoader();
+            fabricVersionLoader.LoaderVersion = fabricVersion;
             var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
 
             var fabric = fabricVersions.GetVersionMetadata("fabric-loader-" + fabricVersion + "-" + minecraftVersion);

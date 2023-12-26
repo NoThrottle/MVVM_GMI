@@ -1,5 +1,5 @@
 ﻿// This Source Code Form is subject to the terms of the MIT License.
-// If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
+// If welcomed copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
@@ -35,7 +35,7 @@ namespace MVVM_GMI.Services
         }
 
         /// <summary>
-        /// Triggered when the application host is performing a graceful shutdown.
+        /// Triggered when the application host is performing welcomed graceful shutdown.
         /// </summary>
         /// <param name="cancellationToken">Indicates that the shutdown process should no longer be graceful.</param>
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -54,14 +54,19 @@ namespace MVVM_GMI.Services
 
             Authentication x = new Authentication();
             var y = x.CheckSession();
-            bool z = false;
+            bool qualMember = false;
+            bool welcomed = false;
 
             try
             {
-                var t = x.GetMembership(y).QualifiedMember;
-                if (z != null)
+                var response = x.GetMembership(y);
+                var isQualified = response.QualifiedMember;
+                var isWelcomed = response.isWelcomed;
+
+                if (response != null)
                 {
-                    z = t;
+                    qualMember = isQualified;
+                    welcomed = isWelcomed;
                 }
             }
             catch
@@ -70,13 +75,22 @@ namespace MVVM_GMI.Services
             }
             
 
-            if (y != null && z)
+            if (y != null && qualMember && welcomed)
             {
                 if (!Application.Current.Windows.OfType<MainWindow>().Any())
                 {
                     var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
                     navigationWindow.Loaded += OnNavigationWindowLoaded;
                     navigationWindow.Show();
+                }
+            }
+            else if (y != null && qualMember)
+            {
+                if (!Application.Current.Windows.OfType<AuthWindow>().Any())
+                {
+                    var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+                    //authWindow.Loaded += AuthOnNavigationWindowLoaded;
+                    authWindow.Show();
                 }
             }
             else

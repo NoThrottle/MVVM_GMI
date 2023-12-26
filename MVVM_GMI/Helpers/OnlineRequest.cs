@@ -63,6 +63,34 @@ namespace MVVM_GMI.Helpers
         }
 
         /// <summary>
+        /// Returns ALL the documents in a collection, with a filter
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Collection"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<List<T>> GetAllFromDatabaseAsync<T>(string Collection, string propertyName, object filter)
+        {
+            List<T> list = new List<T>();
+
+            var db = FirestoreService.Database;
+            var docRef = db.Collection(Collection).WhereEqualTo(propertyName, filter);
+            var res = await docRef.GetSnapshotAsync();
+
+            foreach (var snap in res.Documents)
+            {
+                list.Add(snap.ConvertTo<T>());
+            }
+
+            if (list != null)
+            {
+                return list;
+            }
+
+            throw new Exception();
+        }
+
+        /// <summary>
         /// Writes to Firestore. Passes any and all errors.
         /// </summary>
         /// <param name="Collection"></param>

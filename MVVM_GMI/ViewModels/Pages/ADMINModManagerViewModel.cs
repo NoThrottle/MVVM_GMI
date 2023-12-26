@@ -178,7 +178,7 @@ namespace MVVM_GMI.ViewModels.Pages
             int b = 0;
             foreach (var p in (JArray)obj["game_versions"])
             {
-                if (p.ToString().ToLower() == "1.20.2")
+                if (p.ToString().ToLower() == "1.20.1")
                 {
                     SelIndexMinecraftVersions = b;
                 }
@@ -277,7 +277,10 @@ namespace MVVM_GMI.ViewModels.Pages
                 DownloadURL = downloadLink,
                 VersionNumber = versionNumber,
                 DatePublished = DatePublished,
-                Size = int.Parse(FileSize)
+                Size = int.Parse(FileSize),
+
+                projectID = ProjectID,
+                versionID = ModVersions[SelIndexModVersions]
 
             };
 

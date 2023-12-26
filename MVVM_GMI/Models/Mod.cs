@@ -20,6 +20,12 @@ namespace MVVM_GMI.Models
         //--------//
 
         [FirestoreProperty]
+        public string projectID { get; set; }
+
+        [FirestoreProperty]
+        public string versionID { get; set; }
+
+        [FirestoreProperty]
         public bool ClientSide { get; set; }
 
         [FirestoreProperty]
