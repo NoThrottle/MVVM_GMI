@@ -48,6 +48,7 @@
     <None Remove="Assets\hsmc-icon-500.png" />
     <None Remove="Assets\Login_Art.png" />
     <None Remove="Assets\SplashArt-1000.png" />
+    <None Remove="Assets\UI\discord_logo.png" />
     <None Remove="Assets\wpfui-icon-1024.png" />
   </ItemGroup>
 
@@ -84,6 +85,7 @@
     <Resource Include="Assets\SplashArt-1000.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Assets\UI\discord_logo.png" />
     <Resource Include="Assets\wpfui-icon-1024.png" />
   </ItemGroup>
 

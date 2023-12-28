@@ -61,17 +61,64 @@
             Grid.Row="0"
             Grid.RowSpan="2" />
 
-        <ui:TitleBar
-            x:Name="TitleBar"
-            Title="{Binding ViewModel.ApplicationTitle}"
+
+
+        <Grid Width="550" Grid.Row="0" HorizontalAlignment="Left">
+            
+            <ui:TitleBar
+                x:Name="TitleBar"
+                Title="{Binding ViewModel.ApplicationTitle}"
+                Grid.Row="0"
+                CloseWindowByDoubleClickOnIcon="True"
+                Width="700"
+            >
+
+                <ui:TitleBar.Icon>
+                    <ui:ImageIcon Source="pack://application:,,,/Assets/hsmc-icon-500.png" />
+                </ui:TitleBar.Icon>
+
+            </ui:TitleBar>
+            
+        </Grid>
+
+
+        <Grid HorizontalAlignment="Right" Height="32">
+            
+            <ui:TitleBar
+            x:Name="TitleBar2"
             Grid.Row="0"
-            CloseWindowByDoubleClickOnIcon="True">
+            Width="132"
+            Margin="0,1,0,0"
+            >
 
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="pack://application:,,,/Assets/hsmc-icon-500.png" />
-            </ui:TitleBar.Icon>
+            </ui:TitleBar>
+            
+        </Grid>
 
-        </ui:TitleBar>
+
+        <Grid Grid.Row="0" >
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,140,0">
+
+
+                <ui:Button Appearance="Transparent" Width="44" BorderBrush="Transparent" FontSize="18" Command="{Binding ViewModel.OpenWebsiteCommand}">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="Globe32" Height="32"/>
+                    </ui:Button.Icon>
+                </ui:Button>
+
+                <ui:Button Appearance="Transparent" Width="44" BorderBrush="Transparent" Command="{Binding ViewModel.OpenDiscordCommand}">
+                    <ui:Button.Icon>
+                        <ui:ImageIcon Source="pack://application:,,,/Assets/UI/discord_logo.png" Height="32"/>
+                    </ui:Button.Icon>
+                </ui:Button>
+
+
+            </StackPanel>
+
+        </Grid>
+
+
 
     </Grid>
 </ui:FluentWindow>

@@ -1,5 +1,7 @@
 ﻿using MVVM_GMI.Views.Pages;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Security.Policy;
 using Wpf.Ui.Controls;
 
 namespace MVVM_GMI.ViewModels.Windows
@@ -9,6 +11,18 @@ namespace MVVM_GMI.ViewModels.Windows
 
         [ObservableProperty]
         private string _applicationTitle = "HighSkyMC Launcher";
+
+        [RelayCommand]
+        void OpenWebsite()
+        {
+            Process.Start("explorer", "https://docs.nothrottle.com");
+        }
+
+        [RelayCommand]
+        void OpenDiscord()
+        {
+            Process.Start("explorer", "https://discord.gg/EFKhZASA2X");
+        }
 
         [ObservableProperty]
         private ObservableCollection<object> _menuItems = new()
