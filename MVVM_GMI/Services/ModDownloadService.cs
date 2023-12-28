@@ -84,7 +84,7 @@ namespace MVVM_GMI.Services
 
             Directory.CreateDirectory(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"));
 
-            var x = await online.GetAllFromDatabaseAsync<ModEntry>("Mods","ServerSide",true);
+            var x = await online.GetAllFromDatabaseAsync<ModEntry>("Mods","ClientSide",true);
 
             int MaxQueue = 10;
             int inQueue = 0;

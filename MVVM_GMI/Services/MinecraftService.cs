@@ -3,23 +3,28 @@ using CmlLib.Core.Auth;
 using CmlLib.Core.Installer.FabricMC;
 using Google.Cloud.Firestore;
 using System.Diagnostics;
-using System.Formats.Tar;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using @user = MVVM_GMI.Services.UserProfileService;
 using online = MVVM_GMI.Helpers.OnlineRequest;
+using @user = MVVM_GMI.Services.UserProfileService;
 
 namespace MVVM_GMI.Services
 {
     public class MinecraftService
     {
 
-        private string minecraftVersion = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties","gameLoad").Result.minecraftVersion;
-        private string fabricVersion = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties","gameLoad").Result.fabricVersion;
+        private string minecraftVersion;
+        private string fabricVersion;
+        private string serverAddress;
+        private string serverPort;
 
         public MinecraftService()
         {
-            
+            var y = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties", "gameLoad").Result;
+            var z = online.GetFromDatabaseAsync<ServerInfoProperties>("ServerProperties", "serverInfo").Result;
+            minecraftVersion = y.minecraftVersion;
+            fabricVersion = y.fabricVersion;
+
+            serverAddress = z.ipAddress;
+            serverPort = z.port;
         }
 
         //----------------//
@@ -107,13 +112,16 @@ namespace MVVM_GMI.Services
                 minRam = ConfigurationService.Instance.fromMinecraft.MinRamAllocation;
             }
 
+            //var JVM = MLaunch.DefaultJavaParameter;
+            //JVM.Append("--quickPlayMultiplayer \"15.235.181.196:25863\"");
+
             process = await launcher.CreateProcessAsync("fabric-loader-" + fabricVersion + "-" + minecraftVersion, new MLaunchOption
             {
 
-                //ServerIp = serverAddress,
-
                 MaximumRamMb = ConfigurationService.Instance.fromMinecraft.MaxRamAllocation,
                 MinimumRamMb = minRam,
+
+
 
                 ScreenWidth = ConfigurationService.Instance.fromMinecraft.StartingWidth,
                 ScreenHeight = ConfigurationService.Instance.fromMinecraft.StartingHeight,
@@ -122,6 +130,7 @@ namespace MVVM_GMI.Services
                 VersionType = "HighSkyMC",
                 GameLauncherName = "HighSkyMC",
                 GameLauncherVersion = "2",
+                //JVMArguments = JVM,
 
                 Session = MSession.CreateOfflineSession(user.AuthorizedUsername),//MAKE SURE TO ALLOW USERNAMES WHEN PROFILING IS ENABLED
 
@@ -141,10 +150,10 @@ namespace MVVM_GMI.Services
             Console.WriteLine(process.StartInfo.Arguments);
             var processUtil = new CmlLib.Utils.ProcessUtil(process);
 
+            
+
             processUtil.OutputReceived += (s, e) => 
             {
-
-                Console.WriteLine(e);
 
                 if (check && e != null && e.Contains(@"Connecting to"))
                 {
@@ -392,4 +401,18 @@ namespace MVVM_GMI.Services
         [FirestoreProperty]
         public string minecraftVersion { get; set; }
     }
+
+    [FirestoreData]
+    public class ServerInfoProperties
+    {
+        [FirestoreProperty]
+        public string ipAddress { get; set; }
+
+        [FirestoreProperty]
+        public string port { get; set; }
+    }
+
+
+
+
 }

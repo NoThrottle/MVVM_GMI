@@ -2,8 +2,6 @@
 using MVVM_GMI.Models;
 using MVVM_GMI.Services;
 using Newtonsoft.Json;
-using System;
-using System.CodeDom;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;

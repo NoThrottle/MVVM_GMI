@@ -1,13 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MVVM_GMI.Services.Database;
 using MVVM_GMI.Views.Pages;
-using MVVM_GMI.Views.Windows;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Security.Authentication.OnlineId;
 using Wpf.Ui;
 
 namespace MVVM_GMI.ViewModels.Windows
@@ -24,7 +17,6 @@ namespace MVVM_GMI.ViewModels.Windows
             _navigationService = navigationService;
             _serviceProvider = serviceProvider;
             _contentDialogService = contentDialogService;
-
         }
 
 

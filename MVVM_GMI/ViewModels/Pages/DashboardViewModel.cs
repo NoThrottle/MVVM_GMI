@@ -1,13 +1,6 @@
-﻿// This Source Code Form is subject to the terms of the MIT License.
-// If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
-// Copyright (C) Leszek Pomianowski and WPF UI Contributors.
-// All Rights Reserved.
-
-using CmlLib.Utils;
+﻿using CmlLib.Utils;
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
-using MVVM_GMI.Views.Windows;
-using System.Net.Sockets;
 using Wpf.Ui;
 
 namespace MVVM_GMI.ViewModels.Pages
@@ -71,10 +64,12 @@ namespace MVVM_GMI.ViewModels.Pages
 
             try
             {
+                CheckForUpdatesAsync();
+
                 WhatsNewText = Task.Run(async () => {
 
                     Changelogs x = await Changelogs.GetChangelogs();
-                    var y = await x.GetChangelogHtml("1.20.4");
+                    var y = await x.GetChangelogHtml("1.20.1");
                     return y;
 
 
@@ -86,6 +81,20 @@ namespace MVVM_GMI.ViewModels.Pages
                 WhatsNewText = "No Internet";
             }
             
+        }
+
+        async Task CheckForUpdatesAsync()
+        {
+            var x = new UpdateService();
+            if (x.CheckForUpdates())
+            {
+                await ShowDialogAsync("New Version Available", "A new version of the launcher is available and updating is required.","","","Okay");
+
+                if (x.StartUpdate())
+                {
+                    Application.Current.MainWindow.Close();
+                }
+            }
         }
 
 

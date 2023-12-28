@@ -6,6 +6,7 @@ namespace MVVM_GMI.ViewModels.Windows
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+
         [ObservableProperty]
         private string _applicationTitle = "HighSkyMC Launcher";
 
@@ -24,13 +25,15 @@ namespace MVVM_GMI.ViewModels.Windows
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
                 TargetPageType = typeof(Views.Pages.DataPage)
             },
+
+#if DEBUG
             new NavigationViewItem()
             {
                 Content = "Mods",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
                 TargetPageType = typeof(Views.Pages.ADMINModManagerPage)
-            }
-            ,
+            },
+#endif
             new NavigationViewItem()
             {
                 Content = "Donate",
