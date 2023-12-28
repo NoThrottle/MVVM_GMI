@@ -97,7 +97,6 @@ namespace MVVM_GMI.ViewModels.Pages
             }
         }
 
-
         [RelayCommand]
         private void OpenMinecraftSettings()
         {
@@ -151,7 +150,7 @@ namespace MVVM_GMI.ViewModels.Pages
                 var z = new MinecraftService();
 
                 z.ProgressUpdated += (s) => UpdateUI(s);
-                z.TaskCompleted += async (a) =>
+                z.TaskCompleted += (a) =>
                 {
                     PlayButtonState(4);
                     Locked = false;

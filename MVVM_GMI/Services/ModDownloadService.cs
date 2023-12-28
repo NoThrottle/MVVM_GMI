@@ -1,8 +1,8 @@
 ﻿using Google.Cloud.Firestore;
 using MVVM_GMI.Models;
 using System.IO;
-using from = MVVM_GMI.Services.ConfigurationService;
-using online = MVVM_GMI.Helpers.OnlineRequest;
+using @from = MVVM_GMI.Services.ConfigurationService;
+using @online = MVVM_GMI.Helpers.OnlineRequest;
 using static MVVM_GMI.Helpers.Extensions;
 
 namespace MVVM_GMI.Services
@@ -93,7 +93,7 @@ namespace MVVM_GMI.Services
             int max = x.Count()-1;
             int prog = 0;
 
-            _ = Task.Run(async () => 
+            _ = Task.Run(() => 
             {
                 foreach (var entry in x)
                 {
@@ -123,7 +123,7 @@ namespace MVVM_GMI.Services
 
             while (prog != max)
             {
-                Application.Current.Dispatcher.Invoke((Action)async delegate {
+                Application.Current.Dispatcher.Invoke((Action) delegate {
 
                     UpdateStatus("Downloading", 0, false, x.Count(), prog, "Downloading Mods: ", prog + "/" + x.Count() + " - Mod: " + entryName);
 

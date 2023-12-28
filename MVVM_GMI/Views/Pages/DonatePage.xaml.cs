@@ -3,11 +3,11 @@ using Wpf.Ui.Controls;
 
 namespace MVVM_GMI.Views.Pages
 {
-    public partial class DataPage : INavigableView<DataViewModel>
+    public partial class DonatePage : INavigableView<DonateViewModel>
     {
-        public DataViewModel ViewModel { get; }
+        public DonateViewModel ViewModel { get; }
 
-        public DataPage(DataViewModel viewModel)
+        public DonatePage(DonateViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;

@@ -19,12 +19,12 @@ namespace MVVM_GMI.ViewModels.Windows
                 Icon = new SymbolIcon { Symbol = SymbolRegular.XboxController24 },
                 TargetPageType = typeof(Views.Pages.DashboardPage)
             },
-            new NavigationViewItem()
-            {
-                Content = "Info",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
-                TargetPageType = typeof(Views.Pages.DataPage)
-            },
+            //new NavigationViewItem()
+            //{
+            //    Content = "Info",
+            //    Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+            //    TargetPageType = typeof(Views.Pages.DonatePage)
+            //},
 
 #if DEBUG
             new NavigationViewItem()
@@ -38,7 +38,7 @@ namespace MVVM_GMI.ViewModels.Windows
             {
                 Content = "Donate",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Money24 },
-                TargetPageType = typeof(Views.Pages.DataPage)
+                TargetPageType = typeof(Views.Pages.DonatePage)
             }
         };
 

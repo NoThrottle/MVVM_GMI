@@ -3,7 +3,7 @@ using CmlLib.Core.Auth;
 using CmlLib.Core.Installer.FabricMC;
 using Google.Cloud.Firestore;
 using System.Diagnostics;
-using online = MVVM_GMI.Helpers.OnlineRequest;
+using @online = MVVM_GMI.Helpers.OnlineRequest;
 using @user = MVVM_GMI.Services.UserProfileService;
 
 namespace MVVM_GMI.Services
