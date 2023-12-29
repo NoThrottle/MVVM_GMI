@@ -4,6 +4,7 @@ using System.IO;
 using @from = MVVM_GMI.Services.ConfigurationService;
 using @online = MVVM_GMI.Helpers.OnlineRequest;
 using static MVVM_GMI.Helpers.Extensions;
+using MVVM_GMI.Helpers;
 
 namespace MVVM_GMI.Services
 {
@@ -43,6 +44,21 @@ namespace MVVM_GMI.Services
 
         #endregion Boiler plate
 
+        async Task ProcessActionsAsync()
+        {
+            if (from.Instance.fromLauncher.DidStarterAction)
+            {
+                return;
+            }
+
+            var t = await online.GetFromDatabaseAsync<JSONActionDocument>("JSONActions","Default");
+            var x = new JSONActions();
+            await x.DoActionAsync(t.JSONString);
+
+            from.Instance.fromLauncher.DidStarterAction = true;
+        }
+
+
         public async Task<bool> CheckInstalledModVersion()
         {
             UpdateStatus(new MinecraftLoadingUpdate() 
@@ -63,6 +79,15 @@ namespace MVVM_GMI.Services
             {
                 var df = await DownloadModsAsync();
                 from.Instance.fromLauncher.ModUpdateIndex = z;
+            }
+
+            try
+            {
+                await ProcessActionsAsync();
+            }
+            catch
+            {
+                //Internet or Rate Limit failure
             }
 
             return true;
@@ -86,7 +111,7 @@ namespace MVVM_GMI.Services
 
             var x = await online.GetAllFromDatabaseAsync<ModEntry>("Mods","ClientSide",true);
 
-            int MaxQueue = 10;
+            int MaxQueue = from.Instance.fromLauncher.SimultaneousDownloads;
             int inQueue = 0;
 
             string entryName = "";
@@ -136,7 +161,7 @@ namespace MVVM_GMI.Services
         }
 
 
-        public void UpdateStatus(string textProgress, int intProgress, bool isIntermediate, int maxProgress, int currentProgress, string process, string processDescription)
+        void UpdateStatus(string textProgress, int intProgress, bool isIntermediate, int maxProgress, int currentProgress, string process, string processDescription)
         {
             MinecraftLoadingUpdate x = new MinecraftLoadingUpdate();
             x.TextProgress = textProgress;
@@ -151,7 +176,7 @@ namespace MVVM_GMI.Services
             ProgressUpdated?.Invoke(x);
         }
 
-        public void UpdateStatus(MinecraftLoadingUpdate update)
+        void UpdateStatus(MinecraftLoadingUpdate update)
         {
             ProgressUpdated?.Invoke(update);
         }

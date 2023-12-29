@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Google.Cloud.Firestore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MVVM_GMI.Services
+namespace MVVM_GMI.Helpers
 {
     internal class JSONActions
     {
@@ -44,6 +45,10 @@ namespace MVVM_GMI.Services
                 {
                     CreateDirectory(item);
                 }
+                else if (item["Action"].ToString() == "Extract To Directory")
+                {
+                    ExtractToDirectory(item);
+                }
             }
         }
 
@@ -59,7 +64,7 @@ namespace MVVM_GMI.Services
             string source = parsePath(action["Source Path"].ToString());
             string destination = parsePath(action["Destination Path"].ToString());
 
-            Directory.Move(source,destination);
+            Directory.Move(source, destination);
         }
 
         string parsePath(string path)
@@ -70,7 +75,7 @@ namespace MVVM_GMI.Services
                 if (path.Contains("%AppData%"))
                 {
                     var cut = path.Substring(10);
-                    return Path.Combine(appDataRoaming,cut);
+                    return Path.Combine(appDataRoaming, cut);
                 }
                 else
                 {
@@ -81,6 +86,15 @@ namespace MVVM_GMI.Services
             return path;
         }
 
+        void ExtractToDirectory(JObject action)
+        {
+
+            string source = parsePath(action["Source Path"].ToString());
+            string destination = parsePath(action["Destination Path"].ToString());
+            
+            Directory.CreateDirectory(destination);
+            System.IO.Compression.ZipFile.ExtractToDirectory(source, destination);
+        }
 
         void WriteText(JObject action)
         {
@@ -89,7 +103,7 @@ namespace MVVM_GMI.Services
             string filename = action["Filename"].ToString();
 
             Directory.CreateDirectory(path);
-            File.WriteAllText(Path.Combine(path,filename),content);
+            File.WriteAllText(Path.Combine(path, filename), content);
 
         }
 
@@ -99,7 +113,7 @@ namespace MVVM_GMI.Services
             string path = parsePath(action["Path"].ToString());
             string filename = action["Filename"].ToString();
 
-            File.Delete(Path.Combine(path,filename));
+            File.Delete(Path.Combine(path, filename));
         }
 
         async Task DownloadToLocationAsync(JObject action)
@@ -115,7 +129,7 @@ namespace MVVM_GMI.Services
                 try
                 {
                     byte[] fileBytes = await client.GetByteArrayAsync(url);
-                    await System.IO.File.WriteAllBytesAsync(Path.Combine(path,filename), fileBytes);
+                    await File.WriteAllBytesAsync(Path.Combine(path, filename), fileBytes);
                 }
                 catch (HttpRequestException ex)
                 {
@@ -124,5 +138,15 @@ namespace MVVM_GMI.Services
             }
         }
 
+    }
+
+    [FirestoreData]
+    internal class JSONActionDocument
+    {
+        [FirestoreProperty]
+        public string Title { get; set; }
+
+        [FirestoreProperty]
+        public string JSONString { get; set; }
     }
 }

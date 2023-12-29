@@ -50,7 +50,7 @@
 
                 </StackPanel>
 
-                <ui:Button Icon="{ui:SymbolIcon DoorArrowRight16}" Content="Log Out" Appearance="Danger" HorizontalAlignment="Right" Margin="32"/>
+                <ui:Button Icon="{ui:SymbolIcon DoorArrowRight16}" Content="Log Out" Appearance="Danger" HorizontalAlignment="Right" Margin="32" Command="{Binding ViewModel.LogOutCommand}"/>
 
             </Grid>
 
@@ -95,7 +95,7 @@
                                 Source="https://png.pngtree.com/png-clipart/20221227/original/pngtree-badge-gaming-elegant-esport-logo-png-image_8811251.png"/>
 
                             <TextBlock
-                                Text="abcdefghijklmno"
+                                Text="Coming Soon"
                                 VerticalAlignment="Center"
                                 FontSize="32"
                                 FontWeight="Bold" 

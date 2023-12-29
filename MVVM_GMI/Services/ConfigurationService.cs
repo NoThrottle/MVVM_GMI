@@ -205,11 +205,6 @@ namespace MVVM_GMI.Services
                 }
             }
 
-
-            /// <summary>
-            /// UNUSED: True if the settings file has been constructed.
-            /// </summary>
-            public bool WrittenToFile { get; set; }
         }
 
         public class Launcher
@@ -323,11 +318,36 @@ namespace MVVM_GMI.Services
                 }
             }
 
+            private int _SimultaneousDownloads = int.Parse((string)instance.GetValue("SimultaneousDownloads", 10));
+            public int SimultaneousDownloads
+            {
+                get
+                {
+                    return _SimultaneousDownloads;
+                }
+                set
+                {
+                    _SimultaneousDownloads = value;
+                    Instance.setProperty("SimultaneousDownloads", value);
 
-            /// <summary>
-            /// UNUSED: True if the settings file has been constructed.
-            /// </summary>
-            public bool WrittenToFile { get; set; }
+                }
+            }
+
+            private bool _DidStarterAction = bool.Parse((string)instance.GetValue("DidStarterAction", false));
+            public bool DidStarterAction
+            {
+                get
+                {
+                    return _DidStarterAction;
+                }
+                set
+                {
+                    _DidStarterAction = value;
+                    Instance.setProperty("DidStarterAction", value);
+
+                }
+            }
+
         }
 
         //--------------------------------------------------//

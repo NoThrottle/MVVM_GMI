@@ -104,36 +104,11 @@
                     FontWeight="Black"                       
                     />
 
-                <TextBlock 
-                    Text="{Binding ViewModel.WhatsNewText, Mode=OneWay}"
-                    FontSize="16"
-                    FontWeight="Normal"  
-                    Margin="0,12,0,0"
-                    />
+                
 
 
             </StackPanel>
 
-            <Grid>
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <ui:Button
-                    Grid.Column="0"
-                    Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}"
-                    Content="Click me!"
-                    Icon="Fluent24" />
-
-                <TextBlock
-                    Grid.Column="1"
-                    Margin="12,0,0,0"
-                    VerticalAlignment="Center"
-                    Text="{Binding ViewModel.Counter, Mode=OneWay}" />
-
-            </Grid>
         </StackPanel>
     </Grid>
 </Page>

@@ -1,4 +1,5 @@
-﻿using Wpf.Ui.Controls;
+﻿using MVVM_GMI.Services;
+using Wpf.Ui.Controls;
 
 namespace MVVM_GMI.ViewModels.Pages
 {
@@ -18,7 +19,13 @@ namespace MVVM_GMI.ViewModels.Pages
                 InitializeViewModel();
         }
 
-        public void OnNavigatedFrom() { }
+        public void OnNavigatedFrom()
+        { 
+        
+            ConfigurationService.Instance.fromLauncher.SimultaneousDownloads = SimDownloads;
+            
+
+        }
 
         private void InitializeViewModel()
         {
@@ -33,6 +40,12 @@ namespace MVVM_GMI.ViewModels.Pages
             return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString()
                 ?? String.Empty;
         }
+
+
+        [ObservableProperty]
+        private int _simDownloads = ConfigurationService.Instance.fromLauncher.SimultaneousDownloads;
+
+
 
         [RelayCommand]
         private void OnChangeTheme(string parameter)
