@@ -25,6 +25,8 @@ namespace MVVM_GMI.Helpers
 
             foreach (JObject item in x)
             {
+                MessageBox.Show(item.ToString());
+
                 if (item["Action"].ToString() == "Write Text")
                 {
                     WriteText(item);
@@ -33,7 +35,7 @@ namespace MVVM_GMI.Helpers
                 {
                     DeleteFile(item);
                 }
-                else if (item["Action"].ToString() == "Download To Location")
+                else if (item["Action"].ToString() == "Download To Directory")
                 {
                     await DownloadToDirectoryAsync(item);
                 }
@@ -45,7 +47,7 @@ namespace MVVM_GMI.Helpers
                 {
                     CreateDirectory(item);
                 }
-                else if (item["Action"].ToString() == "Extract To Directory")
+                else if (item["Action"].ToString() == "Extract to Directory")
                 {
                     ExtractToDirectory(item);
                 }
@@ -65,8 +67,8 @@ namespace MVVM_GMI.Helpers
 
         void Move(JObject action)
         {
-            string source = parsePath(action["URL Path"].ToString());
-            string destination = parsePath(action["Destination Path"].ToString());
+            string source = parsePath(action["Source"].ToString());
+            string destination = parsePath(action["Destination"].ToString());
 
             Directory.Move(source, destination);
         }
@@ -93,11 +95,11 @@ namespace MVVM_GMI.Helpers
         void ExtractToDirectory(JObject action)
         {
 
-            string source = parsePath(action["URL"].ToString());
+            string source = parsePath(action["Source"].ToString());
             string destination = parsePath(action["Destination"].ToString());
-            
+
             Directory.CreateDirectory(destination);
-            System.IO.Compression.ZipFile.ExtractToDirectory(source, destination);
+            System.IO.Compression.ZipFile.ExtractToDirectory(source, destination,true);
         }
 
         void WriteText(JObject action)
@@ -136,7 +138,7 @@ namespace MVVM_GMI.Helpers
         async Task DownloadToDirectoryAsync(JObject action)
         {
             string url = action["URL"].ToString();
-            string destination = parsePath(action["Path"].ToString());
+            string destination = parsePath(action["Destination"].ToString());
 
 
             using (HttpClient client = new HttpClient())
@@ -224,7 +226,7 @@ namespace MVVM_GMI.Helpers
 
         public class DownloadToDirectory
         {
-            public string Action { get; } = "Move";
+            public string Action { get; } = "Download To Directory";
             public string URL { get; set; }
             public string Destination { get; set; }
 

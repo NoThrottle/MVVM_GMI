@@ -79,6 +79,7 @@
                     PlaceholderEnabled="True"
                     PlaceholderText="Enter code"
                     Text="{Binding ViewModel.ReferenceNumber, Mode=TwoWay}"
+                    MaxLength="30"
                     />
 
 

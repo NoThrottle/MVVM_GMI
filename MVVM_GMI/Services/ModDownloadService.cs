@@ -85,8 +85,9 @@ namespace MVVM_GMI.Services
             {
                 await ProcessActionsAsync();
             }
-            catch
+            catch (Exception e)
             {
+                MessageBox.Show(e.Message + e.StackTrace + e.Source);
                 //Internet or Rate Limit failure
             }
 

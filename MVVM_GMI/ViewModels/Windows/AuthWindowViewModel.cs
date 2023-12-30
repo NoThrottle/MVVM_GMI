@@ -246,7 +246,7 @@ namespace MVVM_GMI.ViewModels.Windows
 
             try
             {
-                y = x.SignUpAsync(SignupUsername, SignupPassword, SignupCode);
+                y = await x.SignUpAsync(SignupUsername, SignupPassword, SignupCode);
 
                 if (y == null)
                 {

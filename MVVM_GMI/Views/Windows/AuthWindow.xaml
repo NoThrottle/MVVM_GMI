@@ -101,7 +101,7 @@
                 <Grid Height="16"/>
 
                 <Label Content="Invite Code:"/>
-                <ui:TextBox Icon="{ui:SymbolIcon BarcodeScanner24, Filled=False}" PlaceholderEnabled="True" PlaceholderText="Type their Code" Text="{Binding ViewModel.SignupCode, Mode=TwoWay}"/>
+                <ui:TextBox Icon="{ui:SymbolIcon BarcodeScanner24, Filled=False}" PlaceholderEnabled="True" PlaceholderText="Type their Code" Text="{Binding ViewModel.SignupCode, Mode=TwoWay}" MaxLength="12"/>
 
                 <Grid Height="24"/>
                 <CheckBox IsChecked="{Binding ViewModel.SignupTickRules, Mode=TwoWay}" Command="{Binding ViewModel.UpdateSignUpButtonCommand}">
@@ -302,6 +302,7 @@
                     PlaceholderEnabled="True"
                     PlaceholderText="Enter code"
                     Text="{Binding ViewModel.ToSubmitReferenceCode, Mode=TwoWay}"
+                    MaxLength="30"
                     />
 
                 <Grid Height="16"/>
@@ -312,6 +313,7 @@
                     PlaceholderEnabled="True"
                     PlaceholderText="Enter a valid email address"
                     Text="{Binding ViewModel.ToSubmitEmail, Mode=TwoWay}"
+                    MaxLength="96"
                     />
 
                 <Grid Height="32"/>
