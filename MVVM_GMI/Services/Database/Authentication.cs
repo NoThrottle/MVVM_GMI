@@ -255,7 +255,7 @@ namespace MVVM_GMI.Services.Database
             if(result.Count <= 0)
             {
 
-                if (CheckIfUserAlreadyExists(Username))
+                if (CheckIfUserAlreadyExistsAsync(Username).Result)
                 {
                     result.Add("Username already exists.");
                     return result;
@@ -325,16 +325,17 @@ namespace MVVM_GMI.Services.Database
             return false;
         }
 
-        bool CheckIfUserAlreadyExists(string Username)
+        async Task<bool> CheckIfUserAlreadyExistsAsync(string Username)
         {
-            var db = FirestoreService.Database;
-            DocumentReference docRef = db.Collection("UserData").Document(Username);
-            UserCredential userCredential = docRef.GetSnapshotAsync().Result.ConvertTo<UserCredential>();
 
-            if (userCredential != null)
+            var x = await OnlineRequest.GetAllFromDatabaseAsync<UserCredential>("UserData");
+
+            foreach (var y in x)
             {
-                return true;
+                if (y.Name.ToLower() == Username.ToLower()) {
 
+                    return true;
+                }
             }
 
             return false;
