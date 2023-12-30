@@ -29,15 +29,6 @@
         /// </summary>
         internal static string Salt { get; } = "8270ebcf-22e2-491b-84b8-d96f0f2e5edb";
 
-        /// <summary>
-        /// Key used to authenticate when accessing the GoogleSheets
-        /// </summary>
-        internal static string SheetsKey { get; } = "AIzaSyAFGJFSJfQQn0FdtTkz63_KINBCTLQ_Ikg";
-
-        /// <summary>
-        /// The ID of the database sheet
-        /// </summary>
-        internal static string SheetID { get; } = "1TV4yOzTzN7rYjZSXlnNuhAKz8AuQKSPjG8jHJiiUk9g";
 
 
     }

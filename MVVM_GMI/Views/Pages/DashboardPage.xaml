@@ -96,15 +96,48 @@
                 <ui:Image Source="pack://application:,,,/Assets/SplashArt-1000.png" MaxHeight="128" VerticalAlignment="Top" Margin="32"/>
             </Grid>
 
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" Margin="16">
 
                 <TextBlock
                     Text="WHAT'S NEW"
-                    FontSize="48"
+                    FontSize="36"
                     FontWeight="Black"                       
                     />
 
-                
+                <Grid Height="8"/>
+
+                <TextBlock
+                    FontSize="16"
+                    FontWeight="Regular"                       
+                    >
+                    All new launcher for HighSkyMC Season 9. We promise it will be the last. <LineBreak/>
+                    Better user interface design and cleaner user experience.<LineBreak/>
+                    <LineBreak/>
+                    Upcoming Features:<LineBreak/>
+                    - Personal mod manager<LineBreak/>
+                    - Game output terminal<LineBreak/>
+                    - Screenshot gallery<LineBreak/>
+                    - and many more! <LineBreak/>
+                    <LineBreak/>
+                    Changes since v0.1.1-beta<LineBreak/>
+                    <LineBreak/>
+                    - Fixed critical security exploits<LineBreak/>
+                    - Added JSON Actions<LineBreak/>
+                    - Restricted input length on text boxes<LineBreak/>
+                    - Fixed donation page<LineBreak/>
+                    <LineBreak/>
+                    Minecraft 1.20.1 Changelog<LineBreak/>
+                    <LineBreak/>
+                    Fixed a disk permissions-related crash<LineBreak/>
+                    MC-263244 - The realms invitation icon that appears on the realms button in the main menu is displayed incorrectly<LineBreak/>
+                    MC-263245 - Buttons in the "Add Realm" interface within the realms menu no longer render<LineBreak/>
+                    MC-263296 - Game softlocks after cancelling joining a server<LineBreak/>
+                    MC-263340 - Incorrect Protochunk#setStatus call on chunk generate<LineBreak/>
+
+
+                </TextBlock>
+
+
 
 
             </StackPanel>

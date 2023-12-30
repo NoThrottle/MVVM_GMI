@@ -19,7 +19,7 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.1.1-beta</Version>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -51,6 +51,7 @@
     <None Remove="Assets\Login_Art.png" />
     <None Remove="Assets\SplashArt-1000.png" />
     <None Remove="Assets\UI\discord_logo.png" />
+    <None Remove="Assets\UI\DonationQR.png" />
     <None Remove="Assets\wpfui-icon-1024.png" />
   </ItemGroup>
 
@@ -88,6 +89,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\UI\discord_logo.png" />
+    <Resource Include="Assets\UI\DonationQR.png" />
     <Resource Include="Assets\wpfui-icon-1024.png" />
   </ItemGroup>
 

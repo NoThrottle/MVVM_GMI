@@ -56,8 +56,7 @@
                     2. Scan the QR Code on the right<LineBreak/>
                     3. Donate any amount<LineBreak/>
                     4. Once the transaction is complete, input the reference number on the right.<LineBreak/>
-                    5. Input an email we can use to contact you. <LineBreak/>
-                    6. Press submit, and wait for a response.<LineBreak/>
+                    5. Press submit, and wait for a response.<LineBreak/>
                     <LineBreak/>
                     
                     Note:<LineBreak/>
@@ -69,7 +68,7 @@
 
             <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                <ui:Image Source="https://i.ibb.co/x5bVsJT/qrcode.png" Width="256"/>
+                <ui:Image Source="pack://application:,,,/Assets/UI/DonationQR.png" Width="256" RenderOptions.BitmapScalingMode="HighQuality"/>
 
                 <Grid Height="16"/>
 
