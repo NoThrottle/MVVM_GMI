@@ -213,7 +213,7 @@ namespace MVVM_GMI.Services.Database
         /// <param name="Password"></param>
         /// <param name="Code"></param>
         /// <returns></returns>
-        public List<string>? SignUp(string Username, string Password, string Code)
+        public async Task<List<string>?> SignUpAsync(string Username, string Password, string Code)
         {
             List<string> result = new List<string>();
 
@@ -282,7 +282,7 @@ namespace MVVM_GMI.Services.Database
 
                 _ = online.WriteToDatabaseAsync("UserData", data.Name, data);
 
-                CreateSessionAsync(Username);
+                await CreateSessionAsync(Username);
                 UpdateUserProfileService(Username);
 
                 return null;
