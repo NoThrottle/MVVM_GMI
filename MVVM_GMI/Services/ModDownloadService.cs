@@ -51,7 +51,7 @@ namespace MVVM_GMI.Services
                 return;
             }
 
-            var t = await online.GetFromDatabaseAsync<JSONActionDocument>("JSONActions","Default");
+            var t = await online.GetFromDatabaseAsync<JSONActionDocument>("JsonActions","InitialSetup");
             var x = new JSONActions();
             await x.DoActionAsync(t.JSONString);
 

@@ -47,6 +47,13 @@ namespace MVVM_GMI.ViewModels.Windows
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
                 TargetPageType = typeof(Views.Pages.ADMINModManagerPage)
             },
+
+            new NavigationViewItem()
+            {
+                Content = "Actions",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Run24 },
+                TargetPageType = typeof(Views.Pages.JSONActionPage)
+            },
 #endif
             new NavigationViewItem()
             {

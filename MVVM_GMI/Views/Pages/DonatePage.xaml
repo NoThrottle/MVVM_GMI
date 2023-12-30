@@ -18,9 +18,9 @@
     ScrollViewer.CanContentScroll="False"
     mc:Ignorable="d">
 
-    <StackPanel>
+    <Grid>
 
-        <Grid Width="720">
+        <Grid Width="720" VerticalAlignment="Center" Margin="0,-64,0,0">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -93,5 +93,5 @@
 
         </Grid>
 
-    </StackPanel>
+    </Grid>
 </Page>

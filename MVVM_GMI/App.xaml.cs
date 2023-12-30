@@ -55,6 +55,8 @@ namespace MVVM_GMI
 
                 services.AddSingleton<ADMINModManagerPage>();
                 services.AddSingleton<ADMINModManagerViewModel>();
+                services.AddSingleton<JSONActionPage>();
+                services.AddSingleton<JSONActionViewModel>();
 
                 services.AddSingleton<MinecraftService>();
                 services.AddSingleton<Authentication>();
