@@ -25,7 +25,6 @@ namespace MVVM_GMI.Helpers
 
             foreach (JObject item in x)
             {
-                MessageBox.Show(item.ToString());
 
                 if (item["Action"].ToString() == "Write Text")
                 {
