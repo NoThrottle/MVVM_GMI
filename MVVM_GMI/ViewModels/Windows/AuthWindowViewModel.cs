@@ -23,6 +23,8 @@ namespace MVVM_GMI.ViewModels.Windows
         [ObservableProperty]
         private string _applicationTitle = "HighSkyMC Launcher";
 
+        //------------
+
         [ObservableProperty]
         private string _loginVisible = "Visible";
 
@@ -125,19 +127,6 @@ namespace MVVM_GMI.ViewModels.Windows
         {
             ClearFields();
 
-            MembershipProcessVisible = "Collapsed";
-            AuthVisible = "Collapsed";
-            WelcomeScreenVisible = "Collapsed";
-            AwaitingResponseVisible = "Collapsed";
-            OneMoreThingVisible = "Collapsed";
-            RejectedVisible = "Collapsed";
-
-            SubmittedReferenceCode = "";
-            SubmittedEmail = "";
-
-            ToSubmitEmail = "";
-            ToSubmitReferenceCode = "";
-
             try
             {
                 ProcessUserMembership(MVVM_GMI.Services.UserProfileService.AuthorizedUsername);
@@ -227,8 +216,8 @@ namespace MVVM_GMI.ViewModels.Windows
                     return;
                 }
 
-                RefreshMembershipAsync();
-                LoginVisible = "False";
+                await RefreshMembershipAsync();
+                LoginVisible = "Collapsed";
             }
             catch
             {
@@ -251,8 +240,8 @@ namespace MVVM_GMI.ViewModels.Windows
                 if (y == null)
                 {
 
-                    RefreshMembershipAsync();
-                    SignupVisible = "False";
+                    await RefreshMembershipAsync();
+                    SignupVisible = "Collapsed";
                 }
                 else
                 {
@@ -273,6 +262,7 @@ namespace MVVM_GMI.ViewModels.Windows
         void SwitchToCreating()
         {
             ClearFields();
+            AuthVisible = "Visible";
             SignupVisible = "Visible";
             LoginVisible = "Collapsed";
         }
@@ -281,6 +271,7 @@ namespace MVVM_GMI.ViewModels.Windows
         void SwitchToLogin()
         {
             ClearFields();
+            AuthVisible = "Visible";
             SignupVisible = "Collapsed";
             LoginVisible = "Visible";
         }
@@ -311,6 +302,23 @@ namespace MVVM_GMI.ViewModels.Windows
 
         void ClearFields()
         {
+
+            AuthVisible = "Collapsed";
+
+            MembershipProcessVisible = "Collapsed";
+                AwaitingResponseVisible = "Collapsed";
+                OneMoreThingVisible = "Collapsed";
+                RejectedVisible = "Collapsed";
+
+            WelcomeScreenVisible = "Collapsed";
+
+
+            SubmittedReferenceCode = "";
+            SubmittedEmail = "";
+
+            ToSubmitEmail = "";
+            ToSubmitReferenceCode = "";
+
             SignupUsername = "";
             SignupPassword = "";
             SignupCode = "";
@@ -342,25 +350,13 @@ namespace MVVM_GMI.ViewModels.Windows
 
         void GoToMainWindowPage<Page>()
         {
-            if (!Application.Current.Windows.OfType<MVVM_GMI.Views.Windows.MainWindow>().Any())
-            {
-                var navigationWindow = _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.MainWindow>();
-                navigationWindow.Loaded += (sender, e) =>
-                {
 
-                    if (sender is not MVVM_GMI.Views.Windows.MainWindow navigationWindow)
-                    {
-                        return;
-                    }
 
-                    navigationWindow.NavigationView.Navigate(typeof(Page));
+            Application.Current.Shutdown();
+            System.Windows.Forms.Application.Restart();
 
-                };
-                navigationWindow.Show();
-
-                _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.AuthWindow>().Close();
-            }
         }
+
 
     }
 }

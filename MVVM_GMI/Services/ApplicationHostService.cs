@@ -3,12 +3,16 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using CommunityToolkit.Mvvm.ComponentModel.__Internals;
 using Google.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MVVM_GMI.Services.Database;
+using MVVM_GMI.ViewModels.Windows;
 using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
+using System.ComponentModel;
+using Wpf.Ui;
 using Authentication = MVVM_GMI.Services.Database.Authentication;
 
 namespace MVVM_GMI.Services
@@ -19,10 +23,20 @@ namespace MVVM_GMI.Services
     public class ApplicationHostService : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly INavigationService _navigationService;
+        private readonly ISnackbarService _snackbarService;
+        private readonly IContentDialogService _contentDialogService;
 
-        public ApplicationHostService(IServiceProvider serviceProvider)
+        public ApplicationHostService(
+            INavigationService navigationService,
+            IServiceProvider serviceProvider,
+            ISnackbarService snackbarService,
+            IContentDialogService contentDialogService)
         {
             _serviceProvider = serviceProvider;
+            _navigationService = navigationService;
+            _snackbarService = snackbarService;
+            _contentDialogService = contentDialogService;
         }
 
         /// <summary>
@@ -73,34 +87,31 @@ namespace MVVM_GMI.Services
             {
 
             }
-            
+
+            var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+
+            navigationWindow.Closing += ShutDown;
+            authWindow.Closing += ShutDown;
+
+            void ShutDown(object? sender, CancelEventArgs e)
+            {
+                Application.Current.Shutdown();
+            }
+
 
             if (y != null && qualMember && welcomed)
             {
-                if (!Application.Current.Windows.OfType<MainWindow>().Any())
-                {
-                    var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
-                    navigationWindow.Loaded += OnNavigationWindowLoaded;
-                    navigationWindow.Show();
-                }
-            }
-            else if (y != null && qualMember)
-            {
-                if (!Application.Current.Windows.OfType<AuthWindow>().Any())
-                {
-                    var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
-                    //authWindow.Loaded += AuthOnNavigationWindowLoaded;
-                    authWindow.Show();
-                }
+
+                navigationWindow.Loaded += OnNavigationWindowLoaded;
+                navigationWindow.Show();
+              
             }
             else
             {
-                if (!Application.Current.Windows.OfType<AuthWindow>().Any())
-                {
-                    var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
-                    //authWindow.Loaded += AuthOnNavigationWindowLoaded;
-                    authWindow.Show();
-                }
+
+                authWindow.Show();
+                
             }
         }
 

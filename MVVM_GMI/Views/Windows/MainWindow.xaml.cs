@@ -6,7 +6,7 @@ namespace MVVM_GMI.Views.Windows
 {
     public partial class MainWindow
     {
-        public MainWindowViewModel ViewModel { get; }
+        public MainWindowViewModel ViewModel { get; set; }
 
         public MainWindow(
             MainWindowViewModel viewModel,
@@ -28,6 +28,8 @@ namespace MVVM_GMI.Views.Windows
             contentDialogService.SetContentPresenter(RootContentDialog);
 
             NavigationView.SetServiceProvider(serviceProvider);
+
+            
         }
     }
 }

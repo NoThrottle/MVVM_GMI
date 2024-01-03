@@ -24,6 +24,7 @@ namespace MVVM_GMI.Views.Windows
             InitializeComponent();
 
             contentDialogService.SetContentPresenter(AuthRootContentDialog);
+            
 
         }
 

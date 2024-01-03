@@ -125,6 +125,7 @@ namespace MVVM_GMI.Services.Database
         public void LogOut()
         {
             File.Delete(Path.Combine(ConfigurationService.Instance.fromLauncher.LauncherPath, "session.tkn"));
+            user.AuthorizedUsername = null;
         }
 
         /// <summary>
@@ -252,10 +253,11 @@ namespace MVVM_GMI.Services.Database
                 result.Add("Password must be shorter than 17 characters.");
             }
 
-            if(result.Count <= 0)
+            if(result.Count == 0)
             {
 
-                if (CheckIfUserAlreadyExistsAsync(Username).Result)
+                var ox = await CheckIfUserAlreadyExistsAsync(Username);
+                if (ox)
                 {
                     result.Add("Username already exists.");
                     return result;

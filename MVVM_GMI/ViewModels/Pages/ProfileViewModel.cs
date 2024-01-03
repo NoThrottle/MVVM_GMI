@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MVVM_GMI.Services.Database;
+using MVVM_GMI.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace MVVM_GMI.ViewModels.Pages
     public partial class ProfileViewModel : ObservableObject, INavigationAware
     {
         private bool _isInitialized = false;
+
+        public Action isLogOut {  get; set; }
 
         [ObservableProperty]
         private int _counter = 0;
@@ -44,26 +47,15 @@ namespace MVVM_GMI.ViewModels.Pages
         [RelayCommand]
         void LogOut()
         {
-            var x = new Authentication();
-            x.LogOut();
 
-            if (!Application.Current.Windows.OfType<MVVM_GMI.Views.Windows.AuthWindow>().Any())
-            {
-                var navigationWindow = _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.AuthWindow>();
-                navigationWindow.Loaded += (sender, e) =>
-                {
+            new Authentication().LogOut();
 
-                    if (sender is not MVVM_GMI.Views.Windows.MainWindow navigationWindow)
-                    {
-                        return;
-                    }
 
-                    navigationWindow.Activate();
-                };
-                navigationWindow.Show();
+            Application.Current.Shutdown();
+            System.Windows.Forms.Application.Restart();
 
-                _serviceProvider.GetRequiredService<MVVM_GMI.Views.Windows.MainWindow>().Close();
-            }
+
+
         }
     }
 
