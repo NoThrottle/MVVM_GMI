@@ -19,12 +19,12 @@ namespace MVVM_GMI.Services
         public MinecraftService()
         {
             var y = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties", "gameLoad").Result;
-            //var z = online.GetFromDatabaseAsync<ServerInfoProperties>("ServerProperties", "serverInfo").Result;
+            var z = online.GetFromDatabaseAsync<ServerInfoProperties>("ServerProperties", "serverInfo").Result;
             minecraftVersion = y.minecraftVersion;
             fabricVersion = y.fabricVersion;
 
-            //serverAddress = z.ipAddress;
-            //serverPort = z.port;
+            serverAddress = z.ipAddress;
+            serverPort = z.port;
         }
 
         //----------------//

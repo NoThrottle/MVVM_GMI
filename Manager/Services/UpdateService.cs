@@ -34,9 +34,9 @@ namespace MVVM_GMI.Services
         /// <returns></returns>
         internal bool CheckForUpdates()
         {
-            if (props.latest != LauncherProperties.LauncherVersion)
+            if (props.latest != ILauncherProperties.LauncherVersion)
             {
-                if (LauncherProperties.LauncherVersion < props.minimum)
+                if (ILauncherProperties.LauncherVersion < props.minimum)
                 {
 
                     return true;

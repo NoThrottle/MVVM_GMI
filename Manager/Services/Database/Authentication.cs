@@ -15,7 +15,7 @@ using Google.Protobuf.WellKnownTypes;
 
 namespace MVVM_GMI.Services.Database
 {
-    public class Authentication : LauncherProperties
+    public class Authentication : ILauncherProperties
     {
 
         private List<UserCredential> _users = new List<UserCredential>();

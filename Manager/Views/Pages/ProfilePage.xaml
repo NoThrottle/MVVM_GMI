@@ -1,0 +1,209 @@
+﻿<Page x:Class="MVVM_GMI.Views.Pages.ProfilePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:MVVM_GMI.Views.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="ProfilePage"
+        d:DataContext="{d:DesignInstance local:ProfilePage,
+                                         IsDesignTimeCreatable=False}"
+        d:DesignHeight="450"
+        d:DesignWidth="800"
+        ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+        ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        mc:Ignorable="d">
+
+
+    <Grid>
+        <StackPanel>
+
+            <Grid>
+
+                <Border CornerRadius="8,8,8,8" Height="128" VerticalAlignment="Top">
+                    <Border.Background>
+                        <ImageBrush Stretch="UniformToFill" ImageSource="pack://application:,,,/Assets/default_dark.png" />
+                    </Border.Background>
+                </Border>
+
+                <StackPanel
+                    Orientation="Horizontal">
+
+                    <Viewbox Width="Auto" Height="56" HorizontalAlignment="Left" Margin="36,0,0,0">
+                        <TextBlock
+                        Text="{Binding ViewModel.Username}"
+                        VerticalAlignment="Center"
+                        FontSize="48"
+                        FontWeight="Bold"                     
+                        />
+                    </Viewbox>
+
+                </StackPanel>
+
+                <ui:Button Icon="{ui:SymbolIcon DoorArrowRight16}" Content="Log Out" Appearance="Danger" HorizontalAlignment="Right" Margin="32" Command="{Binding ViewModel.LogOutCommand}"/>
+
+            </Grid>
+
+            <Grid Margin="0,16,0,0" Height="96">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Border CornerRadius="8,8,8,8" Height="96" VerticalAlignment="Top">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#ffba08" Offset="0.0" />
+                                <GradientStop Color="#fee0e3" Offset="0.25" />
+                                <GradientStop Color="#feae1e" Offset="0.75" />
+                                <GradientStop Color="#ffba08" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+
+                    <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
+                        <Viewbox.Style>
+                            <Style TargetType="Viewbox">
+                                <Setter Property="Width" Value="Auto"/>
+                                <Setter Property="Height" Value="64"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Width" Value="Auto"/>
+                                        <Setter Property="Height" Value="210"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Viewbox.Style>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Image 
+                                Height="96"
+                                Source="https://png.pngtree.com/png-clipart/20221227/original/pngtree-badge-gaming-elegant-esport-logo-png-image_8811251.png"/>
+
+                            <TextBlock
+                                Text="Coming Soon"
+                                VerticalAlignment="Center"
+                                FontSize="32"
+                                FontWeight="Bold" 
+                                Foreground="Black"
+                                Margin="0,0,16,0"
+                            />
+                        </StackPanel>
+                    </Viewbox>
+                </Grid>
+
+                <Grid Grid.Column="2">
+                    <Border CornerRadius="8,8,8,8" Height="96" VerticalAlignment="Top">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#38b000" Offset="0.0" />
+                                <GradientStop Color="#70e000" Offset="0.25" />
+                                <GradientStop Color="#ccff33" Offset="0.75" />
+                                <GradientStop Color="#38b000" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+
+                    <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
+
+                        <TextBlock
+                            Text="Standard User"
+                            VerticalAlignment="Center"
+                            FontSize="28"
+                            FontWeight="Bold" 
+                            Foreground="Black"
+                            Margin="16"
+                            />
+
+                    </Viewbox>
+                </Grid>
+
+                <Grid Grid.Column="4">
+                    <Border CornerRadius="8,8,8,8" Height="96" VerticalAlignment="Top">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#586f7c" Offset="0.0" />
+                                <GradientStop Color="#cfd2cd" Offset="0.25" />
+                                <GradientStop Color="#b8dbd9" Offset="0.75" />
+                                <GradientStop Color="#586f7c" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+
+                    <Viewbox StretchDirection="DownOnly" Stretch="Uniform">
+                        <Viewbox.Style>
+                            <Style TargetType="Viewbox">
+                                <Setter Property="Width" Value="Auto"/>
+                                <Setter Property="Height" Value="64"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Width" Value="Auto"/>
+                                        <Setter Property="Height" Value="210"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Viewbox.Style>
+
+
+                        <TextBlock
+                            Text="Non-Donator"
+                            VerticalAlignment="Center"
+                            FontSize="32"
+                            FontWeight="Bold" 
+                            Foreground="Black"
+                            Margin="16"
+                        />
+                    </Viewbox>
+                </Grid>
+
+
+            </Grid>
+
+            <WrapPanel MaxWidth="1280">
+
+                <Grid Margin="16" Width="360" Background="#1c1c1c">
+
+                    <StackPanel Margin="16">
+
+                        <DockPanel>
+                            <ui:Button
+                                Content="Invite"
+                                Icon="{ui:SymbolIcon Add24}"
+                                DockPanel.Dock="Right"
+                                Command="{Binding ViewModel.CreateInviteAsyncCommand}"
+                                IsEnabled="{Binding ViewModel.InviteEnabled}"/>
+
+                            <TextBlock
+                                Text="Invite a Friend!"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                VerticalAlignment="Center"
+                                DockPanel.Dock="Left"
+                                />
+                        </DockPanel>
+
+                        <Grid Height="16"/>
+
+                        <Grid Height="160" Width="360" Background="#1f1f1f">
+
+                            <ListView ItemsSource="{Binding ViewModel.Invited}">
+                                
+                            </ListView>
+
+                        </Grid>
+
+
+                    </StackPanel>
+                    
+                </Grid>
+                
+                
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</Page>

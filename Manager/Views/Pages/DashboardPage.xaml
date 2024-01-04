@@ -1,0 +1,147 @@
+﻿<Page
+    x:Class="MVVM_GMI.Views.Pages.DashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MVVM_GMI.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="DashboardPage"
+    d:DataContext="{d:DesignInstance local:DashboardPage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+
+    <Grid VerticalAlignment="Top">
+
+        <StackPanel>
+
+            <Grid Height="460">
+                <Border CornerRadius="8,8,8,8" Height="400" VerticalAlignment="Top">
+                    <Border.Background>
+                        <ImageBrush Stretch="UniformToFill" ImageSource="pack://application:,,,/Assets/default_dark.png" />
+                    </Border.Background>
+                </Border>
+
+                <StackPanel HorizontalAlignment="Stretch" Margin="32,192,32,0" Visibility="{Binding ViewModel.ProcessVisibility}">
+
+                    <TextBlock
+                        Text="{Binding ViewModel.ProcessText}"
+                        FontSize="14"
+                        FontWeight="Medium" 
+                        Margin="0,0,0,8"
+                        />
+
+                    <ProgressBar
+                        IsIndeterminate="{Binding ViewModel.LoadingBarIntermediate}"
+                        Maximum="{Binding ViewModel.LoadingBarMaximumValue}"
+                        Minimum="0"
+                        Height="12"
+                        Value="{Binding ViewModel.LoadingBarCurrentValue}"
+                        Margin="0,0,0,8"
+                        Background="Transparent"
+                        />
+
+                    <TextBlock
+                        Text="{Binding ViewModel.ProcessDescription}"
+                        Opacity="0.8"
+                        TextWrapping="Wrap"
+                        />
+
+                </StackPanel>
+
+                <StackPanel
+                    VerticalAlignment="Bottom"
+                    Margin="32"
+                    Orientation="Horizontal">
+
+                    <ui:Button 
+                        Content="{Binding ViewModel.PlayButtonText}" 
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Width="192"
+                        Height="56"
+                        HorizontalAlignment="Left"
+                    
+                        Icon="{ui:SymbolIcon Play16, Filled=True}"
+                        Appearance="Primary" 
+                        Background="{Binding ViewModel.PlayButtonColor}" 
+                        PressedBackground="{Binding ViewModel.PlayButtonPressedColor}" 
+                        MouseOverBackground="{Binding ViewModel.PlayButtonHoverColor}"
+                        Command="{Binding ViewModel.PressedPlayCommand, Mode=OneWay}"
+                        PressedForeground="{Binding ViewModel.PlayButtonPressedTextColor}"/>
+
+                    <ui:Button
+                        Content="Quick Start"
+                        Appearance="Secondary"
+                        Margin="16 0 0 0"
+                        Padding="12"
+                        Icon="{ui:SymbolIcon FastForward24, Filled=True}"
+                        Command="{Binding ViewModel.PressedQuickLaunchCommand, Mode=OneWay}"/>
+
+                    <ui:Button
+                        Appearance="Secondary"
+                        Margin="16 0 0 0"
+                        Padding="10"
+                        FontSize="18"
+                        Command="{Binding ViewModel.OpenMinecraftSettingsCommand, Mode=OneWay}"
+                        Icon="{ui:SymbolIcon Settings32, Filled=True, FontSize=18}"/>
+
+                </StackPanel>
+                <ui:Image Source="pack://application:,,,/Assets/SplashArt-1000.png" MaxHeight="128" VerticalAlignment="Top" Margin="32"/>
+            </Grid>
+
+            <StackPanel Orientation="Vertical" Margin="16">
+
+                <TextBlock
+                    Text="WHAT'S NEW"
+                    FontSize="36"
+                    FontWeight="Black"                       
+                    />
+
+                <Grid Height="8"/>
+
+                <TextBlock
+                    FontSize="16"
+                    FontWeight="Regular"                       
+                    >
+                    All new launcher for HighSkyMC Season 9. We promise it will be the last. <LineBreak/>
+                    Better user interface design and cleaner user experience.<LineBreak/>
+                    <LineBreak/>
+                    Upcoming Features:<LineBreak/>
+                    - Personal mod manager<LineBreak/>
+                    - Game output terminal<LineBreak/>
+                    - Screenshot gallery<LineBreak/>
+                    - and many more! <LineBreak/>
+                    <LineBreak/>
+                    Changes since v0.1.1-beta<LineBreak/>
+                    <LineBreak/>
+                    - Fixed critical security exploits<LineBreak/>
+                    - Added JSON Actions<LineBreak/>
+                    - Restricted input length on text boxes<LineBreak/>
+                    - Fixed donation page<LineBreak/>
+                    <LineBreak/>
+                    Minecraft 1.20.1 Changelog<LineBreak/>
+                    <LineBreak/>
+                    Fixed a disk permissions-related crash<LineBreak/>
+                    MC-263244 - The realms invitation icon that appears on the realms button in the main menu is displayed incorrectly<LineBreak/>
+                    MC-263245 - Buttons in the "Add Realm" interface within the realms menu no longer render<LineBreak/>
+                    MC-263296 - Game softlocks after cancelling joining a server<LineBreak/>
+                    MC-263340 - Incorrect Protochunk#setStatus call on chunk generate<LineBreak/>
+
+
+                </TextBlock>
+
+
+
+
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</Page>

@@ -1,0 +1,279 @@
+﻿<Page
+    x:Class="MVVM_GMI.Views.Pages.MinecraftSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:MVVM_GMI.Helpers"
+    xmlns:local="clr-namespace:MVVM_GMI.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="MinecraftSettingsPage"
+    d:DataContext="{d:DesignInstance local:MinecraftSettingsPage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+
+    <Grid>
+
+        <StackPanel Orientation="Vertical" MaxWidth="720">
+
+            <StackPanel Orientation="Horizontal">
+
+                <ui:Button
+                    Icon="{ui:SymbolIcon ArrowLeft48, Filled=True}"
+                    FontSize="36"
+                    Appearance="Transparent"
+                    BorderBrush="Transparent"
+                    Command="{Binding ViewModel.GoBackCommand, Mode=OneWay}"
+                    Margin="0,0,8,0"
+                    />
+
+                <TextBlock
+                    Text="Minecraft Settings"
+                    FontSize="32"
+                    FontWeight="Bold"
+                    VerticalAlignment="Center"
+                    />
+
+            </StackPanel>
+
+            <Grid Height="32"/>
+
+            <ui:CardExpander Icon="{ui:SymbolIcon ProjectionScreen28}">
+                <ui:CardExpander.Header>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Medium"
+                            Text="Display Settings" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Change how minecraft looks when it launches." />
+                    </StackPanel>
+                </ui:CardExpander.Header>
+
+                <StackPanel Orientation="Vertical" >
+                    <ui:CardControl Icon="{ui:SymbolIcon FullscreenMaximize24}" >
+                        <ui:CardControl.Header>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="Medium"
+                                    Text="Fullscreen" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                    Text="Minecraft launches in Fullscreen." />
+                            </StackPanel>
+                        </ui:CardControl.Header>
+
+                        <ui:ToggleSwitch IsChecked="{Binding ViewModel.Display_isFullscreen, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+
+                    <TextBlock
+                        Margin="0,24,0,0"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Startup Resolution" />
+                    <TextBlock
+                        Margin="0,0,0,0"
+                        FontSize="12"                        
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="If fullscreen is disabled, this is the resolution the Minecraft window will launch in." />
+                    <ui:CardControl Margin="0,8,0,0" Icon="Whiteboard24">
+                        <ui:CardControl.Header>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="Medium"
+                                    Text="Window Width" />
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_width, Mode=TwoWay}" />
+                    </ui:CardControl>
+
+                    <ui:CardControl Icon="Whiteboard24">
+                        <ui:CardControl.Header>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="Medium"
+                                    Text="Window Height" />
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_height, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+
+                </StackPanel>
+            </ui:CardExpander>
+
+            <Grid Height="4"/>
+
+            <ui:CardExpander Icon="{ui:SymbolIcon TopSpeed24}">
+                <ui:CardExpander.Header>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Medium"
+                            Text="Performance Settings" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Modify how Minecraft uses your system resources." />
+                    </StackPanel>
+                </ui:CardExpander.Header>
+
+                <StackPanel Orientation="Vertical" >
+
+                    <TextBlock
+                        Margin="0,0,0,0"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="RAM Allocation" />
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        FontSize="12"                        
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="Maximum amount of RAM that Minecraft can use. The Java process has it's own overhead above the maximum." />
+
+                    <Grid Margin="0,8,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="156"/>
+                            <ColumnDefinition Width="28"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Slider Grid.Column="0" Margin="0,16,16,16" TickFrequency="1024" Minimum="1024" Maximum="{Binding ViewModel.Ram_maximum, Mode=OneWay}" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}" IsSnapToTickEnabled="True" TickPlacement="BottomRight"/>
+                        <ui:NumberBox Grid.Column="1" Minimum="1024" ClearButtonEnabled="False" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}"/>
+                        <TextBlock Grid.Column="2" Text="MB" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                    </Grid>
+
+                    <ui:CardControl Icon="{ui:SymbolIcon KeyboardShiftUppercase24}" >
+                        <ui:CardControl.Header>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="Medium"
+                                    Text="Cap Minimum RAM to Maximum" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                    Text="Sometimes Java's garbage compiler causes a lot of lag. &#x0a;Enable this if you think you have that problem" />
+                            </StackPanel>
+                        </ui:CardControl.Header>
+
+                        <ui:ToggleSwitch IsChecked="{Binding ViewModel.Ram_capped, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardAction Margin="0,8,0,0" Icon="Whiteboard24" Command="{Binding ViewModel.OpenGraphicsSettingsCommand, Mode=OneWay}">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Medium"
+                                Text="Advanced Graphics Settings" />
+                        </StackPanel>
+                    </ui:CardAction>
+                </StackPanel>
+            </ui:CardExpander>
+
+            <Grid Height="4"/>
+
+            <ui:CardExpander Icon="{ui:SymbolIcon Settings48}">
+                <ui:CardExpander.Header>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Medium"
+                            Text="JVM Settings" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Customize how Java launches Minecraft." />
+                    </StackPanel>
+                </ui:CardExpander.Header>
+
+                <StackPanel Orientation="Vertical" >
+
+                    <TextBlock
+                        Margin="0,0,0,0"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="JVM Arguments" />
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        FontSize="12"                        
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="Modifies the properties of the JVM. Leave empty for Default.&#x0a;Might override any of the settings set above." />
+
+                    <ui:TextBox ClearButtonEnabled="True" PlaceholderText="Leave empty for default" Margin="0,8,0,8" Text="{Binding ViewModel.JvmArguments, Mode=TwoWay}"/>
+                </StackPanel>
+            </ui:CardExpander>
+
+            <Grid Height="4"/>
+
+            <ui:CardExpander Icon="{ui:SymbolIcon Warning24}">
+                <ui:CardExpander.Header>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Medium"
+                            Text="Danger Zone" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Troubleshoot your installation by breaking it." />
+                    </StackPanel>
+                </ui:CardExpander.Header>
+
+                <StackPanel Orientation="Vertical" >
+
+                    <TextBlock
+                        Margin="0,0,0,0"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Reset Values" />
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        FontSize="12"                        
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="Only press the buttons if NoThrottle tells you to do so, or if you KNOW what you're doing." />
+
+                    <ui:CardAction Margin="0,8,0,0" Icon="Whiteboard24" Command="{Binding ViewModel.ResetModCommand, Mode=OneWay}">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                                 FontSize="13"
+                                 FontWeight="Medium"
+                                 Text="Reset Mod Installation" />
+                            <TextBlock
+                                Margin="0,0,0,0"
+                                FontSize="12"                        
+                                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                Text="Forces the reinstallation of mods. Deletes the entire contents of ./mods" />
+                        </StackPanel>
+                    </ui:CardAction>
+                    
+                    <ui:CardAction Margin="0,8,0,0" Icon="Whiteboard24" Command="{Binding ViewModel.ResetMinecraftCommand, Mode=OneWay}">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                                 FontSize="13"
+                                 FontWeight="Medium"
+                                 Text="Reset Entire Minecraft Folder" />
+                            <TextBlock
+                                Margin="0,0,0,0"
+                                FontSize="12"                        
+                                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                Text="Deletes your entire minecraft folder, including your world saves, settings, and screenshots." />
+                        </StackPanel>
+                    </ui:CardAction>
+                </StackPanel>
+            </ui:CardExpander>
+
+            <Grid Height="32"/>
+            
+        </StackPanel>
+    </Grid>
+</Page>

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace MVVM_GMI.Services
 {
-    public class ConfigurationService : LauncherProperties
+    public class ConfigurationService : ILauncherProperties
     {
         private static string pathLauncherJSON = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "config.json");
         private static string pathLauncher = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi");
