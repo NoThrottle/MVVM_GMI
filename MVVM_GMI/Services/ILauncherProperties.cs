@@ -6,13 +6,13 @@
         /// <summary>
         /// Current version of the installed Launcher
         /// </summary>
-        internal static int LauncherVersion { get; } = 4;
+        internal static int LauncherVersion { get; } = 5;
 
 
         /// <summary>
         /// Current version of the installed Launcher in a readable format
         /// </summary>
-        internal static String LauncherVersionReadable { get; } = "1.0.2";
+        internal static String LauncherVersionReadable { get; } = "1.0.3";
 
         /// <summary>
         /// Current version of the config file. 
