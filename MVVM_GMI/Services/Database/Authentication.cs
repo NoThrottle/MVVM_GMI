@@ -263,6 +263,13 @@ namespace MVVM_GMI.Services.Database
                     return result;
                 }
 
+                var toy = await CheckIfInviteCodeExists(Code);
+                if (!toy)
+                {
+                    result.Add("Code is invalid, used, or has expired.");
+                    return result;
+                }
+
                 var mem = new Membership()
                 {
                     QualifiedMember = false,
@@ -281,6 +288,13 @@ namespace MVVM_GMI.Services.Database
                     UserMembership = mem,
                     
                 };
+
+                var ad = await ConsumeInviteCode(Code,Username);
+                if (!ad)
+                {
+                    result.Add("Invite code error, try again.");
+                    return result;
+                }
 
                 _ = online.WriteToDatabaseAsync("UserData", data.Name, data);
 
@@ -343,6 +357,95 @@ namespace MVVM_GMI.Services.Database
             return false;
         }
 
+        public async Task<string[]?> CreateInviteCode()
+        {
+            var r = new Random();
+            long A = r.NextInt64(17592186044417, 281474976710655);
+            string code = A.ToString("X").ToLower();
+
+            var c = new InviteCode()
+            {
+                Owner = user.AuthorizedUsername,
+                DateCreated = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                DateExpiry = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 86400,
+                
+            };
+
+            await online.WriteToDatabaseAsync("InviteCodes", code, c);
+
+            return [code, DateTimeOffset.FromUnixTimeSeconds(c.DateExpiry).ToLocalTime().ToString("dd/MM/yyyy h:mm tt")];
+        }
+
+
+        async Task<bool> ConsumeInviteCode(string Code, string Username)
+        {
+            InviteCode x;
+            try
+            {
+                x = await OnlineRequest.GetFromDatabaseAsync<InviteCode>("InviteCodes", Code.ToLower());
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            var t = new Invited() { Code = Code, Date = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), Username = Username };
+
+            try
+            {
+                await online.DeepWriteToDatabaseAsync("UserData", x.Owner, "Invited", Username, t);
+
+            }
+            catch
+            {
+                return false;
+
+            }
+
+            try
+            {
+                await online.DeleteFromDatabaseAsync("InviteCodes", Code.ToLower());
+            }
+            catch
+            {
+                return false;
+
+            }
+
+            return true;
+
+        }
+
+        async Task<bool> CheckIfInviteCodeExists(string Code)
+        {
+            InviteCode x;
+            try
+            {
+                x = await OnlineRequest.GetFromDatabaseAsync<InviteCode>("InviteCodes", Code.ToLower());
+            }
+            catch
+            { 
+                return false;
+
+            }
+
+            if (x != null)
+            {
+
+                if (string.IsNullOrEmpty(x.User))
+                {
+                    if (x.DateExpiry > DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                    {
+                        return true;
+                    }
+                }
+
+            }
+
+            return false;
+
+        }
+
         string Pepper()
         {
             Random random = new Random();
@@ -397,6 +500,26 @@ namespace MVVM_GMI.Services.Database
     }
 
     [FirestoreData]
+    internal class InviteCode
+    {
+        [FirestoreProperty]
+        public string Owner { get; set; }
+
+        [FirestoreProperty]
+        public string User { get; set; }
+
+        [FirestoreProperty]
+        public long DateUsed { get; set; }
+
+        [FirestoreProperty]
+        public long DateCreated { get; set; }
+        [FirestoreProperty]
+        public long DateExpiry { get; set; }
+
+
+    }
+
+    [FirestoreData]
     internal class Membership
     {
         [FirestoreProperty]
@@ -443,6 +566,21 @@ namespace MVVM_GMI.Services.Database
 
         [FirestoreProperty]
         public long Expiry { get; set; }
+
+    }
+
+    [FirestoreData]
+    internal class Invited
+    {
+        [FirestoreProperty]
+        public string Username { get; set; }
+
+        [FirestoreProperty]
+        public string Code { get; set; }
+
+        [FirestoreProperty]
+        public long Date { get; set; }
+
 
     }
 }

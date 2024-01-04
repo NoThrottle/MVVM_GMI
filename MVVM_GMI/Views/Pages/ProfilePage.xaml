@@ -163,6 +163,47 @@
 
 
             </Grid>
+
+            <WrapPanel MaxWidth="1280">
+
+                <Grid Margin="16" Width="360" Background="#1c1c1c">
+
+                    <StackPanel Margin="16">
+
+                        <DockPanel>
+                            <ui:Button
+                                Content="Invite"
+                                Icon="{ui:SymbolIcon Add24}"
+                                DockPanel.Dock="Right"
+                                Command="{Binding ViewModel.CreateInviteAsyncCommand}"
+                                IsEnabled="{Binding ViewModel.InviteEnabled}"/>
+
+                            <TextBlock
+                                Text="Invite a Friend!"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                VerticalAlignment="Center"
+                                DockPanel.Dock="Left"
+                                />
+                        </DockPanel>
+
+                        <Grid Height="16"/>
+
+                        <Grid Height="160" Width="360" Background="#1f1f1f">
+
+                            <ListView ItemsSource="{Binding ViewModel.Invited}">
+                                
+                            </ListView>
+
+                        </Grid>
+
+
+                    </StackPanel>
+                    
+                </Grid>
+                
+                
+            </WrapPanel>
         </StackPanel>
     </Grid>
 </Page>

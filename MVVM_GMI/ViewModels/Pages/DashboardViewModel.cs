@@ -1,6 +1,8 @@
 ﻿using CmlLib.Utils;
+using Microsoft.Extensions.DependencyInjection;
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
+using MVVM_GMI.Views.Windows;
 using Wpf.Ui;
 
 namespace MVVM_GMI.ViewModels.Pages
@@ -10,6 +12,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
         IContentDialogService _dialogService;
         INavigationService _navigationService;
+        IServiceProvider _serviceProvider;
 
         [ObservableProperty]
         private int _counter = 0;
@@ -57,10 +60,11 @@ namespace MVVM_GMI.ViewModels.Pages
         private int _loadingBarCurrentValue = 0;
         #endregion
 
-        public DashboardViewModel(IContentDialogService contentDialogService, INavigationService navigationService)
+        public DashboardViewModel(IContentDialogService contentDialogService, INavigationService navigationService, IServiceProvider serviceProvider)
         {
             _dialogService = contentDialogService;
             _navigationService = navigationService;
+            _serviceProvider = serviceProvider;
 
             try
             {
@@ -80,6 +84,11 @@ namespace MVVM_GMI.ViewModels.Pages
                 ShowDialogAsync("Error","Unable to connect to the internet. Some functions may be unavailable.", "","","Ok");
                 WhatsNewText = "No Internet";
             }
+
+
+            var x = _serviceProvider.GetRequiredService<MainWindow>();
+            _dialogService.SetContentPresenter(x.RootContentDialog);
+
             
         }
 
@@ -92,7 +101,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
                 if (x.StartUpdate())
                 {
-                    Application.Current.MainWindow.Close();
+                    Application.Current.Shutdown();
                 }
             }
         }

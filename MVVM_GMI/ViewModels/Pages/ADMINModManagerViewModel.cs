@@ -271,9 +271,9 @@ namespace MVVM_GMI.ViewModels.Pages
                 IconURL = IconURL,
                 Categories = Category,
 
-                ClientSide = bool.Parse(IsClientSide),
+                ClientSide = bool.Parse(IsClientSide ?? "false"),
                 IsRequired = bool.Parse(IsRequired),
-                ServerSide = bool.Parse(IsServerSide),
+                ServerSide = bool.Parse(IsServerSide ?? "false"),
                 DownloadURL = downloadLink,
                 VersionNumber = versionNumber,
                 DatePublished = DatePublished,

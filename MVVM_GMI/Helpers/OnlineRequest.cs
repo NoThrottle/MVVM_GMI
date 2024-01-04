@@ -61,6 +61,38 @@ namespace MVVM_GMI.Helpers
         }
 
         /// <summary>
+        /// Gets all documents from a sub-collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Collection"></param>
+        /// <param name="Document"></param>
+        /// <param name="SubCollection"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<List<T>> GetAllFromDatabaseAsync<T>(string Collection, string Document, string SubCollection)
+        {
+            List<T> list = new List<T>();
+
+            var db = FirestoreService.Database;
+            var docRef = db.Collection(Collection).Document(Document).Collection(SubCollection);
+            var res = await docRef.GetSnapshotAsync();
+
+            foreach (var snap in res.Documents)
+            {
+                list.Add(snap.ConvertTo<T>());
+            }
+
+            if (list != null)
+            {
+                return list;
+            }
+
+            throw new Exception();
+        }
+
+
+
+        /// <summary>
         /// Returns ALL the documents in a collection, with a filter
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -107,6 +139,27 @@ namespace MVVM_GMI.Helpers
             {
                 throw;
             }            
+        }
+
+        /// <summary>
+        /// Writes to Firestore. Passes any and all errors.
+        /// </summary>
+        /// <param name="Collection"></param>
+        /// <param name="Document"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static async Task<WriteResult> DeepWriteToDatabaseAsync(string Collection, string Document, string SubCollection, string SubDocument, object data)
+        {
+            try
+            {
+                var db = FirestoreService.Database;
+                DocumentReference docRef = db.Collection(Collection).Document(Document).Collection(SubCollection).Document(SubDocument);
+                return await docRef.SetAsync(data);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         /// <summary>
