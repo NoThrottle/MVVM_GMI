@@ -66,6 +66,9 @@ namespace MVVM_GMI.ViewModels.Pages
             _navigationService = navigationService;
             _serviceProvider = serviceProvider;
 
+            var x = _serviceProvider.GetRequiredService<MainWindow>();
+            _dialogService.SetContentPresenter(x.RootContentDialog);
+
             try
             {
                 CheckForUpdatesAsync();
@@ -86,8 +89,7 @@ namespace MVVM_GMI.ViewModels.Pages
             }
 
 
-            var x = _serviceProvider.GetRequiredService<MainWindow>();
-            _dialogService.SetContentPresenter(x.RootContentDialog);
+            
 
             
         }

@@ -2,6 +2,7 @@
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
 using System.Diagnostics;
+using System.IO;
 using System.Security.Policy;
 using System.Windows.Navigation;
 using Wpf.Ui;
@@ -13,9 +14,11 @@ namespace MVVM_GMI.ViewModels.Pages
     public partial class MinecraftSettingsViewModel : ObservableObject, INavigationAware
     {
 
+        IContentDialogService _contentDialogService;
         INavigationService _navigationService;
-        public MinecraftSettingsViewModel(INavigationService navigationService)
+        public MinecraftSettingsViewModel(INavigationService navigationService, IContentDialogService contentDialogService)
         {
+            _contentDialogService = contentDialogService;
             _navigationService = navigationService;
         }
 
@@ -73,6 +76,34 @@ namespace MVVM_GMI.ViewModels.Pages
             _navigationService.GoBack();
         }
 
+        [RelayCommand]
+        async Task ResetMod()
+        {
+
+            var x = await ShowDialogAsync("Are you sure?","This action will delete your entire mods folder, forcing a reinstall when you next play. Do you want to proceed?","Yes","","No");
+            
+            if (x == ContentDialogResult.Primary)
+            {
+                Directory.Delete(Path.Combine(from.Instance.fromLauncher.MinecraftPath,"mods"),true);
+                from.Instance.fromLauncher.DidStarterAction = false;
+                from.Instance.fromLauncher.ModUpdateIndex = 0;
+            }
+
+        }
+
+        [RelayCommand]
+        async Task ResetMinecraft()
+        {
+            var x = await ShowDialogAsync("Are you sure?", "This action will delete your entire minecraft folder, forcing a reinstall when you next play. Do you want to proceed?", "Yes", "", "No");
+
+            if (x == ContentDialogResult.Primary)
+            {
+                Directory.Delete(from.Instance.fromLauncher.MinecraftPath, true);
+                from.Instance.fromLauncher.DidStarterAction = false;
+                from.Instance.fromLauncher.ModUpdateIndex = 0;
+            }
+        }
+
         private void InitializeValues()
         {
             Display_isFullscreen = from.Instance.fromMinecraft.StartFullscreen.ToString();
@@ -95,6 +126,22 @@ namespace MVVM_GMI.ViewModels.Pages
             from.Instance.fromMinecraft.CapRamAllocation = bool.Parse(Ram_capped);
             //from.WriteProperties();
             from.Instance.fromMinecraft.JVMArguments = JvmArguments;
+        }
+
+        async Task<Wpf.Ui.Controls.ContentDialogResult> ShowDialogAsync(string Title, string Content, string PrimaryButtonText, string SecondaryButtonText, string CloseButtonText)
+        {
+            var x = await _contentDialogService.ShowSimpleDialogAsync(
+                    new SimpleContentDialogCreateOptions()
+                    {
+                        Title = Title,
+                        Content = Content,
+                        PrimaryButtonText = PrimaryButtonText,
+                        SecondaryButtonText = SecondaryButtonText,
+                        CloseButtonText = CloseButtonText
+                    }
+                    );
+
+            return x;
         }
 
     }

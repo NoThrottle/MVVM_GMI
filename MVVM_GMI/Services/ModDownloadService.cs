@@ -1,4 +1,4 @@
-﻿using Google.Cloud.Firestore;
+﻿      using Google.Cloud.Firestore;
 using MVVM_GMI.Models;
 using System.IO;
 using @from = MVVM_GMI.Services.ConfigurationService;
@@ -135,7 +135,7 @@ namespace MVVM_GMI.Services
                         inQueue += 1;
 
                         entryName = entry.Name;
-                        var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", entry.Name + entry.projectID + entry.versionID + ".jar");
+                        var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", entry.projectID + entry.versionID + ".jar");
                         await online.DownloadFileAsync(entry.DownloadURL, o);
                         prog++;
 

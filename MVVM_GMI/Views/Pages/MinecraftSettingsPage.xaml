@@ -214,6 +214,64 @@
                 </StackPanel>
             </ui:CardExpander>
 
+            <Grid Height="4"/>
+
+            <ui:CardExpander Icon="{ui:SymbolIcon Warning24}">
+                <ui:CardExpander.Header>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Medium"
+                            Text="Danger Zone" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Troubleshoot your installation by breaking it." />
+                    </StackPanel>
+                </ui:CardExpander.Header>
+
+                <StackPanel Orientation="Vertical" >
+
+                    <TextBlock
+                        Margin="0,0,0,0"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Reset Values" />
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        FontSize="12"                        
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="Only press the buttons if NoThrottle tells you to do so, or if you KNOW what you're doing." />
+
+                    <ui:CardAction Margin="0,8,0,0" Icon="Whiteboard24" Command="{Binding ViewModel.ResetModCommand, Mode=OneWay}">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                                 FontSize="13"
+                                 FontWeight="Medium"
+                                 Text="Reset Mod Installation" />
+                            <TextBlock
+                                Margin="0,0,0,0"
+                                FontSize="12"                        
+                                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                Text="Forces the reinstallation of mods. Deletes the entire contents of ./mods" />
+                        </StackPanel>
+                    </ui:CardAction>
+                    
+                    <ui:CardAction Margin="0,8,0,0" Icon="Whiteboard24" Command="{Binding ViewModel.ResetMinecraftCommand, Mode=OneWay}">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock
+                                 FontSize="13"
+                                 FontWeight="Medium"
+                                 Text="Reset Entire Minecraft Folder" />
+                            <TextBlock
+                                Margin="0,0,0,0"
+                                FontSize="12"                        
+                                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                Text="Deletes your entire minecraft folder, including your world saves, settings, and screenshots." />
+                        </StackPanel>
+                    </ui:CardAction>
+                </StackPanel>
+            </ui:CardExpander>
+
             <Grid Height="32"/>
             
         </StackPanel>

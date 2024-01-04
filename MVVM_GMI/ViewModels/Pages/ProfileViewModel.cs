@@ -31,7 +31,9 @@ namespace MVVM_GMI.ViewModels.Pages
         public void OnNavigatedTo()
         {
             if (!_isInitialized)
+            {
                 InitializeViewModel();
+            }
 
             UpdateInvitedList();
         }
@@ -64,7 +66,6 @@ namespace MVVM_GMI.ViewModels.Pages
         void UpdateInvitedList()
         {
 
-
             Task.Run(() => { updateAsync(); });
 
             async Task updateAsync()
@@ -73,11 +74,13 @@ namespace MVVM_GMI.ViewModels.Pages
 
                 try
                 {
+
                     t.AddRange(await OnlineRequest.GetAllFromDatabaseAsync<Invited>("UserData", UserProfileService.AuthorizedUsername, "Invited"));
+
                 }
                 catch
                 {
-
+                    System.Windows.Forms.MessageBox.Show("Cannot Fetch");
                 }
 
                 if (t.Count == 0)
@@ -85,12 +88,18 @@ namespace MVVM_GMI.ViewModels.Pages
                     return;
                 }
 
-                Invited.Clear();
-
-                foreach (var x in t)
+                Application.Current.Dispatcher.Invoke(() => 
                 {
-                    Invited.Add(x.Username);
-                }
+                    Invited.Clear();
+
+                    foreach (var x in t)
+                    {
+                        Invited.Add(x.Username);
+                    }
+
+                });
+
+
             }
 
         }
