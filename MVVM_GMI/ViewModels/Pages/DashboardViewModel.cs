@@ -114,15 +114,6 @@ namespace MVVM_GMI.ViewModels.Pages
             _navigationService.Navigate(typeof(MinecraftSettingsPage));
         }
 
-
-        [RelayCommand]
-        private void OnCounterIncrement()
-        {
-            Counter++;
-          
-        }
-
-
         bool Locked = false;
         [RelayCommand]
         void PressedPlay()
@@ -260,5 +251,9 @@ namespace MVVM_GMI.ViewModels.Pages
             }
 
         }
+
+
+        //-----UI------
+
     }
 }

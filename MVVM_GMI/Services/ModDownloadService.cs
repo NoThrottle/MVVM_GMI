@@ -1,10 +1,9 @@
-﻿      using Google.Cloud.Firestore;
+﻿using Google.Cloud.Firestore;
+using MVVM_GMI.Helpers;
 using MVVM_GMI.Models;
 using System.IO;
 using @from = MVVM_GMI.Services.ConfigurationService;
 using @online = MVVM_GMI.Helpers.OnlineRequest;
-using static MVVM_GMI.Helpers.Extensions;
-using MVVM_GMI.Helpers;
 
 namespace MVVM_GMI.Services
 {
@@ -75,11 +74,15 @@ namespace MVVM_GMI.Services
             var y = await online.GetFromDatabaseAsync<ModsProperties>("ServerProperties","mods");
             int z = y.updateIndex;
 
-            if (x != z)
+            if (x == 0)
             {
-                var df = await DownloadModsAsync();
+                await VerifyInstallationAsync(true);
                 from.Instance.fromLauncher.ModUpdateIndex = z;
+
             }
+
+            await VerifyInstallationAsync(false);
+            from.Instance.fromLauncher.ModUpdateIndex = z;            
 
             try
             {
@@ -97,31 +100,20 @@ namespace MVVM_GMI.Services
         }
 
 
-        async Task<bool> DownloadModsAsync()
+        async Task<bool> DownloadModsAsync(List<ModEntry> mods)
         {
-            try
-            {
-                Directory.Delete(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"),true);
-            }
-            catch
-            {
-
-            }
-
             Directory.CreateDirectory(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"));
-
-            var x = await online.GetAllFromDatabaseAsync<ModEntry>("Mods","ClientSide",true);
 
             int MaxQueue = from.Instance.fromLauncher.SimultaneousDownloads;
             int inQueue = 0;
 
             string entryName = "";
-            int max = x.Count()-1;
+            int max = mods.Count();
             int prog = 0;
 
             _ = Task.Run(() => 
             {
-                foreach (var entry in x)
+                foreach (var entry in mods)
                 {
 
                     while(inQueue > MaxQueue)
@@ -136,7 +128,14 @@ namespace MVVM_GMI.Services
 
                         entryName = entry.Name;
                         var o = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods", entry.projectID + entry.versionID + ".jar");
-                        await online.DownloadFileAsync(entry.DownloadURL, o);
+                        try 
+                        {
+                            await online.DownloadFileAsync(entry.DownloadURL, o);
+                        }
+                        catch
+                        {
+
+                        }
                         prog++;
 
                         inQueue--;
@@ -151,16 +150,101 @@ namespace MVVM_GMI.Services
             {
                 Application.Current.Dispatcher.Invoke((Action) delegate {
 
-                    UpdateStatus("Downloading", 0, false, x.Count(), prog, "Downloading Mods: ", prog + "/" + x.Count() + " - Mod: " + entryName);
+                    UpdateStatus("Downloading", 0, false, mods.Count(), prog, "Downloading Mods: ", prog + "/" + mods.Count() + " - Mod: " + entryName);
 
                 });
                 
                 Thread.Sleep(100);
             }
 
+            await VerifyInstallationAsync(false);
             return true;
         }
 
+        async Task VerifyInstallationAsync(bool Reset)
+        {
+
+            var modsPath = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods");
+            var mods = await online.GetAllFromDatabaseAsync<ModEntry>("Mods", "ClientSide", true);
+            var modsCopy = new List<ModEntry>(mods);
+
+
+            if (Reset)
+            {
+
+                try
+                {
+
+                    Directory.Delete(modsPath, true);
+                }
+                catch
+                {
+
+                }
+
+                await DownloadModsAsync(mods);
+                return;
+
+            }
+
+            if (!Directory.Exists(modsPath))
+            {
+                await DownloadModsAsync(mods);
+                return;
+
+            }
+
+            DirectoryInfo d = new DirectoryInfo(modsPath);
+            FileInfo[] files = d.GetFiles();
+            var filesCopy = files.ToList();
+            int prog = 0;
+
+            foreach (var mod in mods)
+            {
+                Application.Current.Dispatcher.Invoke((Action)delegate {
+                    UpdateStatus("Verifying Installation", 0, false, mods.Count(), prog, "Verifying Installation: ", prog + "/" + mods.Count() + " - Mod: " + mod.Name);
+                });
+
+                foreach (var file in files)
+                {
+                    var filename = mod.projectID + mod.versionID + ".jar";
+                    if (file.Name == filename && file.Length == mod.Size)
+                    {
+                        modsCopy.Remove(mod);
+                        filesCopy.Remove(file);
+                        break;
+                    }
+                }
+
+                prog++;
+            }
+
+            foreach (var file in filesCopy)
+            {
+                try
+                {
+                    File.Delete(file.FullName);
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to delete: " + file.FullName, "Error");
+                }
+            }
+
+            if (modsCopy.Count == 0)
+            {
+                return;
+            }
+
+            foreach(var mod in modsCopy)
+            {
+                MessageBox.Show(mod.Name);
+            }
+
+            await DownloadModsAsync(modsCopy);
+
+            return;
+        }
 
         void UpdateStatus(string textProgress, int intProgress, bool isIntermediate, int maxProgress, int currentProgress, string process, string processDescription)
         {
