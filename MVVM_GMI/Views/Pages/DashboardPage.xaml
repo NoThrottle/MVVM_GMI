@@ -101,13 +101,13 @@
                 <ui:Image Source="pack://application:,,,/Assets/SplashArt-1000.png" MaxHeight="128" VerticalAlignment="Top" Margin="32"/>
             </Grid>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1" HorizontalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition MaxWidth="1061"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="1" Background="{DynamicResource ResourceKey=SystemFillColorSolidNeutralBackgroundBrush}" Width="260" Margin="16">
+                <Grid Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{DynamicResource ResourceKey=SystemFillColorSolidNeutralBackgroundBrush}" Height="Auto" Width="260" Margin="16">
 
                     <StackPanel Margin="16">
 
@@ -119,17 +119,17 @@
                         <Grid Height="8"/>
 
                         <StackPanel Orientation="Horizontal">
-                            <ui:Button BorderBrush="Transparent" Content="Online">
+                            <ui:Button BorderBrush="Transparent" Content="{Binding ViewModel.ServerStatusText}">
                                 <ui:Button.Icon>
-                                    <ui:SymbolIcon Symbol="Circle24" Filled="True" Foreground="{DynamicResource ResourceKey=PaletteGreenBrush}"/>
+                                    <ui:SymbolIcon Symbol="Circle24" Filled="True" Foreground="{Binding ViewModel.ServerStatusColor}"/>
                                 </ui:Button.Icon>
                             </ui:Button>
 
                             <Grid Width="8"/>
 
-                            <ui:Button BorderBrush="Transparent" Content="Healthy">
+                            <ui:Button BorderBrush="Transparent" Content="{Binding ViewModel.ServerHealthText}">
                                 <ui:Button.Icon>
-                                    <ui:SymbolIcon Symbol="Circle24" Filled="True" Foreground="{DynamicResource ResourceKey=PaletteGreenBrush}"/>
+                                    <ui:SymbolIcon Symbol="Circle24" Filled="True" Foreground="{Binding ViewModel.ServerHealthColor}"/>
                                 </ui:Button.Icon>
                             </ui:Button>
                         </StackPanel>
@@ -137,66 +137,62 @@
                         <Grid Height="16"/>
 
                         <TextBlock
-                            Text="PLAYERS ONLINE:"
+                            Text="{Binding ViewModel.PlayersOnlineText}"
                             FontWeight="Medium"
                             />
 
                         <Grid Height="8"/>
 
-                        <ListView/>
+                        <ListView ItemsSource="{Binding ViewModel.PlayersOnline}" Height="200"/>
 
                         
                     </StackPanel>
 
-                    <Grid Background="{DynamicResource ResourceKey=SystemFillColorSolidNeutralBackgroundBrush}" Visibility="Collapsed">
+                    <Grid Background="{DynamicResource ResourceKey=SystemFillColorSolidNeutralBackgroundBrush}" Visibility="{Binding ViewModel.OnlineStatusLoadingVisibility}">
                         <ui:LoadingScreen HorizontalAlignment="Center" Background="Transparent" VerticalAlignment="Stretch"/>
                     </Grid>
 
 
                 </Grid>
                 
-                <WrapPanel Grid.Column="0">
+                <WrapPanel Grid.Column="0" HorizontalAlignment="Center">
 
-                    <Grid Background="{DynamicResource ResourceKey=SystemFillColorSolidNeutralBackgroundBrush}"  MaxWidth="512" Margin="16">
+                    <Grid Background="{DynamicResource ResourceKey=SystemFillColorSolidNeutralBackgroundBrush}" MinWidth="360" MaxWidth="512" MaxHeight="540" Margin="16" VerticalAlignment="Top">
                         <StackPanel Orientation="Vertical" Margin="24">
 
                             <TextBlock
-                    Text="WHAT'S NEW"
-                    FontSize="36"
-                    FontWeight="Black"                       
-                    />
+                                Text="WHAT'S NEW"
+                                FontSize="36"
+                                FontWeight="Black"                       
+                                />
 
                             <Grid Height="8"/>
 
                             <TextBlock
-                    FontSize="16"
-                    FontWeight="Regular"    
-                        TextWrapping="Wrap"
-                    >
-                    All new launcher for HighSkyMC Season 9. We promise it will be the last. <LineBreak/>
-                    Better user interface design and cleaner user experience.<LineBreak/>
-                    <LineBreak/>
-                    Upcoming Features:<LineBreak/>
-                    - Personal mod manager<LineBreak/>
-                    - Game output terminal<LineBreak/>
-                    - Screenshot gallery<LineBreak/>
-                    - and many more! <LineBreak/>
-                    <LineBreak/>
-                    Changes since v0.1.1-beta<LineBreak/>
-                    <LineBreak/>
-                    - Fixed critical security exploits<LineBreak/>
-                    - Added JSON Actions<LineBreak/>
-                    - Restricted input length on text boxes<LineBreak/>
-                    - Fixed donation page<LineBreak/>
-                    <LineBreak/>
-                    Minecraft 1.20.1 Changelog<LineBreak/>
-                    <LineBreak/>
-                    Fixed a disk permissions-related crash<LineBreak/>
-                    MC-263244 - The realms invitation icon that appears on the realms button in the main menu is displayed incorrectly<LineBreak/>
-                    MC-263245 - Buttons in the "Add Realm" interface within the realms menu no longer render<LineBreak/>
-                    MC-263296 - Game softlocks after cancelling joining a server<LineBreak/>
-                    MC-263340 - Incorrect Protochunk#setStatus call on chunk generate<LineBreak/>
-
+                                FontSize="16"
+                                FontWeight="Regular"    
+                                TextWrapping="Wrap"
+                                >
+                                    All new launcher for HighSkyMC Season 9. We promise it will be the last. <LineBreak/>
+                                    Better user interface design and cleaner user experience.<LineBreak/>
+                                    <LineBreak/>
+                                
+                                    Upcoming Features:<LineBreak/>
+                                    - Personal mod manager<LineBreak/>
+                                    - Game output terminal<LineBreak/>
+                                    - Screenshot gallery<LineBreak/>
+                                    - and many more! <LineBreak/>
+                                    <LineBreak/>
+                         
+                                
+                                    Minecraft 1.20.1 Changelog<LineBreak/>
+                                    <LineBreak/>
+                                
+                                    Fixed a disk permissions-related crash<LineBreak/>
+                                    MC-263244 - The realms invitation icon that appears on the realms button in the main menu is displayed incorrectly<LineBreak/>
+                                    MC-263245 - Buttons in the "Add Realm" interface within the realms menu no longer render<LineBreak/>
+                                    MC-263296 - Game softlocks after cancelling joining a server<LineBreak/>
+                                    MC-263340 - Incorrect Protochunk#setStatus call on chunk generate<LineBreak/>
 
                             </TextBlock>
 
@@ -206,6 +202,26 @@
                         </StackPanel>
                     </Grid>
 
+                    <Grid Background="{DynamicResource ResourceKey=SystemFillColorSolidNeutralBackgroundBrush}" MinWidth="360" MaxWidth="512" Margin="16">
+                        <StackPanel Orientation="Vertical" Margin="24">
+
+                            <TextBlock
+                                Text="Launcher Changelog"
+                                FontSize="36"
+                                FontWeight="Black"                       
+                                />
+
+                            <Grid Height="8"/>
+
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="Regular"    
+                                TextWrapping="Wrap"
+                                Text="{Binding ViewModel.Changelog}"
+                            />
+
+                        </StackPanel>
+                    </Grid>
 
 
                 </WrapPanel>

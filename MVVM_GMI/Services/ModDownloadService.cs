@@ -236,11 +236,6 @@ namespace MVVM_GMI.Services
                 return;
             }
 
-            foreach(var mod in modsCopy)
-            {
-                MessageBox.Show(mod.Name);
-            }
-
             await DownloadModsAsync(modsCopy);
 
             return;

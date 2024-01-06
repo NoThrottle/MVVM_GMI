@@ -1,9 +1,15 @@
 ﻿using CmlLib.Utils;
+using Google.Rpc;
 using Microsoft.Extensions.DependencyInjection;
+using MVVM_GMI.Helpers;
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
 using Wpf.Ui;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System.Collections.ObjectModel;
+using System.Windows.Threading;
 
 namespace MVVM_GMI.ViewModels.Pages
 {
@@ -18,7 +24,7 @@ namespace MVVM_GMI.ViewModels.Pages
         private int _counter = 0;
 
         [ObservableProperty]
-        private string _whatsNewText = "";
+        private string _changelog = "";
 
         #region Play Button
         //Play Button Properties
@@ -69,15 +75,15 @@ namespace MVVM_GMI.ViewModels.Pages
             var x = _serviceProvider.GetRequiredService<MainWindow>();
             _dialogService.SetContentPresenter(x.RootContentDialog);
 
+            StartPlayerTimerAsync();
+
             try
             {
                 CheckForUpdatesAsync();
 
-                WhatsNewText = Task.Run(async () => {
+                Changelog = Task.Run(async () => {
 
-                    Changelogs x = await Changelogs.GetChangelogs();
-                    var y = await x.GetChangelogHtml("1.20.1");
-                    return y;
+                    return await OnlineRequest.GetJsonAsync("https://pastebin.com/raw/jGgj4Mk5");
 
 
                 }).Result;
@@ -85,7 +91,7 @@ namespace MVVM_GMI.ViewModels.Pages
             catch (Exception e)
             {
                 ShowDialogAsync("Error","Unable to connect to the internet. Some functions may be unavailable.", "","","Ok");
-                WhatsNewText = "No Internet";
+                Changelog = "No Internet";
             }
 
 
@@ -255,5 +261,151 @@ namespace MVVM_GMI.ViewModels.Pages
 
         //-----UI------
 
+        [ObservableProperty]
+        ObservableCollection<string> _playersOnline = new ObservableCollection<string>();
+
+        [ObservableProperty]
+        string _playersOnlineText = "PLAYERS ONLINE: 0/100";
+
+        [ObservableProperty]
+        string _onlineStatusLoadingVisibility = "Visible";
+
+        [ObservableProperty]
+        string _serverHealthText = "Unknown";
+
+        [ObservableProperty]
+        string _serverStatusText = "Unknown";
+
+        [ObservableProperty]
+        string _serverHealthColor = "#9e9e9e";
+
+        [ObservableProperty]
+        string _serverStatusColor = "#9e9e9e";
+
+        private DispatcherTimer playersOnlineTimer;
+
+        async Task StartPlayerTimerAsync()
+        {
+            playersOnlineTimer = new DispatcherTimer();
+            playersOnlineTimer.Interval = TimeSpan.FromSeconds(5);
+            try
+            {
+                playersOnlineTimer.Tick += GetOnlinePlayersAsync;
+                playersOnlineTimer.Tick += GetServerStatus;
+                OnlineStatusLoadingVisibility = "Collapsed";
+            }
+            catch
+            {
+                OnlineStatusLoadingVisibility = "Visible";
+            }
+
+
+            playersOnlineTimer.Start();
+        }
+
+        async void GetServerStatus(object sender, EventArgs e)
+        {
+            var Auth = new List<String[]>();
+            Auth.Add(["Authorization", "Bearer ptlc_Qx5oOPvfzxi6gtZZAhjBs4JDj29rpIfFAcanoR80Q45"]);
+
+            string x = null;
+
+            try
+            {
+                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/a7974b2a-36cc-4fb3-a801-9dccfac0e6f1/resources", Auth);
+            }
+            catch
+            {
+
+            }
+
+            if (x == null) { return; }
+
+            JObject obj = JObject.Parse(x);
+            var status = obj["attributes"]["current_state"].ToString() ?? null;
+            var health = obj["attributes"]["resources"]["cpu_absolute"].ToString();
+
+            switch (status)
+            {
+                case "offline":
+                    ServerStatusText = "Offline";
+                    ServerStatusColor = "#f44336";
+                    break;
+                case "starting":
+                    ServerStatusText = "Starting";
+                    ServerStatusColor = "#ffeb3b";
+                    break;
+                case "running":
+                    ServerStatusColor = "#4caf50";
+                    ServerStatusText = "Online";
+                    break;
+                default:
+                    ServerStatusText = "Unknown";
+                    ServerStatusColor = "#9e9e9e";
+                    break;
+            }
+
+            var h = float.Parse(health);
+
+            if (status == null || status == "offline")
+            { 
+                ServerHealthText = "Unknown";
+                ServerHealthColor = "#9e9e9e";
+            }
+            else if (h <= 90)
+            {
+                ServerHealthText = "Healthy";
+                ServerHealthColor = "#4caf50";
+            }
+            else if (h <= 99)
+            {
+                ServerHealthText = "Fair";
+                ServerHealthColor = "#ffeb3b";
+            }
+            else if (h <= 150)
+            {
+                ServerHealthText = "Caution";
+                ServerHealthColor = "#ff9800";
+            }
+            else if (h > 150)
+            {
+                ServerHealthText = "Unhealthy";
+                ServerHealthColor = "#f44336";
+            }
+        }
+
+        async void GetOnlinePlayersAsync(object sender, EventArgs e)
+        {
+            var Auth = new List<String[]>();
+            Auth.Add(["Authorization", "Bearer ptlc_Qx5oOPvfzxi6gtZZAhjBs4JDj29rpIfFAcanoR80Q45"]);
+
+            string x = null;
+
+            try
+            {
+                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/a7974b2a-36cc-4fb3-a801-9dccfac0e6f1/minecraft-players", Auth);
+            }
+            catch
+            {
+
+            }
+            
+            if (x == null) { return; }
+
+            JObject obj = JObject.Parse(x);
+            JArray? players = (JArray?)obj["data"]["online_players"];
+
+            int count = (int)obj["data"]["online_player_count"];
+            int max = (int)obj["data"]["max_players"];
+
+            PlayersOnlineText = "PLAYERS ONLINE: " + count + "/" + max;
+
+            PlayersOnline.Clear();
+
+            foreach(JObject b in players)
+            {
+                PlayersOnline.Add(b["name"].ToString());
+            }
+        }
     }
 }
