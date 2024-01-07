@@ -63,56 +63,11 @@ namespace MVVM_GMI.Services
         private async Task HandleActivationAsync()
         {
             await Task.CompletedTask;
-
-            //_ = ConfigurationService.Instance.PropertiesExist();
-
-            Authentication x = new Authentication();
-            var y = x.CheckSession();
-            bool qualMember = false;
-            bool welcomed = false;
-
-            try
-            {
-                var response = x.GetMembership(y);
-                var isQualified = response.QualifiedMember;
-                var isWelcomed = response.isWelcomed;
-
-                if (response != null)
-                {
-                    qualMember = isQualified;
-                    welcomed = isWelcomed;
-                }
-            }
-            catch
-            {
-
-            }
-
             var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+            navigationWindow.Loaded += OnNavigationWindowLoaded;
+            navigationWindow.Activate();
+            navigationWindow.Show();
 
-            navigationWindow.Closing += ShutDown;
-            authWindow.Closing += ShutDown;
-
-            void ShutDown(object? sender, CancelEventArgs e)
-            {
-                Application.Current.Shutdown();
-            }
-
-
-            if (y != null && qualMember && welcomed)
-            {
-
-                navigationWindow.Loaded += OnNavigationWindowLoaded;
-                navigationWindow.Show();
-              
-            }
-            else
-            {
-
-                authWindow.Show();
-                
-            }
         }
 
         private void OnNavigationWindowLoaded(object sender, RoutedEventArgs e)

@@ -9,13 +9,11 @@
       Title="ProfilePage"
         d:DataContext="{d:DesignInstance local:ADMINModManagerPage,
                                          IsDesignTimeCreatable=False}"
-        d:DesignHeight="450"
-        d:DesignWidth="800"
         ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
         ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-        mc:Ignorable="d">
-    
+        mc:Ignorable="d" Width="988" Height="965">
+
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -27,7 +25,12 @@
 
         <StackPanel Grid.Column="0" Margin="16">
 
-            <Label Content="Published Mod List"/>
+            <Grid>
+                <Label Content="Published Mod List" VerticalAlignment="Center"/>
+                <ui:Button Content="Deselect" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </Grid>
+
+            <Grid Height="8"/>
 
             <ListView
                 Grid.Column="0"
@@ -164,7 +167,6 @@
                                 </StackPanel>
 
                                 <ui:Button Margin="8,0,8,4" Content="Query" Grid.Column="1" VerticalAlignment="Bottom" Command="{Binding ViewModel.QueryVersionCommand}"/>
-                                <ui:Button Margin="0,0,0,4" Content="Publish" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Primary" Command="{Binding ViewModel.AddModToListCommand}"/>
                             </Grid>
 
                             <Grid Height="8"/>
@@ -205,6 +207,42 @@
 
                     </Grid>
 
+                    <Grid Height="16"/>
+
+                    <Grid Background="#11FFFFFF">
+
+                        <StackPanel Margin="16">
+
+                            <Label Content="Paste Action Here:"/>
+                            <ui:TextBox AcceptsReturn="True" MaxHeight="260"/>
+
+                            <Grid Height="8"/>
+
+                            <ui:Button Content="Add Action"/>
+
+                            <Grid Height="16"/>
+
+
+                            <Label Content="Result: "/>
+                            <ui:TextBox Grid.Row="2" VerticalScrollBarVisibility="Visible" MaxHeight="260" AcceptsReturn="True" IsReadOnly="True" Text="asd"/>
+
+
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid Height="16"/>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <ui:Button Margin="0,0,6,0" Content="Publish" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Primary" Command="{Binding ViewModel.AddModToListCommand}"/>
+                        <ui:Button Margin="0,0,0,0" Content="Reset" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Danger" Command="{Binding ViewModel.AddModToListCommand}"/>
+
+                    </StackPanel>
+
+
+
+
                 </StackPanel>
             </TabItem>
             <TabItem>
@@ -221,7 +259,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="156"/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <StackPanel Grid.Column="0">
                             <Label Content="Mod Name:"/>
                             <ui:TextBox/>
@@ -239,14 +277,14 @@
                         <Label Content="Description"/>
                         <ui:TextBox/>
                     </StackPanel>
-                    
+
                     <Grid Height="8"/>
 
                     <StackPanel Orientation="Horizontal">
                         <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsClientSide, Mode=TwoWay}" Content="Client Side"/>
                         <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsServerSide, Mode=TwoWay}" Content="Server Side"/>
                     </StackPanel>
-                    
+
                     <Grid Height="8"/>
 
                     <StackPanel>
@@ -268,9 +306,9 @@
                 </StackPanel>
             </TabItem>
         </TabControl>
-        
 
-        
+
+
 
 
     </Grid>

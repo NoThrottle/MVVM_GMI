@@ -35,21 +35,14 @@ namespace MVVM_GMI
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<MainWindowViewModel>();
 
-                services.AddSingleton<AuthWindow>();
-                services.AddSingleton<AuthWindowViewModel>();
-
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IContentDialogService, ContentDialogService>();
 
                 services.AddSingleton<DashboardPage>();
                 services.AddSingleton<DashboardViewModel>();
-                services.AddSingleton<DonatePage>();
-                services.AddSingleton<DonateViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
-                services.AddSingleton<ProfilePage>();
-                services.AddSingleton<ProfileViewModel>();
                 services.AddSingleton<MinecraftSettingsPage>();
                 services.AddSingleton<MinecraftSettingsViewModel>();
 

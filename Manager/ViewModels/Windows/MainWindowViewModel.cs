@@ -40,7 +40,6 @@ namespace MVVM_GMI.ViewModels.Windows
             //    TargetPageType = typeof(Views.Pages.DonatePage)
             //},
 
-#if DEBUG
             new NavigationViewItem()
             {
                 Content = "Mods",
@@ -54,24 +53,12 @@ namespace MVVM_GMI.ViewModels.Windows
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Run24 },
                 TargetPageType = typeof(Views.Pages.JSONActionPage)
             },
-#endif
-            new NavigationViewItem()
-            {
-                Content = "Donate",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.Money24 },
-                TargetPageType = typeof(Views.Pages.DonatePage)
-            }
+
         };
 
         [ObservableProperty]
         private ObservableCollection<object> _footerMenuItems = new()
         {
-            new NavigationViewItem()
-            {
-                Content = "Profile",
-                Icon = new SymbolIcon { Symbol =  SymbolRegular.Person24},
-                TargetPageType = typeof(Views.Pages.ProfilePage)
-            },
 
             new NavigationViewItem()
             {

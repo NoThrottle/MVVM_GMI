@@ -68,44 +68,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
             var x = _serviceProvider.GetRequiredService<MainWindow>();
             _dialogService.SetContentPresenter(x.RootContentDialog);
-
-            try
-            {
-                CheckForUpdatesAsync();
-
-                WhatsNewText = Task.Run(async () => {
-
-                    Changelogs x = await Changelogs.GetChangelogs();
-                    var y = await x.GetChangelogHtml("1.20.1");
-                    return y;
-
-
-                }).Result;
-            }
-            catch (Exception e)
-            {
-                ShowDialogAsync("Error","Unable to connect to the internet. Some functions may be unavailable.", "","","Ok");
-                WhatsNewText = "No Internet";
-            }
-
-
             
-
-            
-        }
-
-        async Task CheckForUpdatesAsync()
-        {
-            var x = new UpdateService();
-            if (x.CheckForUpdates())
-            {
-                await ShowDialogAsync("New Version Available", "A new version of the launcher is available and updating is required.","","","Okay");
-
-                if (x.StartUpdate())
-                {
-                    Application.Current.Shutdown();
-                }
-            }
         }
 
         [RelayCommand]
