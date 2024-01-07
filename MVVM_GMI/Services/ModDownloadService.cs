@@ -1,7 +1,10 @@
-﻿using Google.Cloud.Firestore;
+﻿using AutoUpdaterDotNET;
+using Google.Cloud.Firestore;
 using MVVM_GMI.Helpers;
 using MVVM_GMI.Models;
+using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Text;
 using @from = MVVM_GMI.Services.ConfigurationService;
 using @online = MVVM_GMI.Helpers.OnlineRequest;
 
@@ -57,7 +60,6 @@ namespace MVVM_GMI.Services
             from.Instance.fromLauncher.DidStarterAction = true;
         }
 
-
         public async Task<bool> CheckInstalledModVersion()
         {
             UpdateStatus(new MinecraftLoadingUpdate() 
@@ -80,9 +82,17 @@ namespace MVVM_GMI.Services
                 from.Instance.fromLauncher.ModUpdateIndex = z;
 
             }
-
-            await VerifyInstallationAsync(false);
-            from.Instance.fromLauncher.ModUpdateIndex = z;            
+            else if (x != z)
+            {
+                await VerifyInstallationAsync(false);
+                from.Instance.fromLauncher.ModUpdateIndex = z;
+            }
+            else
+            {
+                await VerifyInstallationAsync(false, GetLocalCache());
+                from.Instance.fromLauncher.ModUpdateIndex = z;
+            }
+            
 
             try
             {
@@ -99,6 +109,51 @@ namespace MVVM_GMI.Services
             
         }
 
+        List<ModEntry>? GetLocalCache()
+        {
+            var path = Path.Combine(from.Instance.fromLauncher.LauncherPath, "cache.dat");
+            List<ModEntry>? entries = new List<ModEntry>();
+
+            if (File.Exists(path))
+            {
+                var x = File.ReadAllText(path);
+                var y = Encoding.UTF8.GetString(Convert.FromBase64String(x));
+                entries = JToken.Parse(y).ToObject<List<ModEntry>>();
+            }
+            else
+            {
+                return null;
+            }
+
+            string? attempt = null;
+
+            try
+            {
+                attempt = entries[0].Name;
+            }
+            catch
+            {
+                return null;
+            }
+
+            if (String.IsNullOrEmpty(attempt))
+            {
+                return null;
+            }
+
+            return entries;
+        }
+
+        void SetLocalCache(List<ModEntry> entries)
+        {
+            var path = Path.Combine(from.Instance.fromLauncher.LauncherPath, "cache.dat");
+
+            var convert = Newtonsoft.Json.JsonConvert.SerializeObject(entries);
+            var str = convert.ToString();
+            var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(str));
+
+            File.WriteAllText(path, encoded);
+        }
 
         async Task<bool> DownloadModsAsync(List<ModEntry> mods)
         {
@@ -161,11 +216,17 @@ namespace MVVM_GMI.Services
             return true;
         }
 
-        async Task VerifyInstallationAsync(bool Reset)
+        async Task VerifyInstallationAsync(bool Reset, List<ModEntry> mods = null)
         {
 
             var modsPath = Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods");
-            var mods = await online.GetAllFromDatabaseAsync<ModEntry>("Mods", "ClientSide", true);
+
+            if (mods == null)
+            {
+                mods = await online.GetAllFromDatabaseAsync<ModEntry>("Mods", "ClientSide", true);
+                SetLocalCache(mods);
+            }
+
             var modsCopy = new List<ModEntry>(mods);
 
 
@@ -199,6 +260,8 @@ namespace MVVM_GMI.Services
             var filesCopy = files.ToList();
             int prog = 0;
 
+            List<string> actions = new List<string>();
+
             foreach (var mod in mods)
             {
                 Application.Current.Dispatcher.Invoke((Action)delegate {
@@ -215,21 +278,26 @@ namespace MVVM_GMI.Services
                         break;
                     }
                 }
+                
+                if (mod.Actions != null)
+                {
+                    actions.AddRange(mod.Actions);
+                }
 
                 prog++;
             }
 
-            foreach (var file in filesCopy)
-            {
-                try
-                {
-                    File.Delete(file.FullName);
-                }
-                catch
-                {
-                    MessageBox.Show("Unable to delete: " + file.FullName, "Error");
-                }
-            }
+            //foreach (var file in filesCopy)
+            //{
+            //    try
+            //    {
+            //        File.Delete(file.FullName);
+            //    }
+            //    catch
+            //    {
+            //        MessageBox.Show("Unable to delete: " + file.FullName, "Error");
+            //    }
+            //}
 
             if (modsCopy.Count == 0)
             {
@@ -237,6 +305,17 @@ namespace MVVM_GMI.Services
             }
 
             await DownloadModsAsync(modsCopy);
+
+
+            int cnt = 0;
+            foreach(var x in actions)
+            {
+                cnt++;
+                Application.Current.Dispatcher.Invoke((Action)delegate {
+                    UpdateStatus("Doing Actions", 0, true, 0, 0, "Doing Actions: ", "Action " + cnt + "/" + actions.Count);
+                });
+                await new JSONActions().DoActionAsync(x);
+            }
 
             return;
         }
