@@ -12,7 +12,7 @@
         ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
         ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-        mc:Ignorable="d" Width="988" Height="965">
+        mc:Ignorable="d" Width="988" Height="1560">
 
     <Grid>
 
@@ -21,23 +21,32 @@
             <ColumnDefinition MinWidth="400"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Background="#11FFFFFF"/>
+        <Grid Grid.Column="0" Background="#11FFFFFF" MaxHeight="1080"/>
 
-        <StackPanel Grid.Column="0" Margin="16">
+        <Grid Grid.Column="0" Margin="16" MaxHeight="1080" VerticalAlignment="Top">
 
-            <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Grid Grid.Row="0">
                 <Label Content="Published Mod List" VerticalAlignment="Center"/>
-                <ui:Button Content="Deselect" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <ui:Button Content="Select" Command="{Binding ViewModel.OpenModEntryCommand}"/>
+                    <Grid Width="8"/>
+                    <ui:Button Content="Deselect" Command="{Binding ViewModel.DeselectModEntryCommand}"/>
+                </StackPanel>
             </Grid>
 
-            <Grid Height="8"/>
-
             <ListView
-                Grid.Column="0"
-                Height="600"
+                Grid.Row="1"
                 ItemsSource="{Binding ViewModel.Mods, Mode=TwoWay}"
-                SelectedIndex="1"
-                SelectionMode="Extended">
+                SelectedIndex="{Binding ViewModel.ModEntrySelectedIndex, Mode=TwoWay}"
+                SelectionMode="Extended"
+                Margin="0,8,0,16"
+                >
 
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:ModEntry}">
@@ -84,7 +93,7 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-        </StackPanel>
+        </Grid>
 
         <TabControl Grid.Column="1" Margin="16,0,0,0">
             <TabItem>
@@ -214,17 +223,17 @@
                         <StackPanel Margin="16">
 
                             <Label Content="Paste Action Here:"/>
-                            <ui:TextBox AcceptsReturn="True" MaxHeight="260"/>
+                            <ui:TextBox AcceptsReturn="True" MaxHeight="260" Text="{Binding ViewModel.JsonActionTextBox, Mode=TwoWay}"/>
 
                             <Grid Height="8"/>
 
-                            <ui:Button Content="Add Action"/>
+                            <ui:Button Content="Add Action" Command="{Binding ViewModel.AddActionCommand}"/>
 
                             <Grid Height="16"/>
 
 
                             <Label Content="Result: "/>
-                            <ui:TextBox Grid.Row="2" VerticalScrollBarVisibility="Visible" MaxHeight="260" AcceptsReturn="True" IsReadOnly="True" Text="asd"/>
+                            <ui:TextBox Grid.Row="2" Text="{Binding ViewModel.JsonActionsAggregate}" VerticalScrollBarVisibility="Visible" MaxHeight="260" AcceptsReturn="True" IsReadOnly="True"/>
 
 
                         </StackPanel>
@@ -236,7 +245,7 @@
                     <StackPanel Orientation="Horizontal">
 
                         <ui:Button Margin="0,0,6,0" Content="Publish" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Primary" Command="{Binding ViewModel.AddModToListCommand}"/>
-                        <ui:Button Margin="0,0,0,0" Content="Reset" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Danger" Command="{Binding ViewModel.AddModToListCommand}"/>
+                        <ui:Button Margin="0,0,0,0" Content="Reset" Grid.Column="2" VerticalAlignment="Bottom" Appearance="Danger" Command="{Binding ViewModel.ClearFieldsCommand}"/>
 
                     </StackPanel>
 

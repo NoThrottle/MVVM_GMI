@@ -98,7 +98,7 @@ namespace MVVM_GMI.Helpers
             string destination = parsePath(action["Destination"].ToString());
 
             Directory.CreateDirectory(destination);
-            System.IO.Compression.ZipFile.ExtractToDirectory(source, destination,true);
+            System.IO.Compression.ZipFile.ExtractToDirectory(source, destination, true);
         }
 
         void WriteText(JObject action)

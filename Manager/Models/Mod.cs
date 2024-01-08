@@ -46,6 +46,9 @@ namespace MVVM_GMI.Models
         [FirestoreProperty]
         public int Size { get; set; }
 
+        [FirestoreProperty]
+        public string Actions { get; set; }
+
     }
 
     public class Mod
@@ -67,6 +70,7 @@ namespace MVVM_GMI.Models
 
         public string IconURL { get; set; }
 
+        public string Actions { get; set; }
 
     }
 

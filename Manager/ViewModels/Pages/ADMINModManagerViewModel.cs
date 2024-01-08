@@ -92,22 +92,127 @@ namespace MVVM_GMI.ViewModels.Pages
 
         string _isRequired = "False";
 
-
-        string downloadLink = "";
+        [ObservableProperty]
+        string _downloadLink = "";
 
         string versionNumber = "";
 
         private ModEntry? WorkingModEntry = null;
 
 
+        #region Mod Entry List
 
+        [ObservableProperty]
+        int _modEntrySelectedIndex = -1;
+
+        [RelayCommand]
+        async Task OpenModEntryAsync()
+        {
+            ClearFields();
+
+            var x = Mods[ModEntrySelectedIndex];
+
+            ProjectID = x.projectID;
+            ModName = x.Name;
+            IconURL = x.IconURL;
+            ModDescription = x.Description;
+            Category = x.Categories;
+            IsClientSide = x.ClientSide.ToString();
+            IsServerSide = x.ServerSide.ToString();
+            IsRequired = x.IsRequired.ToString();
+
+            
+
+            if(x.Actions != null)
+            {
+                var t = JArray.Parse(x.Actions);
+                JsonActionsArray = t;
+                JsonActionsAggregate = t.ToString();
+            }
+
+            await QueryVersionAsync(x.versionID);
+
+            if (DownloadLink != x.DownloadURL)
+            {
+                System.Windows.MessageBox.Show("Download link mismatch. Will use saved download link");
+                DownloadLink = x.DownloadURL;
+            }
+        }
+
+        [RelayCommand]
+        void DeselectModEntry()
+        {
+            ModEntrySelectedIndex = -1;
+            ClearFields();
+        }
+
+        #endregion
+
+        [RelayCommand]
+        void ClearFields()
+        {
+            ProjectID = "";
+            IsModrinth = "True";
+            IconURL = "";
+            ModName = "";
+            ModDescription = "";
+            Category = "";
+            IsClientSide = "";
+            IsServerSide = "";
+
+
+            ClientLoaders.Clear();
+            SelIndexLoaders = -1;
+            MinecraftVersions.Clear();
+            SelIndexMinecraftVersions = -1;
+            ModVersions.Clear();
+            SelIndexModVersions = -1;
+            FileSize = "";
+            DatePublished = "";
+            DownloadLink = "";
+            versionNumber = "";
+            IsRequired = "";
+
+            JsonActionsAggregate = "";
+            JsonActionTextBox = "";
+            JsonActionsArray.Clear();
+        }
+
+        [ObservableProperty]
+        string _jsonActionsAggregate = "";
+
+        [ObservableProperty]
+        string _jsonActionTextBox = "";
+
+        JArray JsonActionsArray = new JArray();
+
+        [RelayCommand]
+        void AddAction()
+        {
+
+            JToken x;
+
+            try
+            {
+                x = JToken.Parse(JsonActionTextBox);
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("Invalid Json");
+                return;
+            }
+
+            JsonActionsArray.Add(x);
+            JsonActionsAggregate = JsonActionsArray.ToString();
+
+        }
 
 
         [RelayCommand]
         async Task SearchModAsync()
         {
 
-            downloadLink = "";
+            DownloadLink = "";
             versionNumber = "";
             IsRequired = "False";
             DatePublished = "";
@@ -234,18 +339,33 @@ namespace MVVM_GMI.ViewModels.Pages
         }
 
         [RelayCommand]
-        async Task QueryVersionAsync()
+        async Task QueryVersionAsync(string? version = null)
         {
             String x;
 
-            try
+            if (version == null)
             {
-                x = await online.GetJsonAsync("https://api.modrinth.com/v2/version/" + ModVersions[SelIndexModVersions]);
+                try
+                {
+                    x = await online.GetJsonAsync("https://api.modrinth.com/v2/version/" + ModVersions[SelIndexModVersions]);
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("Error, does not exist or something.");
+                    return;
+                }
             }
-            catch
+            else
             {
-                System.Windows.MessageBox.Show("Error, does not exist or something.");
-                return;
+                try
+                {
+                    x = await online.GetJsonAsync("https://api.modrinth.com/v2/version/" + version);
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("Error, does not exist or something.");
+                    return;
+                }
             }
 
             if (x == null)
@@ -257,9 +377,10 @@ namespace MVVM_GMI.ViewModels.Pages
             var obj = JObject.Parse(x);
             FileSize = obj["files"][0]["size"].ToString();
             DatePublished = obj["date_published"].ToString();
-            downloadLink = obj["files"][0]["url"].ToString();
+            DownloadLink = obj["files"][0]["url"].ToString();
             versionNumber = obj["version_number"].ToString();
         }
+
 
         [RelayCommand]
         void AddModToList()
@@ -274,13 +395,15 @@ namespace MVVM_GMI.ViewModels.Pages
                 ClientSide = bool.Parse(IsClientSide ?? "false"),
                 IsRequired = bool.Parse(IsRequired),
                 ServerSide = bool.Parse(IsServerSide ?? "false"),
-                DownloadURL = downloadLink,
+                DownloadURL = DownloadLink,
                 VersionNumber = versionNumber,
                 DatePublished = DatePublished,
                 Size = int.Parse(FileSize),
 
                 projectID = ProjectID,
-                versionID = ModVersions[SelIndexModVersions]
+                versionID = ModVersions[SelIndexModVersions],
+
+                Actions = JsonActionsArray.ToString()
 
             };
 

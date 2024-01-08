@@ -142,7 +142,8 @@
 
                                 <Grid Height="12"/>
                                 <Label Content="Content"/>
-                                <ui:TextBox    
+                                <ui:TextBox   
+                                    MaxHeight="512"
                                     TextWrapping="Wrap"
                                     AcceptsReturn="True"
                                     VerticalScrollBarVisibility="Visible"
