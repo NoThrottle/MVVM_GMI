@@ -89,8 +89,7 @@ namespace MVVM_GMI.Services
             }
             else
             {
-                await VerifyInstallationAsync(false, GetLocalCache());
-                from.Instance.fromLauncher.ModUpdateIndex = z;
+                await VerifyInstallationAsync(false, GetLocalCache());                
             }
             
 
@@ -229,13 +228,11 @@ namespace MVVM_GMI.Services
 
             var modsCopy = new List<ModEntry>(mods);
 
-
             if (Reset)
             {
 
                 try
                 {
-
                     Directory.Delete(modsPath, true);
                 }
                 catch
@@ -281,31 +278,27 @@ namespace MVVM_GMI.Services
                 
                 if (mod.Actions != null)
                 {
-                    actions.AddRange(mod.Actions);
+                    JArray a = JArray.Parse(mod.Actions);
+                    foreach(var action in a)
+                    {
+                        actions.Add(((JArray)action).ToString());
+                    }
                 }
 
                 prog++;
             }
 
-            //foreach (var file in filesCopy)
-            //{
-            //    try
-            //    {
-            //        File.Delete(file.FullName);
-            //    }
-            //    catch
-            //    {
-            //        MessageBox.Show("Unable to delete: " + file.FullName, "Error");
-            //    }
-            //}
-
-            if (modsCopy.Count == 0)
+            foreach (var file in filesCopy)
             {
-                return;
+                try
+                {
+                    File.Delete(file.FullName);
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to delete: " + file.FullName, "Error");
+                }
             }
-
-            await DownloadModsAsync(modsCopy);
-
 
             int cnt = 0;
             foreach(var x in actions)
@@ -314,8 +307,16 @@ namespace MVVM_GMI.Services
                 Application.Current.Dispatcher.Invoke((Action)delegate {
                     UpdateStatus("Doing Actions", 0, true, 0, 0, "Doing Actions: ", "Action " + cnt + "/" + actions.Count);
                 });
+
                 await new JSONActions().DoActionAsync(x);
             }
+
+            if (modsCopy.Count == 0)
+            {
+                return;
+            }
+
+            await DownloadModsAsync(modsCopy);
 
             return;
         }
