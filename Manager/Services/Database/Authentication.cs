@@ -12,10 +12,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using @user = MVVM_GMI.Services.UserProfileService;
 using @online = MVVM_GMI.Helpers.OnlineRequest;
 using Google.Protobuf.WellKnownTypes;
+using MVVM_Manager.Helpers;
 
 namespace MVVM_GMI.Services.Database
 {
-    public class Authentication : ILauncherProperties
+    public class Authentication : LauncherProperties
     {
 
         private List<UserCredential> _users = new List<UserCredential>();

@@ -1,6 +1,6 @@
-﻿namespace MVVM_GMI.Services
+﻿namespace MVVM_Manager.Helpers
 {
-    public class ILauncherProperties
+    public class LauncherProperties
     {
 
         /// <summary>
@@ -12,7 +12,7 @@
         /// <summary>
         /// Current version of the installed Launcher in a readable format
         /// </summary>
-        internal static String LauncherVersionReadable { get; } = "1.0.5";
+        internal static string LauncherVersionReadable { get; } = "1.0.5";
 
         /// <summary>
         /// Current version of the config file. 
@@ -29,6 +29,7 @@
         /// </summary>
         internal static string Salt { get; } = "8270ebcf-22e2-491b-84b8-d96f0f2e5edb";
 
+        internal static string[] CurseforgeKey = ["x-api-key", "$2a$10$AqWZvncWxExG6BnLZ.0BJuvf5ulONJhr0X6bmEec8aSmF/Rxaow/S"];
 
 
     }

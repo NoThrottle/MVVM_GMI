@@ -1,10 +1,11 @@
 ﻿using MVVM_GMI.Helpers;
+using MVVM_Manager.Helpers;
 using Newtonsoft.Json.Linq;
 using System.IO;
 
 namespace MVVM_GMI.Services
 {
-    public class ConfigurationService : ILauncherProperties
+    public class ConfigurationService : LauncherProperties
     {
         private static string pathLauncherJSON = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi"), "config.json");
         private static string pathLauncher = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".gmi");

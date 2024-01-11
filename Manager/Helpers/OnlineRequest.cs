@@ -182,7 +182,7 @@ namespace MVVM_GMI.Helpers
             }
         }
 
-        internal static async Task<string>? GetJsonAsync(string url)
+        internal static async Task<string>? GetJsonAsync(string url, List<String[]>? header = null)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -191,6 +191,15 @@ namespace MVVM_GMI.Helpers
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Add("Accept", "application/json");
                     client.DefaultRequestHeaders.Add("UserCredential-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0");
+
+                    if (header != null)
+                    {
+                        foreach (var kvp in header)
+                        {
+                            client.DefaultRequestHeaders.Add(kvp[0], kvp[1]);
+                        }
+                    }
+
                     string json = await client.GetStringAsync(url);
                     return json;
                 }

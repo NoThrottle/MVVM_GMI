@@ -1,17 +1,21 @@
-﻿using Google.Protobuf.Compiler;
+﻿using CmlLib.Core.Version;
+using Google.Protobuf.Compiler;
 using MVVM_GMI.Models;
+using MVVM_Manager.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Metrics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.PointOfService;
 using Wpf.Ui.Controls;
 using online = MVVM_GMI.Helpers.OnlineRequest;
+using from = MVVM_GMI.Services.ConfigurationService;
 
 namespace MVVM_GMI.ViewModels.Pages
 {
@@ -108,7 +112,7 @@ namespace MVVM_GMI.ViewModels.Pages
         [RelayCommand]
         async Task OpenModEntryAsync()
         {
-            ClearFields();
+            ClearFields(true);
 
             var x = Mods[ModEntrySelectedIndex];
 
@@ -119,9 +123,7 @@ namespace MVVM_GMI.ViewModels.Pages
             Category = x.Categories;
             IsClientSide = x.ClientSide.ToString();
             IsServerSide = x.ServerSide.ToString();
-            IsRequired = x.IsRequired.ToString();
-
-            
+            IsRequired = x.IsRequired.ToString();           
 
             if(x.Actions != null)
             {
@@ -149,10 +151,15 @@ namespace MVVM_GMI.ViewModels.Pages
         #endregion
 
         [RelayCommand]
-        void ClearFields()
+        void ClearFields(bool Searching = false)
         {
-            ProjectID = "";
-            IsModrinth = "True";
+
+            if(!Searching)
+            {
+                ProjectID = "";
+                IsModrinth = "True";
+            }
+
             IconURL = "";
             ModName = "";
             ModDescription = "";
@@ -207,19 +214,27 @@ namespace MVVM_GMI.ViewModels.Pages
 
         }
 
-
         [RelayCommand]
         async Task SearchModAsync()
         {
 
-            DownloadLink = "";
-            versionNumber = "";
-            IsRequired = "False";
-            DatePublished = "";
-            FileSize = "";
+            ClearFields(true);
 
-            ModVersions.Clear();
+            if (bool.Parse(IsModrinth))
+            {
+                await SearchModrinthAsync();
+            }
+            else
+            {
+                await SearchCurseforgeAsync();
+            }
 
+        }
+
+        #region Search Mod Tools
+
+        async Task SearchModrinthAsync()
+        {
             String x = "";
 
             try
@@ -228,13 +243,13 @@ namespace MVVM_GMI.ViewModels.Pages
             }
             catch
             {
-                System.Windows.MessageBox.Show("Error, does not exist or something.");
+                System.Windows.MessageBox.Show("Error, does not exist or something. Modrinth - NetError");
                 return;
             }
 
-            if(x == null)
+            if (x == null)
             {
-                System.Windows.MessageBox.Show("Error, does not exist or something.");
+                System.Windows.MessageBox.Show("Error, does not exist or something. Modrinth - Null");
                 return;
             }
 
@@ -278,8 +293,6 @@ namespace MVVM_GMI.ViewModels.Pages
                     break;
             }
 
-            MinecraftVersions.Clear();
-
             int b = 0;
             foreach (var p in (JArray)obj["game_versions"])
             {
@@ -290,8 +303,6 @@ namespace MVVM_GMI.ViewModels.Pages
                 MinecraftVersions.Add(p.ToString());
                 b++;
             }
-
-            ClientLoaders.Clear();
 
             int c = 0;
             foreach (var p in (JArray)obj["loaders"])
@@ -305,16 +316,158 @@ namespace MVVM_GMI.ViewModels.Pages
             }
         }
 
+        async Task SearchCurseforgeAsync()
+        {
+            String x;
+
+            try
+            {
+                x = await online.GetJsonAsync("https://api.curseforge.com/v1/mods/" + ProjectID, [LauncherProperties.CurseforgeKey]);
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("Error, does not exist or something. CF - NetError");
+                return;
+            }
+
+            if (x == null)
+            {
+                System.Windows.MessageBox.Show("Error, does not exist or something. CF - Null");
+                return;
+            }
+
+            var obj = JObject.Parse(x)["data"];
+
+            ModName = obj["name"].ToString();
+            IconURL = obj["logo"]["thumbnailUrl"].ToString();
+            ModDescription = obj["summary"].ToString();
+
+            try
+            {
+                Category = new CultureInfo("en-US", false).TextInfo.ToTitleCase((obj["categories"][0]["name"]).ToString());
+            }
+            catch
+            {
+                Category = "None";
+            }
+
+            IsClientSide = "True";
+            IsServerSide = "True";
+
+            foreach (var t in obj["latestFilesIndexes"])
+            {
+                if (!MinecraftVersions.Contains(t["gameVersion"].ToString()))
+                {
+                    MinecraftVersions.Add(t["gameVersion"].ToString());
+                }
+
+                var g = CurseforgeLoader_IntToName((t["modLoader"] ?? "0").ToString());
+
+                if (!ClientLoaders.Contains(g))
+                {
+                    ClientLoaders.Add(g);
+                }
+            }
+
+        }
+
+        string CurseforgeLoader_IntToName(string Number)
+        {
+
+            /*
+                0=Any
+                1=Forge
+                2=Cauldron
+                3=LiteLoader
+                4=Fabric
+                5=Quilt
+                6=NeoForge
+             */
+
+            var x = int.Parse(Number);
+
+            switch (x)
+            {
+                case 0:
+                    return "Any";
+                case 1:
+                    return "Forge";
+                case 2:
+                    return "Cauldron";
+                case 3:
+                    return "LiteLoader";
+                case 4:
+                    return "Fabric";
+                case 5:
+                    return "Quilt";
+                case 6:
+                    return "NeoForge";
+                default:
+                    return "null";
+
+            }
+        }
+        int CurseforgeLoader_NameToInt(string Name)
+        {
+
+            /*
+                0=Any
+                1=Forge
+                2=Cauldron
+                3=LiteLoader
+                4=Fabric
+                5=Quilt
+                6=NeoForge
+             */
+
+            switch (Name)
+            {
+                case "Any":
+                    return 0;
+                case "Forge":
+                    return 1;
+                case "Cauldron":
+                    return 2;
+                case "LiteLoader":
+                    return 3;
+                case "Fabric":
+                    return 4;
+                case "Quilt":
+                    return 5;
+                case "NeoForge":
+                    return 6;
+                default:
+                    return -1;
+
+            }
+        }
+
+        #endregion
+
+
 
         [RelayCommand]
         async Task GetVersionsAsync()
         {
 
+            if (bool.Parse(IsModrinth))
+            {
+                await GetVersionModrinthAsync();
+            }
+            else
+            {
+                await GetVersionCurseforgeAsync();
+            }
+            
+        }
+
+        async Task GetVersionModrinthAsync()
+        {
             String x;
 
             try
             {
-                x = await online.GetJsonAsync("https://api.modrinth.com/v2/project/" + ProjectID + "/version?loaders=[\"" + ClientLoaders[SelIndexLoaders] +"\"]&game_versions=[\"" + MinecraftVersions[SelIndexMinecraftVersions] + "\"]");
+                x = await online.GetJsonAsync("https://api.modrinth.com/v2/project/" + ProjectID + "/version?loaders=[\"" + ClientLoaders[SelIndexLoaders] + "\"]&game_versions=[\"" + MinecraftVersions[SelIndexMinecraftVersions] + "\"]");
             }
             catch
             {
@@ -330,16 +483,60 @@ namespace MVVM_GMI.ViewModels.Pages
 
             JArray obj = JArray.Parse(x);
 
-            ModVersions.Clear();
-
-            foreach(var version in obj)
+            foreach (var version in obj)
             {
                 ModVersions.Add(version["id"].ToString());
             }
         }
 
+        async Task GetVersionCurseforgeAsync()
+        {
+            String x;
+
+            try
+            {
+                x = await online.GetJsonAsync("https://api.curseforge.com/v1/mods/" + ProjectID + "/files?modLoaderType=" + CurseforgeLoader_NameToInt(ClientLoaders[SelIndexLoaders]) + "&gameVersion=" + MinecraftVersions[SelIndexMinecraftVersions], [LauncherProperties.CurseforgeKey]);
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("Error, does not exist or something.");
+                return;
+            }
+
+            if (x == null)
+            {
+                System.Windows.MessageBox.Show("Error, does not exist or something.");
+                return;
+            }
+
+            JArray obj = (JArray)JObject.Parse(x)["data"];
+
+
+            foreach (var version in obj)
+            {
+                ModVersions.Add(version["id"].ToString());
+            }
+        }
+
+
+
+
         [RelayCommand]
         async Task QueryVersionAsync(string? version = null)
+        {
+            if (bool.Parse(IsModrinth))
+            {
+                await QueryVersionModrinthAsync(version);
+            }
+            else
+            {
+                await QueryVersionCurseforgeAsync(version);
+            }
+
+
+        }
+
+        async Task QueryVersionModrinthAsync(string? version = null)
         {
             String x;
 
@@ -381,10 +578,57 @@ namespace MVVM_GMI.ViewModels.Pages
             versionNumber = obj["version_number"].ToString();
         }
 
+        async Task QueryVersionCurseforgeAsync(string? version = null)
+        {
+            String x;
+
+            if (version == null)
+            {
+                try
+                {
+                    x = await online.GetJsonAsync("https://api.curseforge.com/v1/mods/" + ProjectID + "/files/" + ModVersions[SelIndexModVersions], [LauncherProperties.CurseforgeKey]);
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("Error, does not exist or something. CF - Query Version Net Error");
+                    return;
+                }
+            }
+            else
+            {
+                try
+                {
+                    x = await online.GetJsonAsync("https://api.curseforge.com/v1/mods/" + ProjectID + "/files/" + version, [LauncherProperties.CurseforgeKey]);
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("Error, does not exist or something. CF - Query Version Net Error");
+                    return;
+                }
+            }
+
+            if (x == null)
+            {
+                System.Windows.MessageBox.Show("Error, does not exist or something. CF - Query Version Null");
+                return;
+            }
+
+            var obj = JObject.Parse(x)["data"];
+
+            FileSize = obj["fileLength"].ToString();
+            DatePublished = obj["fileDate"].ToString();
+            DownloadLink = obj["downloadUrl"].ToString();
+            versionNumber = obj["displayName"].ToString();
+        }
+
+
+
 
         [RelayCommand]
         void AddModToList()
         {
+            System.Windows.MessageBox.Show(IsClientSide + "dad" + IsRequired + "ad" + IsServerSide);
+
             var x = new ModEntry()
             {
                 Name = ModName,
@@ -392,9 +636,9 @@ namespace MVVM_GMI.ViewModels.Pages
                 IconURL = IconURL,
                 Categories = Category,
 
-                ClientSide = bool.Parse(IsClientSide ?? "false"),
-                IsRequired = bool.Parse(IsRequired),
-                ServerSide = bool.Parse(IsServerSide ?? "false"),
+                ClientSide = (IsClientSide != null && (IsClientSide.ToLower() == "true" || IsClientSide.ToLower() == "false")) ? bool.Parse(IsClientSide) : false,
+                IsRequired = (IsRequired != null && (IsRequired.ToLower() == "true" || IsRequired.ToLower() == "false")) ? bool.Parse(IsRequired) : false,
+                ServerSide = (IsServerSide != null && (IsServerSide.ToLower() == "true" || IsServerSide.ToLower() == "false")) ? bool.Parse(IsServerSide) : false,
                 DownloadURL = DownloadLink,
                 VersionNumber = versionNumber,
                 DatePublished = DatePublished,
@@ -433,6 +677,85 @@ namespace MVVM_GMI.ViewModels.Pages
             {
                 Mods.Add(mod);
             }
+        }
+
+
+
+        [RelayCommand]
+        void DownloadAllServerMods()
+        {
+            List<ModEntry> toDL = new List<ModEntry>();
+
+            foreach(var mod in Mods)
+            {
+                if (mod.ServerSide)
+                {
+                    toDL.Add(mod);
+                }
+            }
+
+            DownloadModsAsync("E:/HSMC Launcher/allServerMods", toDL);
+        }
+
+        async Task<bool> DownloadModsAsync(string _Path, List<ModEntry> mods)
+        {
+            try
+            {
+                Directory.Delete(_Path, true);
+            }
+            catch
+            {
+
+            }
+
+            Directory.CreateDirectory(_Path);
+
+            var x = mods;
+
+            int MaxQueue = from.Instance.fromLauncher.SimultaneousDownloads;
+            int inQueue = 0;
+
+            string entryName = "";
+            int max = x.Count() - 1;
+            int prog = 0;
+
+            _ = Task.Run(() =>
+            {
+                foreach (var entry in x)
+                {
+
+                    while (inQueue > MaxQueue)
+                    {
+                        Thread.Sleep(250);
+                    }
+
+                    Task.Run(async () =>
+                    {
+
+                        inQueue += 1;
+
+                        entryName = entry.Name;
+                        var o = Path.Combine(_Path, entry.Name + entry.projectID + entry.versionID + ".jar");
+                        await online.DownloadFileAsync(entry.DownloadURL, o);
+                        prog++;
+
+                        inQueue--;
+
+                    });
+
+                }
+
+            });
+
+            while (prog != max)
+            {
+
+                var t = System.Windows.MessageBox.Show(("Downloading Mods: " + prog + "/" + x.Count() + " - Mod: " + entryName), "Downloading");
+
+                Thread.Sleep(1000);
+            }
+
+            return true;
         }
     }
 }
