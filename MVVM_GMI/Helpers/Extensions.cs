@@ -1,4 +1,9 @@
-﻿namespace MVVM_GMI.Helpers
+﻿using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
+
+namespace MVVM_GMI.Helpers
 {
     public static class Extensions
     {
@@ -9,5 +14,91 @@
                 yield return arr.Skip(i * size).Take(size);
             }
         }
+
+        public static string CutToMaxLength(string input, int maxLength)
+        {
+            if (input.Length > maxLength)
+            {
+                return input.Substring(0, maxLength);
+            }
+            else
+            {
+                return input;
+            }
+        }
+
+        internal static string? getDetailsFromLog4j(string logEventString)
+        {
+            var t = ParseLog4jEvent(logEventString);
+
+            if(t == null)
+            {
+                return null;
+            }
+
+            return "[" + t.Timestamp + "] " + t.Logger + " - " + t.Level + " : " + t.Message;
+        }
+
+
+        static List<string> logsBuilder = new List<string>();
+
+        internal static Log4jEvent? ParseLog4jEvent(string logEventString)
+        {
+
+
+            if (logEventString.Contains("<log4j:Event"))
+            {
+                logsBuilder.Clear();
+                var t = logEventString.Replace("<log4j:Event", "<Event");
+                logsBuilder.Add(t);
+                return null;
+            }
+            else if (logEventString.Contains("</log4j:Event>"))
+            {
+                logsBuilder.Add("</Event>");
+            }
+            else
+            {
+                var m = new Regex("<log4j:").Replace(logEventString, "<");
+                var n = new Regex("</log4j:").Replace(m, "</");
+                logsBuilder.Add(n);
+                return null;
+            }
+
+            string Event = string.Join("", logsBuilder);
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(Event);
+
+            string logger = doc.DocumentElement.Attributes["logger"].Value;
+            string timestamp = doc.DocumentElement.Attributes["timestamp"].Value;
+            string level = doc.DocumentElement.Attributes["level"].Value;
+            string thread = doc.DocumentElement.Attributes["thread"].Value;
+            string message = doc.DocumentElement.SelectSingleNode("Message").InnerText;
+
+            // Create and return a Log4jEvent object
+            return new Log4jEvent
+            {
+                Timestamp = timestamp,
+                Logger = logger,
+                Level = level,
+                Message = message,
+                Thread = thread
+                // Add more properties based on your log data structure
+            };
+
+        }
+
+
+    }
+
+    internal class Log4jEvent
+    {
+        public string Timestamp { get; set; }
+        public string Logger { get; set; }
+        public string Level { get; set; }
+        public string Message { get; set; }
+        public string Thread { get; set; }
+        // Add more properties based on your log data structure
     }
 }

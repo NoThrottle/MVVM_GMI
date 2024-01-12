@@ -21,7 +21,8 @@ namespace MVVM_GMI.Services
             var y = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties", "gameLoad").Result;
             //var z = online.GetFromDatabaseAsync<ServerInfoProperties>("ServerProperties", "serverInfo").Result;
             minecraftVersion = y.minecraftVersion;
-            fabricVersion = y.fabricVersion;
+            fabricVersion = "0.15.3";
+            //fabricVersion = y.fabricVersion;
 
             //serverAddress = z.ipAddress;
             //serverPort = z.port;
@@ -142,7 +143,7 @@ namespace MVVM_GMI.Services
             process.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
 
 
-            UpdateStatus("Loading", 0, true, 0, 0, "Initializing Minecraft: ", "Starting Minecraft Process");
+            UpdateStatus("Loading", 0, true, 0, 0, "Starting Minecraft: ", "Beginning Minecraft Process");
 
             bool check = true;
 
@@ -150,35 +151,36 @@ namespace MVVM_GMI.Services
             Console.WriteLine(process.StartInfo.Arguments);
             var processUtil = new CmlLib.Utils.ProcessUtil(process);
 
-            
+            processUtil.OutputReceived += OutputHandler;
 
-            processUtil.OutputReceived += (s, e) => 
+            void OutputHandler(object sender, string e)
             {
-
-                if (check && e != null && e.Contains(@"Connecting to"))
+                if (check)
                 {
-                    //Minimize but not yet implemented
-                    check = false;
-                    
+                    var t = Helpers.Extensions.getDetailsFromLog4j(e);
+
+                    if (t != null)
+                    {
+                        UpdateStatus("Loading", 0, true, 0, 0, "Initializing Minecraft: ", Helpers.Extensions.CutToMaxLength(t, 256));
+                    }
+
                 }
 
-                if (e != null && e.Contains(@"Game Crashed! Crash report saved to:"))
+                if (check && e != null && e.Contains(@"LOGMCINIT"))
                 {
+                    check = false;
                     UpdateStatus(new MinecraftLoadingUpdate()
                     {
-                        TextProgress = "Error",
-                        IntProgress = 3,
+                        TextProgress = "Running",
+                        IntProgress = 1,
                     });
+
+                    processUtil.OutputReceived -= OutputHandler;
+
                 }
-            };
+            }
 
             processUtil.StartWithEvents();
-
-            UpdateStatus(new MinecraftLoadingUpdate()
-            {
-                TextProgress = "Running",
-                IntProgress = 1,
-            });
 
             process.Exited += (s, a) => SetDefaultState();
             processUtil.Exited += (sender, args) => SetDefaultState();
