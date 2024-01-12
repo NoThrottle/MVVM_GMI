@@ -339,6 +339,10 @@ namespace MVVM_GMI.ViewModels.Pages
                     ServerStatusColor = "#4caf50";
                     ServerStatusText = "Online";
                     break;
+                case "stopping":
+                    ServerStatusColor = "#ffeb3b";
+                    ServerStatusText = "Stopping";
+                    break;
                 default:
                     ServerStatusText = "Unknown";
                     ServerStatusColor = "#9e9e9e";

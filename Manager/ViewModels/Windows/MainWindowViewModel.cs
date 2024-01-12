@@ -10,7 +10,7 @@ namespace MVVM_GMI.ViewModels.Windows
     {
 
         [ObservableProperty]
-        private string _applicationTitle = "HighSkyMC Launcher";
+        private string _applicationTitle = "HighSkyMC Server Manager";
 
         [RelayCommand]
         void OpenWebsite()

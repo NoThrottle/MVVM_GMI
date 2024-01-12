@@ -280,25 +280,52 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <Label Content="Project ID:"/>
+                                <ui:TextBox Text="{Binding ViewModel.ProjectID, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <Label Content="Version ID:"/>
+                                <ui:TextBox Text="{Binding ViewModel.VersionID, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                        </Grid>
+                        
+                        <Grid Height="16"/>
+
+                        <Grid Width="512" Height="2" Background="#2cefefef"/>
+                        
+                        <Grid Height="8"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
                                 <ColumnDefinition Width="156"/>
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
                                 <Label Content="Mod Name:"/>
-                                <ui:TextBox/>
+                                <ui:TextBox Text="{Binding ViewModel.ModName, Mode=TwoWay}"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                 <Label Content="Category:"/>
-                                <ComboBox/>
+                                <ui:TextBox Text="{Binding ViewModel.Category, Mode=TwoWay}"/>
                             </StackPanel>
                         </Grid>
+
+
 
                         <Grid Height="8"/>
 
                         <StackPanel>
                             <Label Content="Description"/>
-                            <ui:TextBox/>
+                            <ui:TextBox MaxLines="3" TextWrapping="Wrap" Text="{Binding ViewModel.ModDescription, Mode=TwoWay}"/>
                         </StackPanel>
 
                         <Grid Height="8"/>
@@ -306,20 +333,35 @@
                         <StackPanel Orientation="Horizontal">
                             <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsClientSide, Mode=TwoWay}" Content="Client Side"/>
                             <CheckBox IsThreeState="True" IsChecked="{Binding ViewModel.IsServerSide, Mode=TwoWay}" Content="Server Side"/>
+                            <ui:ToggleSwitch IsThreeState="False" IsChecked="{Binding ViewModel.IsRequired, Mode=TwoWay}" Content="Required" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <Grid Height="8"/>
 
                         <StackPanel>
                             <Label Content="Timestamp"/>
-                            <ui:TextBox/>
+                            <ui:TextBox Text="{Binding ViewModel.DatePublished, Mode=TwoWay}"/>
                         </StackPanel>
 
                         <Grid Height="8"/>
 
                         <StackPanel>
                             <Label Content="Icon URL"/>
-                            <ui:TextBox/>
+                            <ui:TextBox Text="{Binding ViewModel.IconURL, Mode=TwoWay}"/>
+                        </StackPanel>
+
+                        <Grid Height="8"/>
+
+                        <StackPanel>
+                            <Label Content="Download URL"/>
+                            <ui:TextBox Text="{Binding ViewModel.DownloadLink, Mode=TwoWay}"/>
+                        </StackPanel>
+
+                        <Grid Height="8"/>
+
+                        <StackPanel>
+                            <Label Content="File Size:"/>
+                            <ui:TextBox Text="{Binding ViewModel.FileSize, Mode=TwoWay}"/>
                         </StackPanel>
 
 

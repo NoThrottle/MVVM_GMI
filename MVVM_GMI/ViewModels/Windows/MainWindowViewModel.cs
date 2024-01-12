@@ -31,20 +31,23 @@ namespace MVVM_GMI.ViewModels.Windows
             {
                 Content = "Play",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.XboxController24 },
-                TargetPageType = typeof(Views.Pages.DashboardPage)
+                TargetPageType = typeof(Views.Pages.DashboardPage),
+                
             },
-            //new NavigationViewItem()
-            //{
-            //    Content = "Info",
-            //    Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
-            //    TargetPageType = typeof(Views.Pages.DonatePage)
-            //},
+            new NavigationViewItem()
+            {
+                Content = "Packs",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.PaintBrush20 },
+                TargetPageType = typeof(Views.Pages.GameplayPage),
+            },
 
             new NavigationViewItem()
             {
                 Content = "Donate",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Money24 },
-                TargetPageType = typeof(Views.Pages.DonatePage)
+                TargetPageType = typeof(Views.Pages.DonatePage),
+                
+               
             }
         };
 

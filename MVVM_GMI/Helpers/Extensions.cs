@@ -36,7 +36,9 @@ namespace MVVM_GMI.Helpers
                 return null;
             }
 
-            return "[" + t.Timestamp + "] " + t.Logger + " - " + t.Level + " : " + t.Message;
+            var x = DateTimeOffset.FromUnixTimeMilliseconds(t.Timestamp).ToLocalTime().ToString("dd/M/yy HH:mm");
+
+            return "[" + x + "] " + t.Logger + " - " + t.Level + " : " + t.Message;
         }
 
 
@@ -71,7 +73,7 @@ namespace MVVM_GMI.Helpers
             doc.LoadXml(Event);
 
             string logger = doc.DocumentElement.Attributes["logger"].Value;
-            string timestamp = doc.DocumentElement.Attributes["timestamp"].Value;
+            long timestamp = long.Parse(doc.DocumentElement.Attributes["timestamp"].Value);
             string level = doc.DocumentElement.Attributes["level"].Value;
             string thread = doc.DocumentElement.Attributes["thread"].Value;
             string message = doc.DocumentElement.SelectSingleNode("Message").InnerText;
@@ -94,7 +96,7 @@ namespace MVVM_GMI.Helpers
 
     internal class Log4jEvent
     {
-        public string Timestamp { get; set; }
+        public long Timestamp { get; set; }
         public string Logger { get; set; }
         public string Level { get; set; }
         public string Message { get; set; }

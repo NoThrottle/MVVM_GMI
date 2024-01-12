@@ -16,6 +16,8 @@ using Windows.Devices.PointOfService;
 using Wpf.Ui.Controls;
 using online = MVVM_GMI.Helpers.OnlineRequest;
 using from = MVVM_GMI.Services.ConfigurationService;
+using MVVM_GMI.Helpers;
+using System.Windows.Shapes;
 
 namespace MVVM_GMI.ViewModels.Pages
 {
@@ -70,7 +72,6 @@ namespace MVVM_GMI.ViewModels.Pages
 
         [ObservableProperty]
         ObservableCollection<String> _clientLoaders = new ObservableCollection<string>();
-
         [ObservableProperty]
         int _selIndexLoaders = -1;
 
@@ -85,6 +86,9 @@ namespace MVVM_GMI.ViewModels.Pages
 
         [ObservableProperty]
         int _selIndexModVersions = -1;
+
+        [ObservableProperty]
+        string? _versionID = "";
 
         [ObservableProperty]
         string _fileSize = "";
@@ -117,6 +121,7 @@ namespace MVVM_GMI.ViewModels.Pages
             var x = Mods[ModEntrySelectedIndex];
 
             ProjectID = x.projectID;
+            VersionID = x.versionID;
             ModName = x.Name;
             IconURL = x.IconURL;
             ModDescription = x.Description;
@@ -166,6 +171,7 @@ namespace MVVM_GMI.ViewModels.Pages
             Category = "";
             IsClientSide = "";
             IsServerSide = "";
+            VersionID = "";
 
 
             ClientLoaders.Clear();
@@ -533,7 +539,11 @@ namespace MVVM_GMI.ViewModels.Pages
                 await QueryVersionCurseforgeAsync(version);
             }
 
+            if (version == null)
+            {
+                VersionID = ModVersions[SelIndexModVersions];
 
+            }
         }
 
         async Task QueryVersionModrinthAsync(string? version = null)
@@ -627,7 +637,6 @@ namespace MVVM_GMI.ViewModels.Pages
         [RelayCommand]
         void AddModToList()
         {
-            System.Windows.MessageBox.Show(IsClientSide + "dad" + IsRequired + "ad" + IsServerSide);
 
             var x = new ModEntry()
             {
@@ -645,7 +654,7 @@ namespace MVVM_GMI.ViewModels.Pages
                 Size = int.Parse(FileSize),
 
                 projectID = ProjectID,
-                versionID = ModVersions[SelIndexModVersions],
+                versionID = VersionID,
 
                 Actions = JsonActionsArray.ToString()
 
@@ -684,6 +693,16 @@ namespace MVVM_GMI.ViewModels.Pages
         [RelayCommand]
         void DownloadAllServerMods()
         {
+
+            try
+            {
+                Directory.Delete("E:/HSMC Launcher/allServerMods", true);
+            }
+            catch
+            {
+
+            }
+
             List<ModEntry> toDL = new List<ModEntry>();
 
             foreach(var mod in Mods)
@@ -697,16 +716,60 @@ namespace MVVM_GMI.ViewModels.Pages
             DownloadModsAsync("E:/HSMC Launcher/allServerMods", toDL);
         }
 
+        async Task VerifyInstallationAsync(List<ModEntry> mods, string _Path)
+        {
+            var modsCopy = new List<ModEntry>(mods);
+
+
+            DirectoryInfo d = new DirectoryInfo(_Path);
+            FileInfo[] files = d.GetFiles();
+            var filesCopy = files.ToList();
+            int prog = 0;
+
+            var t = System.Windows.MessageBox.Show("Verifying Mods: ");
+
+            foreach (var mod in mods)
+            {
+                foreach (var file in files)
+                {
+                    var filename = mod.Name +  mod.versionID + ".jar";
+                    if (file.Name == filename && file.Length == mod.Size)
+                    {
+                        modsCopy.Remove(mod);
+                        filesCopy.Remove(file);
+                        break;
+                    }
+                }
+
+                prog++;
+            }
+
+            foreach (var file in filesCopy)
+            {
+                try
+                {
+                    File.Delete(file.FullName);
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("Unable to delete: " + file.FullName, "Error");
+                }
+            }
+
+
+            if (modsCopy.Count == 0)
+            {
+                return;
+            }
+
+            await DownloadModsAsync(_Path, modsCopy);
+
+            return;
+        }
+
         async Task<bool> DownloadModsAsync(string _Path, List<ModEntry> mods)
         {
-            try
-            {
-                Directory.Delete(_Path, true);
-            }
-            catch
-            {
 
-            }
 
             Directory.CreateDirectory(_Path);
 
@@ -735,8 +798,16 @@ namespace MVVM_GMI.ViewModels.Pages
                         inQueue += 1;
 
                         entryName = entry.Name;
-                        var o = Path.Combine(_Path, entry.Name + entry.projectID + entry.versionID + ".jar");
-                        await online.DownloadFileAsync(entry.DownloadURL, o);
+                        var o = System.IO.Path.Combine(_Path, entry.Name + entry.versionID + ".jar");
+                        try
+                        {
+                            await online.DownloadFileAsync(entry.DownloadURL, o);
+
+                        }
+                        catch
+                        {
+                            System.Windows.MessageBox.Show("Unable to dl " + entry.Name + " from " + entry.DownloadURL);
+                        }
                         prog++;
 
                         inQueue--;
@@ -754,6 +825,11 @@ namespace MVVM_GMI.ViewModels.Pages
 
                 Thread.Sleep(1000);
             }
+
+            await VerifyInstallationAsync(mods, _Path);
+
+            System.Windows.MessageBox.Show("Verified");
+
 
             return true;
         }

@@ -39,11 +39,13 @@
             IsBackButtonVisible="Visible"
             IsPaneToggleVisible="False"
             MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
+            
             PaneDisplayMode="LeftFluent">
             <ui:NavigationView.Header>
                 <Grid Height="32"/>
                 <!--<ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20"/>-->
             </ui:NavigationView.Header>
+
             <ui:NavigationView.ContentOverlay>
                 <Grid>
                     <ui:SnackbarPresenter x:Name="SnackbarPresenter" />
@@ -51,6 +53,7 @@
             </ui:NavigationView.ContentOverlay>
 
             <ui:NavigationView.FooterMenuItems>
+                
                 <Grid Height="8"/>
             </ui:NavigationView.FooterMenuItems>
 
