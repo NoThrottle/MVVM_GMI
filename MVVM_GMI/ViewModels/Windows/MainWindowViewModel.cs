@@ -34,12 +34,12 @@ namespace MVVM_GMI.ViewModels.Windows
                 TargetPageType = typeof(Views.Pages.DashboardPage),
                 
             },
-            new NavigationViewItem()
-            {
-                Content = "Packs",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.PaintBrush20 },
-                TargetPageType = typeof(Views.Pages.GameplayPage),
-            },
+            //new NavigationViewItem()
+            //{
+            //    Content = "Packs",
+            //    Icon = new SymbolIcon { Symbol = SymbolRegular.PaintBrush20 },
+            //    TargetPageType = typeof(Views.Pages.GameplayPage),
+            //},
 
             new NavigationViewItem()
             {

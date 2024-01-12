@@ -58,6 +58,12 @@ namespace MVVM_GMI.Helpers
         }
 
 
+        void EditFile(JObject action)
+        {
+            string path = parsePath(action["Path"].ToString());
+            Directory.CreateDirectory(path);
+        }
+
         void CreateDirectory(JObject action)
         {
             string path = parsePath(action["Path"].ToString());
@@ -229,6 +235,37 @@ namespace MVVM_GMI.Helpers
             public string URL { get; set; }
             public string Destination { get; set; }
 
+        }
+
+        public class EditFile
+        {
+            public string Action { get; } = "Edit File";
+            public string Path { get; set; }
+            public string Filename { get; set; }
+
+            //Java Properties
+            //JSON
+            //XML
+            //TOML
+            public string Type { get; set; }
+
+            public List<EditFileChange> Changes { get; set; }
+
+        }
+
+        public class EditFileChange
+        {
+            /// <summary>
+            /// Key to edit must be the last one in this list.
+            /// </summary>
+            List<string> KeyStructure {  get; set; }
+
+            /// <summary>
+            /// Value can be Text or Numbers.
+            /// Make sure to encapsulate in "" all text.
+            /// Booleans will br treated based on type.
+            /// </summary>
+            object Value { get; set; }
         }
     }
 }

@@ -68,7 +68,38 @@
 
             <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                <ui:Image Source="pack://application:,,,/Assets/UI/DonationQR.png" Width="256" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <TabControl TabStripPlacement="Top">
+                    <TabItem Width="64" Background="#1c000000">
+                        <TabItem.Header>
+                            <TextBlock
+                                Text="GCash"
+                                />
+                        </TabItem.Header>
+                        <ui:Image Source="pack://application:,,,/Assets/UI/DonationQR_GCash.png" Width="256" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </TabItem>
+
+                    <TabItem Width="64" Background="#1c000000">
+                        <TabItem.Header>
+                            <TextBlock
+                                Text="Bank"
+                                />
+                        </TabItem.Header>
+
+                        <Grid Background="White" Height="256" Width="256">
+                            
+                            <ui:Image Source="pack://application:,,,/Assets/UI/DonationQR_Bank.png" Width="232" RenderOptions.BitmapScalingMode="HighQuality"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Center"
+                                      />
+
+                        </Grid>
+                        
+                    </TabItem>
+
+
+                </TabControl>
+                
+                
 
                 <Grid Height="16"/>
 

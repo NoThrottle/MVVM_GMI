@@ -306,13 +306,13 @@ namespace MVVM_GMI.ViewModels.Pages
         async void GetServerStatus(object sender, EventArgs e)
         {
             var Auth = new List<String[]>();
-            Auth.Add(["Authorization", "Bearer ptlc_Qx5oOPvfzxi6gtZZAhjBs4JDj29rpIfFAcanoR80Q45"]);
+            Auth.Add(["Authorization", "Bearer " + LauncherProperties.ServerKey]);
 
             string x = null;
 
             try
             {
-                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/a7974b2a-36cc-4fb3-a801-9dccfac0e6f1/resources", Auth);
+                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/" + LauncherProperties.ServerID + "/resources", Auth);
             }
             catch
             {
@@ -381,13 +381,13 @@ namespace MVVM_GMI.ViewModels.Pages
         async void GetOnlinePlayersAsync(object sender, EventArgs e)
         {
             var Auth = new List<String[]>();
-            Auth.Add(["Authorization", "Bearer ptlc_Qx5oOPvfzxi6gtZZAhjBs4JDj29rpIfFAcanoR80Q45"]);
+            Auth.Add(["Authorization", "Bearer " + LauncherProperties.ServerKey]);
 
             string x = null;
 
             try
             {
-                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/a7974b2a-36cc-4fb3-a801-9dccfac0e6f1/minecraft-players", Auth);
+                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/" + LauncherProperties.ServerID + "/minecraft-players", Auth);
             }
             catch
             {

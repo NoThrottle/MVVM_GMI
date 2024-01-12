@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /MVVM_GMI/Services/FIrestoreService.cs
+/MVVM_GMI/Helpers/LauncherProperties.cs

@@ -288,17 +288,17 @@ namespace MVVM_GMI.Services
                 prog++;
             }
 
-            //foreach (var file in filesCopy)
-            //{
-            //    try
-            //    {
-            //        File.Delete(file.FullName);
-            //    }
-            //    catch
-            //    {
-            //        MessageBox.Show("Unable to delete: " + file.FullName, "Error");
-            //    }
-            //}
+            foreach (var file in filesCopy)
+            {
+                try
+                {
+                    File.Delete(file.FullName);
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to delete: " + file.FullName, "Error");
+                }
+            }
 
             int cnt = 0;
             foreach(var x in actions)
@@ -316,7 +316,7 @@ namespace MVVM_GMI.Services
                 return;
             }
 
-            //await DownloadModsAsync(modsCopy);
+            await DownloadModsAsync(modsCopy);
 
             return;
         }
