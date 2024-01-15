@@ -1,4 +1,6 @@
 ﻿using MVVM_GMI.Services;
+using MVVM_GMI.Views.Pages;
+using System.Runtime.CompilerServices;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -20,10 +22,34 @@ namespace MVVM_GMI.ViewModels.Pages
             _dialogService = contentDialogService;
         }
 
+        void CheckNotifs()
+        {
+            var t = NotificationService.Instance.PrivateMessages(typeof(SettingsViewModel));
+
+            if (t.Count <= 0)
+            {
+                return;
+            }
+
+            foreach (var message in t)
+            {
+                switch (message.Message)
+                {
+                    case "Start Update":
+                        //STart
+                        break;
+                }
+            }
+        }
+
         public void OnNavigatedTo()
         {
             if (!_isInitialized)
+            {
                 InitializeViewModel();
+            }
+
+            CheckNotifs();
         }
 
         public void OnNavigatedFrom()
@@ -54,22 +80,32 @@ namespace MVVM_GMI.ViewModels.Pages
         [RelayCommand]
         async Task CheckForUpdatesAsync()
         {
-            var x = new Services.UpdateService();
+            //var x = new Services.UpdateService();
 
-            if (x.CheckForUpdates())
-            {
-                await ShowDialogAsync("New Version Available", "A new version of the launcher is available and updating is required.", "", "", "Okay");
+            //if (x.CheckForUpdatesAsync())
+            //{
+            //    await ShowDialogAsync("New Version Available", "A new version of the launcher is available and updating is required.", "", "", "Okay");
 
-                if (x.StartUpdate())
-                {
-                    Application.Current.Shutdown();
-                }
-            }
-            else
-            {
-                await ShowDialogAsync("No Updates", "You are currently using the latest version of the launcher.", "", "", "Okay");
-            }
+            //    if (await x.StartUpdateAsync())
+            //    {
+            //        Application.Current.Shutdown();
+            //    }
+            //}
+            //else
+            //{
+            //    await ShowDialogAsync("No Updates", "You are currently using the latest version of the launcher.", "", "", "Okay");
+            //}
         }
+
+        async Task DoUpdateAsync()
+        {
+            var x = UpdateService.Instance;
+
+            //x.UpdateState += 
+
+            //await x.StartUpdateAsync();
+        }
+
 
         [RelayCommand]
         private void OnChangeTheme(string parameter)

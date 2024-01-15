@@ -59,6 +59,7 @@ namespace MVVM_GMI
                 services.AddSingleton<MinecraftService>();
                 services.AddSingleton<Authentication>();
                 services.AddSingleton<ConfigurationService>();
+                services.AddSingleton<NotificationService>();
             }).Build();
 
         /// <summary>

@@ -85,7 +85,6 @@ namespace MVVM_GMI.ViewModels.Pages
 
                     return await OnlineRequest.GetJsonAsync("https://pastebin.com/raw/jGgj4Mk5");
 
-
                 }).Result;
             }
             catch (Exception e)
@@ -102,16 +101,35 @@ namespace MVVM_GMI.ViewModels.Pages
 
         async Task CheckForUpdatesAsync()
         {
-            var x = new UpdateService();
-            if (x.CheckForUpdates())
-            {
-                await ShowDialogAsync("New Version Available", "A new version of the launcher is available and updating is required.","","","Okay");
+            var x = await UpdateService.Instance.CheckForUpdatesAsync();
 
-                if (x.StartUpdate())
-                {
-                    Application.Current.Shutdown();
-                }
+            switch (x)
+            {
+                case 1:
+                    await ShowDialogAsync("Error", "Unable to check for new version. Your experience may be hampered.", "", "", "Okay");
+                    return;
+                case 2:
+                    return;
+                case 3:
+                    var t = await ShowDialogAsync("New Version Available", "A new version of the launcher is available! Do you want to update?", "Update", "", "Later");
+                    if (t == Wpf.Ui.Controls.ContentDialogResult.Primary)
+                    {
+                        Update();
+                    }
+                    return;
+                case 4:
+                    await ShowDialogAsync("New Version Available", "A new version of the launcher is available and updating is required", "", "", "Okay");
+                    Update();
+                    return;
             }
+
+            void Update()
+            {
+                Locked = true;
+                NotificationService.Instance.AddMessage(new PrivateMessage { Message = "Start Update", Receiver = typeof(SettingsViewModel)});
+                _navigationService.Navigate(typeof(SettingsPage));
+            }
+
         }
 
         [RelayCommand]
@@ -250,6 +268,14 @@ namespace MVVM_GMI.ViewModels.Pages
                     PlayButtonColor = "Blue";
                     PlayButtonHoverColor = "Blue";
                     PlayButtonPressedColor = "Blue";
+                    PlayButtonPressedTextColor = "White";
+                    ProcessVisibility = "Collapsed";
+                    break;
+                case 6: // Update Required
+                    PlayButtonText = "UPDATE! ";
+                    PlayButtonColor = "Gray";
+                    PlayButtonHoverColor = "Gray";
+                    PlayButtonPressedColor = "Gray";
                     PlayButtonPressedTextColor = "White";
                     ProcessVisibility = "Collapsed";
                     break;

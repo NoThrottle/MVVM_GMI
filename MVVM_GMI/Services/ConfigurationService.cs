@@ -348,6 +348,24 @@ namespace MVVM_GMI.Services
                 }
             }
 
+            private bool _JustUpdated = bool.Parse((string)instance.GetValue("JustUpdated", false));
+            /// <summary>
+            /// Returns True if user has just updated. Set manually by updater
+            /// </summary>
+            public bool JustUpdated
+            {
+                get
+                {
+                    return _JustUpdated;
+                }
+                set
+                {
+                    _JustUpdated = value;
+                    Instance.setProperty("JustUpdated", value);
+
+                }
+            }
+
         }
 
         //--------------------------------------------------//

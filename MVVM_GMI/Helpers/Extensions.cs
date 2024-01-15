@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
@@ -91,7 +93,23 @@ namespace MVVM_GMI.Helpers
 
         }
 
+        internal static void RestartApplication()
+        {
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location.Replace(".dll", ".exe"));
+            Application.Current.Shutdown();
+        }
 
+        public static string CalculateMD5(this string filename)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filename))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+        }
     }
 
     internal class Log4jEvent

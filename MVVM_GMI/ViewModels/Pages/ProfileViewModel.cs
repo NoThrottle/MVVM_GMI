@@ -167,12 +167,7 @@ namespace MVVM_GMI.ViewModels.Pages
         {
 
             new Authentication().LogOut();
-
-
-            Application.Current.Shutdown();
-            System.Windows.Forms.Application.Restart();
-
-
+            Helpers.Extensions.RestartApplication();
 
         }
 
