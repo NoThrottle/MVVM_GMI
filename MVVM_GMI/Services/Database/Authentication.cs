@@ -387,7 +387,7 @@ namespace MVVM_GMI.Services.Database
             catch (Exception ex)
             {
                 return false;
-            }
+            }   
 
             var t = new Invited() { Code = Code, Date = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), Username = Username };
 
