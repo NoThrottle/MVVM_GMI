@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
@@ -9,6 +10,22 @@ namespace MVVM_GMI.Helpers
 {
     public static class Extensions
     {
+        public static bool IsAlphanumericUnderscore(string input)
+        {
+            // Use a regular expression to check if the string contains only letters, numbers, or underscores
+            Regex regex = new Regex("^[a-zA-Z0-9_]+$");
+            return regex.IsMatch(input);
+        }
+
+        public static string RSAEncrypt(string publicKey, string content)
+        {
+
+            using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            rsa.ImportFromPem(publicKey);
+            var x = rsa.Encrypt(Encoding.UTF8.GetBytes(content), false);
+            return Convert.ToBase64String(x);
+        }
+
         public static IEnumerable<IEnumerable<T>> Split<T>(this T[] arr, int size)
         {
             for (var i = 0; i < arr.Length / size + 1; i++)
@@ -108,6 +125,23 @@ namespace MVVM_GMI.Helpers
                     var hash = md5.ComputeHash(stream);
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                 }
+            }
+        }
+
+        public static string GetSha512Hash(string input)
+        {
+            using (SHA512 sha512 = SHA512.Create())
+            {
+                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+                byte[] hashBytes = sha512.ComputeHash(inputBytes);
+
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (byte b in hashBytes)
+                {
+                    stringBuilder.Append(b.ToString("x2"));
+                }
+
+                return stringBuilder.ToString();
             }
         }
     }

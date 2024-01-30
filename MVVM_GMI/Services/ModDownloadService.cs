@@ -341,14 +341,14 @@ namespace MVVM_GMI.Services
             ProgressUpdated?.Invoke(update);
         }
 
-        [FirestoreData]
+        
         class ModsProperties
         {
 
-            [FirestoreProperty]
+            
             public int updateIndex { get; set; }
 
-            [FirestoreProperty]
+            
             public bool forceUpdate { get; set; }
         }
 

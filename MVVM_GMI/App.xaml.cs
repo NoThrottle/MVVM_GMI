@@ -57,7 +57,7 @@ namespace MVVM_GMI
                 services.AddSingleton<GameplayViewModel>();
 
                 services.AddSingleton<MinecraftService>();
-                services.AddSingleton<Authentication>();
+                //services.AddSingleton<API>();
                 services.AddSingleton<ConfigurationService>();
                 services.AddSingleton<NotificationService>();
             }).Build();
@@ -78,7 +78,7 @@ namespace MVVM_GMI
         /// </summary>
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            FirestoreService.SetEnvironmentVariable();
+
             //s.PropertiesExist();
 
             _host.Start();
@@ -90,7 +90,6 @@ namespace MVVM_GMI
         private async void OnExit(object sender, ExitEventArgs e)
         {
             await _host.StopAsync();
-
             _host.Dispose();
         }
 

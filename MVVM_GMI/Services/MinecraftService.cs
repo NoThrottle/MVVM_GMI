@@ -1,9 +1,7 @@
 ﻿using CmlLib.Core;
 using CmlLib.Core.Auth;
 using CmlLib.Core.Installer.FabricMC;
-using Google.Cloud.Firestore;
 using System.Diagnostics;
-using @online = MVVM_GMI.Helpers.OnlineRequest;
 using @user = MVVM_GMI.Services.UserProfileService;
 
 namespace MVVM_GMI.Services
@@ -18,9 +16,9 @@ namespace MVVM_GMI.Services
 
         public MinecraftService()
         {
-            var y = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties", "gameLoad").Result;
+            //var y = online.GetFromDatabaseAsync<GameLoadProperties>("ServerProperties", "gameLoad").Result;
             //var z = online.GetFromDatabaseAsync<ServerInfoProperties>("ServerProperties", "serverInfo").Result;
-            minecraftVersion = y.minecraftVersion;
+            //minecraftVersion = y.minecraftVersion;
             fabricVersion = "0.15.3";
             //fabricVersion = y.fabricVersion;
 
@@ -394,23 +392,23 @@ namespace MVVM_GMI.Services
 
     }
 
-    [FirestoreData]
+    
     public class GameLoadProperties
     {
-        [FirestoreProperty]
+        
         public string fabricVersion { get; set; }
 
-        [FirestoreProperty]
+        
         public string minecraftVersion { get; set; }
     }
 
-    [FirestoreData]
+    
     public class ServerInfoProperties
     {
-        [FirestoreProperty]
+        
         public string ipAddress { get; set; }
 
-        [FirestoreProperty]
+        
         public string port { get; set; }
     }
 

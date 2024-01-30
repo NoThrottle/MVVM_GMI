@@ -1,12 +1,4 @@
-﻿using Google.Cloud.Firestore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MVVM_GMI.Services
+﻿namespace MVVM_GMI.Services
 {
     public class UserProfileService
     {
@@ -51,18 +43,16 @@ namespace MVVM_GMI.Services
 
     }
 
-    [FirestoreData]
+    
     internal class UserProfile() 
     {
 
         /// <summary>
         /// Donator rank is the increment from 0-tier to the highest tier.
         /// </summary>
-        [FirestoreProperty]
+        
         public static int DonatorRank { get; set; }
 
-
-        [FirestoreProperty]
         public static string Clan { get; set; }
 
 

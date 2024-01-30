@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using MVVM_GMI.Services.Database;
+﻿using MVVM_GMI.Services.Database;
 using MVVM_GMI.Views.Pages;
 using Wpf.Ui;
+using static MVVM_GMI.Services.Database.API;
 
 namespace MVVM_GMI.ViewModels.Windows
 {
@@ -97,24 +97,54 @@ namespace MVVM_GMI.ViewModels.Windows
         [RelayCommand]
         async Task SubmitMembershipRequestAsync()
         {
-            try
+
+            var payment = new Payment()
             {
-                var x = new Authentication();
-                await x.SubmitMembershipRequestAsync(Services.UserProfileService.AuthorizedUsername, ToSubmitReferenceCode, ToSubmitEmail);
-            }
-            catch
+                ReferenceCode = ToSubmitReferenceCode,
+                Email = ToSubmitEmail
+            };
+
+            (bool sent, bool success, string error, Membership membership) = await Auth.SubmitPayment(payment);
+
+            if (!sent)
             {
-                await ShowDialogAsync("Error","Unable to connect to the internet. Ensure you have a proper connection","","","Okay");
-                
+                await ShowDialogAsync(
+                    "Error",
+                    "Unable to connect to the internet. Ensure you have a proper connection",
+                    "",
+                    "",
+                    "Okay"
+                );
+                return;
             }
+
+            if (!success)
+            {
+                await ShowDialogAsync(
+                    "Error",
+                    "Unable to connect to send request. \n Error: " + error ?? "",
+                    "",
+                    "",
+                    "Okay"
+                );
+                return;
+            }
+            else
+            {
+
+                await RefreshMembershipAsync();
+
+            }
+
+            //IF SUCCESS OPEN MEMBERSHIP WAITING RESPONSE PAGE
             
         }
 
         [RelayCommand]
         void LogOut()
         {
-            var x = new Authentication();
-            x.LogOut();
+            API.LogOut();
+
             ClearFields();
             SwitchToLogin();
             AuthVisible = "Visible";
@@ -129,7 +159,7 @@ namespace MVVM_GMI.ViewModels.Windows
 
             try
             {
-                ProcessUserMembership(MVVM_GMI.Services.UserProfileService.AuthorizedUsername);
+                await RefreshMembership(MVVM_GMI.Services.UserProfileService.AuthorizedUsername);
             }
             catch
             {
@@ -142,24 +172,28 @@ namespace MVVM_GMI.ViewModels.Windows
         [RelayCommand]
         async Task WelcomeAsync()
         {
-            var x = new Authentication();
-            x.UpdateMembership(Services.UserProfileService.AuthorizedUsername, true, false, true, true);
+            await Auth.Welcome();
             GoToMainWindowPage<DashboardPage>();
         }
 
-        void ProcessUserMembership(string Username)
+        async Task RefreshMembership(string Username)
         {
-            var x = new Authentication();
-            var mem = x.GetMembership(Username);
 
+            (bool success, bool accepted, Membership mem) = await Auth.Membership();
 
-            if (mem.QualifiedMember && mem.isWelcomed)
+            if (!success)
+            {
+                await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
+                return;
+            }
+
+            if (accepted)
             {
                 GoToMainWindowPage<DashboardPage>();
                 return;
             }
 
-            if (mem.QualifiedMember && !mem.isWelcomed) 
+            if (mem.UserMembership.QualifiedMember && !mem.UserMembership.isWelcomed) 
             {
 
                 WelcomeScreenVisible = "Visible";
@@ -168,58 +202,70 @@ namespace MVVM_GMI.ViewModels.Windows
             }
 
             MembershipProcessVisible = "Visible";
+            var x = mem.UserMembership;
 
-
-            try
+            if (mem.UserMembershipRequest == null)
             {
-                var memReq = x.GetMembershipRequest(Username);
-                SubmittedReferenceCode = memReq.ReferenceCode;
-                SubmittedEmail = memReq.Email;
+                OneMoreThingVisible = "Visible";
+                return;
             }
-            catch
+            else
             {
-
+                SubmittedEmail = mem.UserMembershipRequest.Email;
+                SubmittedReferenceCode = mem.UserMembershipRequest.ReferenceCode;
             }
 
-            if (mem.hasSubmitted && mem.hasErrorResponse)
+            if (x.hasSubmitted && x.hasErrorResponse)
             {
                 RejectedVisible = "Visible";
             }
 
-            if (mem.hasSubmitted && !mem.hasErrorResponse)
+            if (x.hasSubmitted && !x.hasErrorResponse)
             {
                 AwaitingResponseVisible = "Visible";
             }
 
-            if (!mem.hasSubmitted)
-            {
-                OneMoreThingVisible = "Visible";
-            }
-
-
+            System.Windows.MessageBox.Show("idiot");
         }
 
 
         [RelayCommand]
         async Task LoginAsync()
         {
-            
-            var x = new Authentication();
 
-            try
+            if (String.IsNullOrEmpty(LoginUsername) || 
+                LoginUsername.Trim().Length < 6 || 
+                !Helpers.Extensions.IsAlphanumericUnderscore(LoginUsername) || 
+                String.IsNullOrEmpty(LoginPassword) || 
+                LoginPassword.Trim().Length < 8)
             {
-                bool y = x.Login(LoginUsername, LoginPassword);
-
-                if (!y)
-                {
-                    await ShowDialogAsync("Login Error:", "Incorrect Username or Password", "", "", "Okay");
-                    return;
-                }
-
-                await RefreshMembershipAsync();
-                LoginVisible = "Collapsed";
+                await ShowDialogAsync(
+                    "Login Error:", 
+                    "Username or Password too short or empty.", 
+                    "", 
+                    "", 
+                    "Okay");
+                return;
             }
-            catch
+
+            var loginCredentials = new LoginCredentials()
+            {
+                username = LoginUsername,
+                password = LoginPassword
+            };
+
+            (bool success, bool loggedIn, string? Error) = await Auth.LoginNormal(loginCredentials);
+
+            if (!loggedIn)
+            {
+                await ShowDialogAsync("Login Error:", "Incorrect Username or Password: \n" + Error ?? "", "", "", "Okay");
+                return;
+            }
+
+            await RefreshMembershipAsync();
+            LoginVisible = "Collapsed";
+
+            if (!success)
             {
                 await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
             }
@@ -229,15 +275,25 @@ namespace MVVM_GMI.ViewModels.Windows
         [RelayCommand]
         async Task CreateAccountAsync()
         {
-            var x = new Authentication();
+            var x = ValidateRegistration(SignupUsername, SignupPassword);
+            if (x.Count > 0)
+            {
+                await ShowDialogAsync("Sign-up Error:", String.Join(Environment.NewLine, x), "", "", "Okay");
+                return;
+            }
 
-            List<String>? y = null;
+            var registration = new RegisterCredentials()
+            {
+                username = SignupUsername,
+                password = SignupPassword,
+                inviteCode = SignupCode
+            };
 
             try
             {
-                y = await x.SignUpAsync(SignupUsername, SignupPassword, SignupCode);
+                (bool success, string[] errors) = await Auth.Register(registration);
 
-                if (y == null)
+                if (success)
                 {
 
                     await RefreshMembershipAsync();
@@ -245,14 +301,24 @@ namespace MVVM_GMI.ViewModels.Windows
                 }
                 else
                 {
-                    await ShowDialogAsync("Sign-up Error:", String.Join(Environment.NewLine, y), "", "", "Okay");
+                    await ShowDialogAsync(
+                        "Sign-up Error:", 
+                        String.Join(Environment.NewLine, errors), 
+                        "", 
+                        "",
+                        "Okay");
                     return;
                 }
 
             }
             catch
             {
-                await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
+                await ShowDialogAsync(
+                    "Error", 
+                    "Unable to connect to the internet. Ensure you have a proper connection", 
+                    "", 
+                    "", 
+                    "Okay");
             }
 
 
@@ -356,6 +422,46 @@ namespace MVVM_GMI.ViewModels.Windows
 
         }
 
+        List<string> ValidateRegistration(string Username, string Password)
+        {
+            List<string> result = new List<string>();
 
+            if (string.IsNullOrEmpty(Username))
+            {
+                result.Add("Enter a username.");
+            }
+
+            if (string.IsNullOrEmpty(Password))
+            {
+                result.Add("Enter a password.");
+            }
+
+            if (Username.Length < 6)
+            {
+                result.Add("Username must be longer than 6 characters.");
+            }
+
+            if (Username.Length > 16)
+            {
+                result.Add("Username must be shorter than 17 characters.");
+            }
+            
+            if (!MVVM_GMI.Helpers.Extensions.IsAlphanumericUnderscore(Username))
+            {
+                result.Add("Username must only contain alphanumerics and underscores.");
+            }
+
+            if (Password.Length < 8)
+            {
+                result.Add("Password must be at least 8 characters.");
+            }
+
+            if (Password.Length > 16)
+            {
+                result.Add("Password must be shorter than 17 characters.");
+            }
+
+            return result;
+        }
     }
 }

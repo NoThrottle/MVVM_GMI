@@ -165,13 +165,13 @@ namespace MVVM_GMI.Helpers
     /// <summary>
     /// Document format as to how the JSON Action is stored in Firebase
     /// </summary>
-    [FirestoreData]
+    
     public class JSONActionDocument
     {
-        [FirestoreProperty]
+        
         public string Title { get; set; }
 
-        [FirestoreProperty]
+        
         public string JSONString { get; set; }
     }
 

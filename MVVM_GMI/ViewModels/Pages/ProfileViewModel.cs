@@ -124,7 +124,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
                 try
                 {
-                    code = await new Authentication().CreateInviteCode();
+                    code = await new API().CreateInviteCode();
                 }
                 catch
                 {
@@ -166,7 +166,7 @@ namespace MVVM_GMI.ViewModels.Pages
         void LogOut()
         {
 
-            new Authentication().LogOut();
+            new API().LogOut();
             Helpers.Extensions.RestartApplication();
 
         }

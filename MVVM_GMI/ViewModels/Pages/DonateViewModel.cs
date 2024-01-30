@@ -89,16 +89,16 @@ namespace MVVM_GMI.ViewModels.Pages
 
     }
 
-    [FirestoreData]
+    
     internal class Donation
     {
-        [FirestoreProperty]
+        
         public string? Username {  get; set; }
 
-        [FirestoreProperty]
+        
         public string? Reference { get; set; }
 
-        [FirestoreProperty]
+        
         public string? Date { get; set; }
     }
 

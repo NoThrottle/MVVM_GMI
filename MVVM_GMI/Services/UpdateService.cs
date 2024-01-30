@@ -1,11 +1,9 @@
-﻿using Google.Cloud.Firestore;
+﻿using MVVM_GMI.Helpers;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
 using online = MVVM_GMI.Helpers.OnlineRequest;
-using MVVM_GMI.Helpers;
 
 namespace MVVM_GMI.Services
 {
@@ -51,7 +49,7 @@ namespace MVVM_GMI.Services
         {
             try
             {
-                props = await online.GetFromDatabaseAsync<LauncherVersionProperties>("ServerProperties", "launcherVersion");
+                //props = await online.GetFromDatabaseAsync<LauncherVersionProperties>("ServerProperties", "launcherVersion");
             }
             catch
             {
@@ -225,20 +223,20 @@ namespace MVVM_GMI.Services
     }
 
 
-    [FirestoreData]
+    
     internal class LauncherVersionProperties
     {
 
-        [FirestoreProperty]
+        
         public int latest { get; set; }
 
-        [FirestoreProperty]
+        
         public int minimum { get; set; }
 
-        [FirestoreProperty]
+        
         public string url { get; set; }
 
-        [FirestoreProperty]
+        
         public string hash { get; set; }
 
     }

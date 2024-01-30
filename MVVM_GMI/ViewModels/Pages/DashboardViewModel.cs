@@ -1,15 +1,12 @@
-﻿using CmlLib.Utils;
-using Google.Rpc;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MVVM_GMI.Helpers;
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
-using Wpf.Ui;
-using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
+using Wpf.Ui;
 
 namespace MVVM_GMI.ViewModels.Pages
 {

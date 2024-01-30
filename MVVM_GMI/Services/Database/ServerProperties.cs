@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MVVM_GMI.Services.Database
 {
-    public class ServerProperties
+    internal class ServerProperties
     {
     }
 }

@@ -1,19 +1,10 @@
-﻿// This URL Code Form is subject to the terms of the MIT License.
-// If welcomed copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
-// Copyright (C) Leszek Pomianowski and WPF UI Contributors.
-// All Rights Reserved.
-
-using CommunityToolkit.Mvvm.ComponentModel.__Internals;
-using Google.Api;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MVVM_GMI.Services.Database;
-using MVVM_GMI.ViewModels.Windows;
 using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
 using System.ComponentModel;
 using Wpf.Ui;
-using Authentication = MVVM_GMI.Services.Database.Authentication;
 
 namespace MVVM_GMI.Services
 {
@@ -64,30 +55,6 @@ namespace MVVM_GMI.Services
         {
             await Task.CompletedTask;
 
-            //_ = ConfigurationService.Instance.PropertiesExist();
-
-            Authentication x = new Authentication();
-            var y = x.CheckSession();
-            bool qualMember = false;
-            bool welcomed = false;
-
-            try
-            {
-                var response = x.GetMembership(y);
-                var isQualified = response.QualifiedMember;
-                var isWelcomed = response.isWelcomed;
-
-                if (response != null)
-                {
-                    qualMember = isQualified;
-                    welcomed = isWelcomed;
-                }
-            }
-            catch
-            {
-
-            }
-
             var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
             var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
 
@@ -99,20 +66,24 @@ namespace MVVM_GMI.Services
                 Application.Current.Shutdown();
             }
 
-
-            if (y != null && qualMember && welcomed)
+            if (await API.Auth.LoginAsync())
             {
+                // check membership
+                (bool success, bool isQualified, Membership? membership) = await API.Auth.Membership();
 
-                navigationWindow.Loaded += OnNavigationWindowLoaded;
-                navigationWindow.Show();
-              
+                if (success && isQualified && membership.UserMembership.isWelcomed)
+                {
+                    navigationWindow.Loaded += OnNavigationWindowLoaded;
+                    navigationWindow.Show();
+                }
+
+                authWindow.Show();
             }
             else
             {
-
                 authWindow.Show();
-                
             }
+
         }
 
         private void OnNavigationWindowLoaded(object sender, RoutedEventArgs e)
