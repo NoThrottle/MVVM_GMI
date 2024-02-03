@@ -75,7 +75,7 @@ namespace MVVM_GMI.ViewModels.Pages
                 try
                 {
 
-                    t.AddRange(await OnlineRequest.GetAllFromDatabaseAsync<Invited>("UserData", UserProfileService.AuthorizedUsername, "Invited"));
+                    //t.AddRange(await OnlineRequest.GetAllFromDatabaseAsync<Invited>("UserData", UserProfileService.AuthorizedUsername, "Invited"));
 
                 }
                 catch
@@ -120,11 +120,11 @@ namespace MVVM_GMI.ViewModels.Pages
 
             async Task<bool> action()
             {
-                string[]? code;
+                string[]? code = [];
 
                 try
                 {
-                    code = await new API().CreateInviteCode();
+                    //code = await API.Profile.CreateInviteCodeAsync();
                 }
                 catch
                 {
@@ -166,7 +166,7 @@ namespace MVVM_GMI.ViewModels.Pages
         void LogOut()
         {
 
-            new API().LogOut();
+            //new API().LogOut();
             Helpers.Extensions.RestartApplication();
 
         }

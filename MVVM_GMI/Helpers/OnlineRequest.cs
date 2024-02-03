@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Security.Policy;
+using Windows.Media.Protection.PlayReady;
 
 namespace MVVM_GMI.Helpers
 {
@@ -8,12 +9,26 @@ namespace MVVM_GMI.Helpers
 
         public static class HTTP
         {
-            public static async Task<HttpResponseMessage> get(string URL, List<String[]>? header = null)
+            public static async Task<HttpResponseMessage?> get(string URL, List<String[]>? header = null)
             {
+                List<string> ip = new List<string>();
+
+                foreach (var kvp in header)
+                {
+                   ip.Add(kvp[0] + " : " + kvp[1]);
+                }
+
+                MessageBox.Show("GET - getting " + URL + "\n with headers \n" + String.Join(Environment.NewLine, ip));
+
                 using (HttpClient client = new HttpClient())
                 {
+
+                    MessageBox.Show("GET - using");
+
                     try
                     {
+                        MessageBox.Show("GET - trying");
+
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Add("Accept", "application/json");
 
@@ -25,11 +40,17 @@ namespace MVVM_GMI.Helpers
                             }
                         }
 
+                        MessageBox.Show("GET - sending");
 
-                        return await client.GetAsync(URL);
+
+                        var res = client.GetAsync(URL).Result;
+
+                        MessageBox.Show("GET - with value\n" + res.StatusCode + res.Content.ReadAsStringAsync().Result);
+                        return res;
                     }
                     catch (HttpRequestException ex)
                     {
+                        MessageBox.Show("GET - without value" + ex.StatusCode);
                         return null;
                     }
                 }

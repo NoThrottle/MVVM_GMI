@@ -1,6 +1,4 @@
-﻿using AutoUpdaterDotNET;
-using Google.Cloud.Firestore;
-using MVVM_GMI.Helpers;
+﻿using MVVM_GMI.Helpers;
 using MVVM_GMI.Models;
 using Newtonsoft.Json.Linq;
 using System.IO;
@@ -53,9 +51,9 @@ namespace MVVM_GMI.Services
                 return;
             }
 
-            var t = await online.GetFromDatabaseAsync<JSONActionDocument>("JsonActions","InitialSetup");
-            var x = new JSONActions();
-            await x.DoActionAsync(t.JSONString);
+            //var t = await online.GetFromDatabaseAsync<JSONActionDocument>("JsonActions","InitialSetup");
+            //var x = new JSONActions();
+            //await x.DoActionAsync(t.JSONString);
 
             from.Instance.fromLauncher.DidStarterAction = true;
         }
@@ -73,24 +71,24 @@ namespace MVVM_GMI.Services
             });
 
             int x = from.Instance.fromLauncher.ModUpdateIndex;
-            var y = await online.GetFromDatabaseAsync<ModsProperties>("ServerProperties","mods");
-            int z = y.updateIndex;
+            //var y = await online.GetFromDatabaseAsync<ModsProperties>("ServerProperties","mods");
+            //int z = y.updateIndex;
 
-            if (x == 0)
-            {
-                await VerifyInstallationAsync(true);
-                from.Instance.fromLauncher.ModUpdateIndex = z;
+            //if (x == 0)
+            //{
+            //    await VerifyInstallationAsync(true);
+            //    from.Instance.fromLauncher.ModUpdateIndex = z;
 
-            }
-            else if (x != z)
-            {
-                await VerifyInstallationAsync(false);
-                from.Instance.fromLauncher.ModUpdateIndex = z;
-            }
-            else
-            {
-                await VerifyInstallationAsync(false, GetLocalCache());                
-            }
+            //}
+            //else if (x != z)
+            //{
+            //    await VerifyInstallationAsync(false);
+            //    from.Instance.fromLauncher.ModUpdateIndex = z;
+            //}
+            //else
+            //{
+            //    await VerifyInstallationAsync(false, GetLocalCache());                
+            //}
             
 
             try
@@ -222,7 +220,7 @@ namespace MVVM_GMI.Services
 
             if (mods == null)
             {
-                mods = await online.GetAllFromDatabaseAsync<ModEntry>("Mods", "ClientSide", true);
+                //mods = await online.GetAllFromDatabaseAsync<ModEntry>("Mods", "ClientSide", true);
                 SetLocalCache(mods);
             }
 

@@ -1,5 +1,4 @@
-﻿using Google.Cloud.Firestore;
-using MVVM_GMI.Services;
+﻿using MVVM_GMI.Services;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using @online = MVVM_GMI.Helpers.OnlineRequest;
@@ -57,7 +56,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
             try
             {
-                await online.WriteToDatabaseAsync("Donations", UserProfileService.AuthorizedUsername ?? "Anonymous", x);
+                //await online.WriteToDatabaseAsync("Donations", UserProfileService.AuthorizedUsername ?? "Anonymous", x);
                 await ShowDialogAsync("Donated!", "Thank you for donating! Your donation will be reflected in your account soon.", "", "", "Okay");
                 ReferenceNumber = string.Empty;
             }

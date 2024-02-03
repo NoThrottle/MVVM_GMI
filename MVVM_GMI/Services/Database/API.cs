@@ -17,7 +17,7 @@ namespace MVVM_GMI.Services.Database
 
         public static class Auth
         {
-            static string apiHost = LauncherProperties.host + "/v1/auth";
+            static string apiHost = LauncherProperties.host + "v1/auth";
 
             static string[] tokenHeader = GetTokenHeader();
             static string[] GetTokenHeader()
@@ -33,8 +33,14 @@ namespace MVVM_GMI.Services.Database
             /// <returns></returns>
             public static async Task<bool> LoginAsync()
             {
+                MessageBox.Show("Login Async");
 
-                await EnsureRSA_Async();
+                if (!await EnsureRSA_Async())
+                {
+
+                }
+
+                MessageBox.Show("Gotten RSA");
 
                 string? x = await LoginUsingSessionAsync();
 
@@ -344,48 +350,63 @@ namespace MVVM_GMI.Services.Database
             static async Task<bool> EnsureRSA_Async()
             {
 
+                MessageBox.Show("RSA - Start");
+
                 if (RSA_PUBLIC_KEY != null)
                 {
                     return true;
                 }
 
-                HttpResponseMessage? t = await online.HTTP.get(apiHost + "/publicKey", [LauncherProperties.LauncherKeyHeader]);
+                HttpResponseMessage? t = await online.HTTP.get(apiHost + "/publicKey", [LauncherProperties.LauncherKeyHeader]).ConfigureAwait(false); ;
+
+                MessageBox.Show("RSA - gotten");
 
                 if (t == null)
                 {
+                    MessageBox.Show("RSA - t null");
                     return false;
                 }
 
                 if (t.StatusCode != HttpStatusCode.OK)
                 {
+                    MessageBox.Show("RSA - status bad");
                     return false;
                 }
 
-                JObject obj = JObject.Parse(t.Content.ToString());
+                JObject obj = JObject.Parse(await t.Content.ReadAsStringAsync());
 
                 string key = obj["Key"].ToString();
                 string sig = obj["Signature"].ToString();
 
+                MessageBox.Show("RSA - read");
+
                 using (var rsa = new RSACryptoServiceProvider())
                 {
 
+                    MessageBox.Show("RSA - rsa crypto");
+
                     rsa.ImportFromPem(key);
 
+                    MessageBox.Show(key);
+                    MessageBox.Show(sig);
+
                     byte[] dataBytes = Encoding.UTF8.GetBytes(key);
-                    byte[] signature = Encoding.UTF8.GetBytes(sig);
+                    byte[] signature = Convert.FromBase64String(sig);
                     byte[] hash = SHA256.Create().ComputeHash(dataBytes);
 
                     if (rsa.VerifyHash(hash, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
                     {
+                        MessageBox.Show("RSA - same");
+
                         RSA_PUBLIC_KEY = key;
                         return true;
                     }
 
                 }
 
+                MessageBox.Show("RSA - error");
                 return false;
             }
-
 
         }
 

@@ -1,12 +1,6 @@
-﻿using Google.Cloud.Firestore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MVVM_GMI.Helpers
 {

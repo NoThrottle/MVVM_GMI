@@ -5,6 +5,7 @@ using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
 using System.ComponentModel;
 using Wpf.Ui;
+using @online = MVVM_GMI.Helpers.OnlineRequest.HTTP;
 
 namespace MVVM_GMI.Services
 {
@@ -66,21 +67,31 @@ namespace MVVM_GMI.Services
                 Application.Current.Shutdown();
             }
 
+            //await online.get(LauncherProperties.host +"v1/launcher/launcherInfo", [LauncherProperties.LauncherKeyHeader]);
+
+
+
+
+            MessageBox.Show("1");
+
             if (await API.Auth.LoginAsync())
             {
+                MessageBox.Show("a");
                 // check membership
-                (bool success, bool isQualified, Membership? membership) = await API.Auth.Membership();
-
-                if (success && isQualified && membership.UserMembership.isWelcomed)
+                APIResponse response = await API.Auth.Membership();
+                
+                if (response.Success && ((Membership)response.Content).UserMembership.QualifiedMember)
                 {
                     navigationWindow.Loaded += OnNavigationWindowLoaded;
                     navigationWindow.Show();
                 }
 
                 authWindow.Show();
+                MessageBox.Show("c");
             }
             else
             {
+                MessageBox.Show("b");
                 authWindow.Show();
             }
 

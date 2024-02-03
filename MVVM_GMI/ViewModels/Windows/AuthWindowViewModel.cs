@@ -179,15 +179,17 @@ namespace MVVM_GMI.ViewModels.Windows
         async Task RefreshMembership(string Username)
         {
 
-            (bool success, bool accepted, Membership mem) = await Auth.Membership();
+            APIResponse response = await Auth.Membership();
 
-            if (!success)
+            if (!response.Sent || !response.Success)
             {
                 await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
                 return;
             }
 
-            if (accepted)
+            (bool isMember, Membership mem) = (Tuple<bool, Membership>) response.Content;
+
+            if (isMember)
             {
                 GoToMainWindowPage<DashboardPage>();
                 return;
@@ -234,7 +236,7 @@ namespace MVVM_GMI.ViewModels.Windows
         {
 
             if (String.IsNullOrEmpty(LoginUsername) || 
-                LoginUsername.Trim().Length < 6 || 
+                LoginUsername.Trim().Length < 6 ||  
                 !Helpers.Extensions.IsAlphanumericUnderscore(LoginUsername) || 
                 String.IsNullOrEmpty(LoginPassword) || 
                 LoginPassword.Trim().Length < 8)
@@ -254,21 +256,22 @@ namespace MVVM_GMI.ViewModels.Windows
                 password = LoginPassword
             };
 
-            (bool success, bool loggedIn, string? Error) = await Auth.LoginNormal(loginCredentials);
+            APIResponse response = await Auth.LoginNormal(loginCredentials);
 
-            if (!loggedIn)
+            if (!response.Sent)
             {
-                await ShowDialogAsync("Login Error:", "Incorrect Username or Password: \n" + Error ?? "", "", "", "Okay");
+                await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
+                return;
+            }
+
+            if (!response.Success)
+            {
+                await ShowDialogAsync("Login Error:", "Incorrect Username or Password: \n" + String.Join('\n', response.Error ?? [""]), "", "", "Okay");
                 return;
             }
 
             await RefreshMembershipAsync();
             LoginVisible = "Collapsed";
-
-            if (!success)
-            {
-                await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
-            }
 
         }
 
@@ -291,9 +294,9 @@ namespace MVVM_GMI.ViewModels.Windows
 
             try
             {
-                (bool success, string[] errors) = await Auth.Register(registration);
+                APIResponse response = await Auth.Register(registration);
 
-                if (success)
+                if (response.Sent && response.Success)
                 {
 
                     await RefreshMembershipAsync();
@@ -303,7 +306,7 @@ namespace MVVM_GMI.ViewModels.Windows
                 {
                     await ShowDialogAsync(
                         "Sign-up Error:", 
-                        String.Join(Environment.NewLine, errors), 
+                        String.Join(Environment.NewLine, response.Error ?? [""]), 
                         "", 
                         "",
                         "Okay");
