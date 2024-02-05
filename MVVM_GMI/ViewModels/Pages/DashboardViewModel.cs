@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
 using Wpf.Ui;
+using Wpf.Ui.Extensions;
 
 namespace MVVM_GMI.ViewModels.Pages
 {

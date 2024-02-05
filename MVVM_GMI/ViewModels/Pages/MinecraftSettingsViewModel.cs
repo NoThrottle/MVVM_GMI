@@ -7,6 +7,7 @@ using System.Security.Policy;
 using System.Windows.Navigation;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 using @from = MVVM_GMI.Services.ConfigurationService;
 
 namespace MVVM_GMI.ViewModels.Pages

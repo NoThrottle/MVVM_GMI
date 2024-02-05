@@ -3,6 +3,7 @@ using MVVM_GMI.Views.Pages;
 using System.Runtime.CompilerServices;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace MVVM_GMI.ViewModels.Pages
 {

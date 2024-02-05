@@ -1,6 +1,7 @@
 ﻿using MVVM_GMI.Services.Database;
 using MVVM_GMI.Views.Pages;
 using Wpf.Ui;
+using Wpf.Ui.Extensions;
 using static MVVM_GMI.Services.Database.API;
 
 namespace MVVM_GMI.ViewModels.Windows
@@ -181,9 +182,15 @@ namespace MVVM_GMI.ViewModels.Windows
 
             APIResponse response = await Auth.Membership();
 
-            if (!response.Sent || !response.Success)
+            if (!response.Sent)
             {
                 await ShowDialogAsync("Error", "Unable to connect to the internet. Ensure you have a proper connection", "", "", "Okay");
+                return;
+            }
+
+            if (!response.Success)
+            {
+                await ShowDialogAsync("Error", response.Error, "", "", "Okay");
                 return;
             }
 
@@ -266,7 +273,7 @@ namespace MVVM_GMI.ViewModels.Windows
 
             if (!response.Success)
             {
-                await ShowDialogAsync("Login Error:", "Incorrect Username or Password: \n" + String.Join('\n', response.Error ?? [""]), "", "", "Okay");
+                await ShowDialogAsync("Login Error:", response.Error, "", "", "Okay");
                 return;
             }
 
@@ -292,38 +299,24 @@ namespace MVVM_GMI.ViewModels.Windows
                 inviteCode = SignupCode
             };
 
-            try
+            APIResponse response = await Auth.Register(registration);
+
+            if (response.Sent && response.Success)
             {
-                APIResponse response = await Auth.Register(registration);
 
-                if (response.Sent && response.Success)
-                {
-
-                    await RefreshMembershipAsync();
-                    SignupVisible = "Collapsed";
-                }
-                else
-                {
-                    await ShowDialogAsync(
-                        "Sign-up Error:", 
-                        String.Join(Environment.NewLine, response.Error ?? [""]), 
-                        "", 
-                        "",
-                        "Okay");
-                    return;
-                }
-
+                await RefreshMembershipAsync();
+                SignupVisible = "Collapsed";
             }
-            catch
+            else
             {
                 await ShowDialogAsync(
-                    "Error", 
-                    "Unable to connect to the internet. Ensure you have a proper connection", 
+                    "Sign-up Error:", 
+                    response.Error , 
                     "", 
-                    "", 
+                    "",
                     "Okay");
+                return;
             }
-
 
         }
 
@@ -380,7 +373,6 @@ namespace MVVM_GMI.ViewModels.Windows
                 RejectedVisible = "Collapsed";
 
             WelcomeScreenVisible = "Collapsed";
-
 
             SubmittedReferenceCode = "";
             SubmittedEmail = "";

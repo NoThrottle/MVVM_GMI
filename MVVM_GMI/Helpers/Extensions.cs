@@ -20,9 +20,11 @@ namespace MVVM_GMI.Helpers
         public static string RSAEncrypt(string publicKey, string content)
         {
 
-            using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            MessageBox.Show(publicKey + "aaaaaaaaaaaaaaa");
+
+            using RSA rsa = RSA.Create();
             rsa.ImportFromPem(publicKey);
-            var x = rsa.Encrypt(Encoding.UTF8.GetBytes(content), false);
+            var x = rsa.Encrypt(Encoding.UTF8.GetBytes(content), RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(x);
         }
 

@@ -5,7 +5,7 @@ using @online = MVVM_GMI.Helpers.OnlineRequest.HTTP;
 
 namespace MVVM_GMI.Services.Database
 {
-    internal class SessionService
+    internal static class SessionService
     {
 
         static string _sessionToken { get; set; }
@@ -17,6 +17,7 @@ namespace MVVM_GMI.Services.Database
 
         public static void updateSessionToken(string _sessionToken)
         {
+            MessageBox.Show("Session token updated to " + _sessionToken);
             SessionService._sessionToken = _sessionToken;
         }
 
@@ -70,7 +71,7 @@ namespace MVVM_GMI.Services.Database
                 TimerElapsedAsync();
             }
 
-            var g = JObject.Parse(x.Content.ToString());
+            var g = JObject.Parse(await x.Content.ReadAsStringAsync());
             _accessToken = g["Access Token"].ToString();
 
         }

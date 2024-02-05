@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using Windows.Security.Authentication.OnlineId;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace MVVM_GMI.ViewModels.Pages
 {

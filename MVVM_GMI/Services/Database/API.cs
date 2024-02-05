@@ -17,9 +17,7 @@ namespace MVVM_GMI.Services.Database
 
         public static class Auth
         {
-            static string apiHost = LauncherProperties.host + "v1/auth";
-
-            static string[] tokenHeader = GetTokenHeader();
+            static string apiHost = LauncherProperties.host + "/v1/auth";
             static string[] GetTokenHeader()
             {
                 return ["session-token", SessionService.sessionToken];
@@ -37,7 +35,7 @@ namespace MVVM_GMI.Services.Database
 
                 if (!await EnsureRSA_Async())
                 {
-
+                    //Show Error
                 }
 
                 MessageBox.Show("Gotten RSA");
@@ -46,11 +44,13 @@ namespace MVVM_GMI.Services.Database
 
                 if (x != null)
                 {
+
                     SessionService.updateSessionToken(x);
                     WriteSessionFile(x);
                     return true;
                 }
 
+                MessageBox.Show("Cant Login Using Session");
                 return false;
             }
 
@@ -60,15 +60,21 @@ namespace MVVM_GMI.Services.Database
             /// </summary>
             static async Task<string?> LoginUsingSessionAsync()
             {
+
+                MessageBox.Show("Login Using Session");
+
                 string? token = CheckSession();
 
                 if (token == null)
                 {
+                    MessageBox.Show("no token");
                     return null;
                 }
 
                 string content = "{\"Session Token\" : \"" + token + "\"}";
+
                 HttpResponseMessage? t = await online.HTTP.post(apiHost + "/sessionlogin", content, [LauncherProperties.LauncherKeyHeader]);
+
 
                 if (t == null)
                 {
@@ -77,8 +83,12 @@ namespace MVVM_GMI.Services.Database
 
                 if (t.StatusCode == HttpStatusCode.OK)
                 {
-                    return JObject.Parse(t.Content.ToString())["Session Token"].ToString();
+                    MessageBox.Show("ok");
+
+                    return JObject.Parse(await t.Content.ReadAsStringAsync())["Session Token"].ToString();
                 }
+
+                MessageBox.Show("not ok");
 
                 return null;
             }
@@ -90,7 +100,7 @@ namespace MVVM_GMI.Services.Database
             /// </summary>
             internal static async Task<APIResponse> LoginNormal(LoginCredentials credentials)
             {
-                credentials.password = ext.RSAEncrypt(credentials.password, RSA_PUBLIC_KEY);
+                credentials.password = ext.RSAEncrypt(RSA_PUBLIC_KEY, credentials.password);
 
                 HttpResponseMessage? t = await online.HTTP.post(
                     apiHost + "/login", 
@@ -113,7 +123,7 @@ namespace MVVM_GMI.Services.Database
                     {
                         Sent = true, 
                         Success = false,
-                        Error = [t.Content.ToString()]
+                        Error = await ProcessError(t)
 
                     };
                 }
@@ -125,7 +135,7 @@ namespace MVVM_GMI.Services.Database
                     {
                         Sent = true,
                         Success = false,
-                        Error = ["One or more fields are empty, or does not meet the criteria"]
+                        Error = await ProcessError(t)
 
                     };
 
@@ -137,14 +147,14 @@ namespace MVVM_GMI.Services.Database
                     {
                         Sent = true,
                         Success = false,
-                        Error = [t.Content.ToString()]
+                        Error = await ProcessError(t)
 
                     };
                 }
 
                 if (t.StatusCode == HttpStatusCode.OK)
                 {
-                    var g = JObject.Parse(t.Content.ToString())["Session Token"].ToString();
+                    var g = JObject.Parse(await t.Content.ReadAsStringAsync())["Session Token"].ToString();
                     SessionService.updateSessionToken(g);
                     WriteSessionFile(g);
 
@@ -160,7 +170,7 @@ namespace MVVM_GMI.Services.Database
                 throw new Exception(IncorrectResponse(t));
             }
 
-            //(bool success, string[] ErrorResponse)
+
             internal static async Task<APIResponse> Register(RegisterCredentials credentials)
             {
 
@@ -181,20 +191,11 @@ namespace MVVM_GMI.Services.Database
                 if (t.StatusCode != HttpStatusCode.BadRequest)
                 {
 
-                    var x = JObject.Parse(t.Content.ToString());
-                    var h = (JArray)x["Error"];
-                    List<string> errorList = new List<string>();
-
-                    foreach (var i in h)
-                    {
-                        errorList.Add(i.ToString());
-                    }
-
                     return new APIResponse()
                     {
                         Sent = true,
                         Success = false,
-                        Error = errorList.ToArray()
+                        Error = await ProcessError(t)
                     };
 
                 }
@@ -202,7 +203,7 @@ namespace MVVM_GMI.Services.Database
 
                 if (t.StatusCode == HttpStatusCode.OK)
                 {
-                    var g = JObject.Parse(t.Content.ToString())["Session Token"].ToString();
+                    var g = JObject.Parse(await t.Content.ReadAsStringAsync())["Session Token"].ToString();
                     SessionService.updateSessionToken(g);
                     WriteSessionFile(g);
 
@@ -226,7 +227,9 @@ namespace MVVM_GMI.Services.Database
             {
                 //402, 403, 404, 503, 200
 
-                HttpResponseMessage? t = await online.HTTP.get(apiHost + "/membership", [LauncherProperties.LauncherKeyHeader,tokenHeader]);
+                MessageBox.Show(string.Join(" : ", GetTokenHeader()));
+
+                HttpResponseMessage? t = await online.HTTP.get(apiHost + "/membership", [LauncherProperties.LauncherKeyHeader, GetTokenHeader()]);
 
                 if (t == null) //No Response
                 {
@@ -239,7 +242,7 @@ namespace MVVM_GMI.Services.Database
 
                 if (t.StatusCode == HttpStatusCode.PaymentRequired) //402
                 {
-                    Membership mem = JsonConvert.DeserializeObject<Membership>(t.Content.ToString());
+                    Membership mem = JsonConvert.DeserializeObject<Membership>(await t.Content.ReadAsStringAsync());
 
                     return new APIResponse()
                     {
@@ -252,14 +255,13 @@ namespace MVVM_GMI.Services.Database
 
                 if (t.StatusCode == HttpStatusCode.OK) //200
                 {
-                    await SessionService.activateSessionAsync(JObject.Parse(t.Content.ToString())["Access Token"].ToString());
+                    await SessionService.activateSessionAsync(JObject.Parse(await t.Content.ReadAsStringAsync())["Access Token"].ToString());
 
                     return new APIResponse()
                     {
                         Sent = true,
                         Success = true,
-                        Error = null,
-                        Content = (true, (Membership?) null)
+                        Error = null
 
                     };
 
@@ -271,7 +273,7 @@ namespace MVVM_GMI.Services.Database
                     {
                         Sent = true,
                         Success = false,
-                        Error = [t.Content.ToString()],
+                        Error = await ProcessError(t),
                         Content = (false, (Membership?)null)
                     };
                 }
@@ -282,7 +284,7 @@ namespace MVVM_GMI.Services.Database
                     {
                         Sent = true,
                         Success = false,
-                        Error = [t.Content.ToString()],
+                        Error = await ProcessError(t),
                         Content = (false, (Membership?)null)
                     };
                 }
@@ -304,7 +306,7 @@ namespace MVVM_GMI.Services.Database
                 HttpResponseMessage? t = await online.HTTP.post(
                     apiHost + "/membership/submitPayment", 
                     JObject.FromObject(payment).ToString(), 
-                    [LauncherProperties.LauncherKeyHeader, tokenHeader]);
+                    [LauncherProperties.LauncherKeyHeader, GetTokenHeader()]);
 
                 if (t == null)
                 {
@@ -336,7 +338,7 @@ namespace MVVM_GMI.Services.Database
 
             public static async Task<bool> Welcome()
             {
-                HttpResponseMessage? t = await online.HTTP.get(apiHost + "/membership/welcome", [LauncherProperties.LauncherKeyHeader, tokenHeader]);
+                HttpResponseMessage? t = await online.HTTP.get(apiHost + "/membership/welcome", [LauncherProperties.LauncherKeyHeader, GetTokenHeader()]);
 
                 if (t != null && t.StatusCode == HttpStatusCode.OK)
                 {
@@ -350,16 +352,12 @@ namespace MVVM_GMI.Services.Database
             static async Task<bool> EnsureRSA_Async()
             {
 
-                MessageBox.Show("RSA - Start");
-
                 if (RSA_PUBLIC_KEY != null)
                 {
                     return true;
                 }
 
                 HttpResponseMessage? t = await online.HTTP.get(apiHost + "/publicKey", [LauncherProperties.LauncherKeyHeader]).ConfigureAwait(false); ;
-
-                MessageBox.Show("RSA - gotten");
 
                 if (t == null)
                 {
@@ -378,13 +376,8 @@ namespace MVVM_GMI.Services.Database
                 string key = obj["Key"].ToString();
                 string sig = obj["Signature"].ToString();
 
-                MessageBox.Show("RSA - read");
-
                 using (var rsa = new RSACryptoServiceProvider())
                 {
-
-                    MessageBox.Show("RSA - rsa crypto");
-
                     rsa.ImportFromPem(key);
 
                     MessageBox.Show(key);
@@ -396,15 +389,13 @@ namespace MVVM_GMI.Services.Database
 
                     if (rsa.VerifyHash(hash, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
                     {
-                        MessageBox.Show("RSA - same");
-
                         RSA_PUBLIC_KEY = key;
                         return true;
                     }
 
                 }
 
-                MessageBox.Show("RSA - error");
+                MessageBox.Show("RSA - Error. Signature and Hash do not match!");
                 return false;
             }
 
@@ -414,7 +405,6 @@ namespace MVVM_GMI.Services.Database
         {
 
             private static string apiHost = LauncherProperties.host + "/v1/profile";
-
             static string[] accessTokenHeader = GetTokenHeader();
             static string[] usernameHeader = GetUsername();
             static string[] GetTokenHeader()
@@ -448,7 +438,7 @@ namespace MVVM_GMI.Services.Database
                     {
                         Sent = true,
                         Success = false,
-                        Error = [t.Content.ToString()],
+                        Error = await ProcessError(t),
                     };
                 }
 
@@ -463,7 +453,7 @@ namespace MVVM_GMI.Services.Database
 
                 if (t.StatusCode == HttpStatusCode.OK) // 200
                 {
-                    InviteCode code = JsonConvert.DeserializeObject<InviteCode>(t.Content.ToString());
+                    InviteCode code = JsonConvert.DeserializeObject<InviteCode>(await t.Content.ReadAsStringAsync());
 
                     return new APIResponse()
                     {
@@ -472,7 +462,6 @@ namespace MVVM_GMI.Services.Database
                         Content = code
                     };
                 }
-
 
                 throw new Exception(IncorrectResponse(t));
             }
@@ -542,6 +531,32 @@ namespace MVVM_GMI.Services.Database
             return "API returned an incorrect response: \n" + "Status Code:" + t.StatusCode + "\n" + "Message: \n" + t.Content;
         }
 
+        static async Task<string> ProcessError(HttpResponseMessage Response)
+        {
+            try
+            {
+                var x = JObject.Parse(await Response.Content.ReadAsStringAsync());
+                if (x.ContainsKey("Error"))
+                {
+
+                    if (x["Error"].Type == JTokenType.Array)
+                    {
+
+                        return string.Join("\n",x["Error"]);
+                    }
+
+                    return x["Error"].ToString();
+                }
+                else
+                {
+                    return "An unknown error occurred";
+                }
+            }
+            catch
+            {
+                return "An unknown error occurred";
+            }
+        }
 
     }
 
@@ -644,17 +659,19 @@ namespace MVVM_GMI.Services.Database
         /// </summary>
         public bool Success { get; set; }
 
+        private string? _error { get; set; }
+
         /// <summary>
         /// Error message if the request was not successful
         /// </summary>
-        public string[]? Error {
+        public string? Error {
             get
             {
-                return Error ?? ["Request was not set due to an unknown reason"];
+                return _error ?? "Request was not set due to an unknown reason";
             } 
             set
             {
-                Error = value;
+                _error = value;
             }
         }
 

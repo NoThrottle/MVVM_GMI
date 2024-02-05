@@ -1,5 +1,7 @@
 ﻿using System.Net.Http;
+using System.Net.Http.Json;
 using System.Security.Policy;
+using System.Text;
 using Windows.Media.Protection.PlayReady;
 
 namespace MVVM_GMI.Helpers
@@ -15,19 +17,15 @@ namespace MVVM_GMI.Helpers
 
                 foreach (var kvp in header)
                 {
-                   ip.Add(kvp[0] + " : " + kvp[1]);
+                    ip.Add(kvp[0] + " : " + kvp[1]);
                 }
 
                 MessageBox.Show("GET - getting " + URL + "\n with headers \n" + String.Join(Environment.NewLine, ip));
 
                 using (HttpClient client = new HttpClient())
                 {
-
-                    MessageBox.Show("GET - using");
-
                     try
                     {
-                        MessageBox.Show("GET - trying");
 
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -40,17 +38,14 @@ namespace MVVM_GMI.Helpers
                             }
                         }
 
-                        MessageBox.Show("GET - sending");
-
-
                         var res = client.GetAsync(URL).Result;
 
-                        MessageBox.Show("GET - with value\n" + res.StatusCode + res.Content.ReadAsStringAsync().Result);
+                        MessageBox.Show("GET - with value\n" + res.StatusCode + "\n" + res.Content.ReadAsStringAsync().Result);
                         return res;
                     }
                     catch (HttpRequestException ex)
                     {
-                        MessageBox.Show("GET - without value" + ex.StatusCode);
+                        MessageBox.Show("GET - without value " + ex.StatusCode);
                         return null;
                     }
                 }
@@ -58,11 +53,24 @@ namespace MVVM_GMI.Helpers
 
             public static async Task<HttpResponseMessage> post(string URL, string Content, List<String[]>? header = null)
             {
+
+                List<string> ip = new List<string>();
+
+                foreach (var kvp in header)
+                {
+                    ip.Add(kvp[0] + " : " + kvp[1]);
+                }
+
+                MessageBox.Show("POST - posting " + URL + "\n with headers \n" + String.Join(Environment.NewLine, ip) + "\n with body \n" + Content);
+
                 using (HttpClient client = new HttpClient())
                 {
                     try
                     {
+                        MessageBox.Show("POST - trying");
+
                         client.DefaultRequestHeaders.Accept.Clear();
+                        //client.DefaultRequestHeaders.Add("Content-Type", "application/json");
                         client.DefaultRequestHeaders.Add("Accept", "application/json");
 
                         if (header != null)
@@ -73,7 +81,14 @@ namespace MVVM_GMI.Helpers
                             }
                         }
 
-                        return await client.PostAsync(URL, new StringContent(Content));
+                        MessageBox.Show("POST - sending");
+
+                        var jsonContent = new StringContent(Content, Encoding.UTF8, "application/json");
+                        var res = client.PostAsync(URL, jsonContent).Result;
+
+                        MessageBox.Show("POST - with value\n" + res.StatusCode + "\n" + res.Content.ReadAsStringAsync().Result);
+
+                        return res;
                     }
                     catch (HttpRequestException ex)
                     {
@@ -92,10 +107,10 @@ namespace MVVM_GMI.Helpers
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Add("Accept", "application/json");
                     client.DefaultRequestHeaders.Add("UserCredential-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0");
-                    
+
                     if (header != null)
                     {
-                        foreach(var kvp in header)
+                        foreach (var kvp in header)
                         {
                             client.DefaultRequestHeaders.Add(kvp[0], kvp[1]);
                         }

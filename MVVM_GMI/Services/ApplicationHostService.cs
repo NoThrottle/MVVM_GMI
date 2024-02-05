@@ -67,23 +67,17 @@ namespace MVVM_GMI.Services
                 Application.Current.Shutdown();
             }
 
-            //await online.get(LauncherProperties.host +"v1/launcher/launcherInfo", [LauncherProperties.LauncherKeyHeader]);
-
-
-
-
-            MessageBox.Show("1");
-
             if (await API.Auth.LoginAsync())
             {
                 MessageBox.Show("a");
                 // check membership
                 APIResponse response = await API.Auth.Membership();
                 
-                if (response.Success && ((Membership)response.Content).UserMembership.QualifiedMember)
+                if (response.Success)
                 {
                     navigationWindow.Loaded += OnNavigationWindowLoaded;
                     navigationWindow.Show();
+                    return;
                 }
 
                 authWindow.Show();
