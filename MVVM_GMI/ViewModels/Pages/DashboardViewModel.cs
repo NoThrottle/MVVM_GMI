@@ -1,15 +1,13 @@
-﻿using CmlLib.Utils;
-using Google.Rpc;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MineStatLib;
 using MVVM_GMI.Helpers;
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
 using MVVM_GMI.Views.Windows;
-using Wpf.Ui;
-using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
+using Wpf.Ui;
+using @online = MVVM_GMI.Helpers.OnlineRequest;
 
 namespace MVVM_GMI.ViewModels.Pages
 {
@@ -184,15 +182,15 @@ namespace MVVM_GMI.ViewModels.Pages
 
         async Task<Wpf.Ui.Controls.ContentDialogResult> ShowDialogAsync(string Title, string Content, string PrimaryButtonText, string SecondaryButtonText, string CloseButtonText)
         {
-            var x = await _dialogService.ShowSimpleDialogAsync(
-                    new SimpleContentDialogCreateOptions()
+            var x = await _dialogService.ShowAsync(
+                    new Wpf.Ui.Controls.ContentDialog()
                     {
                         Title = Title,
                         Content = Content,
                         PrimaryButtonText = PrimaryButtonText,
                         SecondaryButtonText = SecondaryButtonText,
                         CloseButtonText = CloseButtonText
-                    }
+                    }, new CancellationToken()
                     );
 
             return x;
@@ -284,14 +282,16 @@ namespace MVVM_GMI.ViewModels.Pages
 
         private DispatcherTimer playersOnlineTimer;
 
+     
         async Task StartPlayerTimerAsync()
         {
+
             playersOnlineTimer = new DispatcherTimer();
             playersOnlineTimer.Interval = TimeSpan.FromSeconds(5);
+
             try
             {
-                playersOnlineTimer.Tick += GetOnlinePlayersAsync;
-                playersOnlineTimer.Tick += GetServerStatus;
+                playersOnlineTimer.Tick += RefreshMinestat;
                 OnlineStatusLoadingVisibility = "Collapsed";
             }
             catch
@@ -303,112 +303,96 @@ namespace MVVM_GMI.ViewModels.Pages
             playersOnlineTimer.Start();
         }
 
-        async void GetServerStatus(object sender, EventArgs e)
+        async void RefreshMinestat(object sender, EventArgs e)
         {
-            var Auth = new List<String[]>();
-            Auth.Add(["Authorization", "Bearer " + LauncherProperties.ServerKey]);
-
-            string x = null;
-
+            
             try
             {
-                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/" + LauncherProperties.ServerID + "/resources", Auth);
+
+                ServerInfoProperties serverProps = null;
+                MineStat stat = null;
+
+                await Task.Run(async () => {
+                    serverProps = online.GetFromDatabaseAsync<ServerInfoProperties>("ServerProperties", "serverInfo").Result;
+                    stat = new MineStat(serverProps.ipAddress, ushort.Parse(serverProps.port));
+                });
+
+                GetServerStatus(stat);
+                GetOnlinePlayers(stat);
+
             }
             catch
             {
+                ServerHealthText = "Unknown";
+                ServerHealthColor = "#9e9e9e";
 
+                ServerStatusText = "Unknown";
+                ServerStatusColor = "#9e9e9e";
+                return;
             }
+         
+        }
 
-            if (x == null) { return; }
+        async void GetServerStatus(MineStat ms)
+        {
 
-            JObject obj = JObject.Parse(x);
-            var status = obj["attributes"]["current_state"].ToString() ?? null;
-            var health = obj["attributes"]["resources"]["cpu_absolute"].ToString();
-
-            switch (status)
+            switch (ms.ServerUp)
             {
-                case "offline":
+                case false:
                     ServerStatusText = "Offline";
                     ServerStatusColor = "#f44336";
                     break;
-                case "starting":
-                    ServerStatusText = "Starting";
-                    ServerStatusColor = "#ffeb3b";
-                    break;
-                case "running":
+                case true:
                     ServerStatusColor = "#4caf50";
                     ServerStatusText = "Online";
                     break;
-                case "stopping":
-                    ServerStatusColor = "#ffeb3b";
-                    ServerStatusText = "Stopping";
-                    break;
-                default:
-                    ServerStatusText = "Unknown";
-                    ServerStatusColor = "#9e9e9e";
-                    break;
             }
 
-            var h = float.Parse(health);
+            var ping = ms.Latency;
 
-            if (status == null || status == "offline")
+            if (ms.ServerUp == false)
             { 
                 ServerHealthText = "Unknown";
                 ServerHealthColor = "#9e9e9e";
             }
-            else if (h <= 90)
+            else if (ping <= 100)
             {
-                ServerHealthText = "Healthy";
+                ServerHealthText = "Fast";
                 ServerHealthColor = "#4caf50";
             }
-            else if (h <= 99)
+            else if (ping <= 200)
             {
                 ServerHealthText = "Fair";
                 ServerHealthColor = "#ffeb3b";
             }
-            else if (h <= 150)
+            else if (ping <= 250)
             {
-                ServerHealthText = "Caution";
+                ServerHealthText = "Slow";
                 ServerHealthColor = "#ff9800";
             }
-            else if (h > 150)
+            else if (ping > 250)
             {
-                ServerHealthText = "Unhealthy";
+                ServerHealthText = "Laggy";
                 ServerHealthColor = "#f44336";
             }
         }
 
-        async void GetOnlinePlayersAsync(object sender, EventArgs e)
+        async void GetOnlinePlayers(MineStat ms)
         {
-            var Auth = new List<String[]>();
-            Auth.Add(["Authorization", "Bearer " + LauncherProperties.ServerKey]);
 
-            string x = null;
-
-            try
-            {
-                x = await OnlineRequest.GetJsonAsync("https://control.sparkedhost.us/api/client/servers/" + LauncherProperties.ServerID + "/minecraft-players", Auth);
-            }
-            catch
-            {
-
-            }
-            
-            if (x == null) { return; }
-
-            JObject obj = JObject.Parse(x);
-            JArray? players = (JArray?)obj["data"]["online_players"];
-
-            int count = (int)obj["data"]["online_player_count"];
-            int max = (int)obj["data"]["max_players"];
-
-            PlayersOnlineText = "PLAYERS ONLINE: " + count + "/" + max;
+            PlayersOnlineText = "PLAYERS ONLINE: " + ms.CurrentPlayers + "/" + ms.MaximumPlayers;
 
             PlayersOnline.Clear();
 
-            foreach(JObject b in players)
+            if (ms.CurrentPlayersInt == 0)
             {
-                PlayersOnline.Add(b["name"].ToString());
+                PlayersOnline.Add("Be the first one online!");
+                return;
+            }
+
+            foreach (var player in ms.PlayerList)
+            {
+                PlayersOnline.Add(player);
             }
         }
     }

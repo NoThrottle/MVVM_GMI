@@ -97,6 +97,14 @@
                         Command="{Binding ViewModel.OpenMinecraftSettingsCommand, Mode=OneWay}"
                         Icon="{ui:SymbolIcon Settings32, Filled=True, FontSize=18}"/>
 
+                    <ui:Button
+                        Appearance="Secondary"
+                        Margin="16 0 0 0"
+                        Padding="10"
+                        FontSize="18"
+                        Command="{Binding ViewModel.OpenMinecraftSettingsCommand, Mode=OneWay}"
+                        Icon="{ui:SymbolIcon Camera24, Filled=True, FontSize=18}"/>
+
                 </StackPanel>
                 <ui:Image Source="pack://application:,,,/Assets/SplashArt-1000.png" MaxHeight="128" VerticalAlignment="Top" Margin="32"/>
             </Grid>

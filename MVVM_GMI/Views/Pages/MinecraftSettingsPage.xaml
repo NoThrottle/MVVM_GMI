@@ -43,32 +43,32 @@
 
             <Grid Height="32"/>
 
-            <ui:CardExpander Icon="{ui:SymbolIcon ProjectionScreen28}">
+            <ui:CardExpander Icon="{ui:SymbolIcon Apps28}">
                 <ui:CardExpander.Header>
                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
                         <TextBlock
                             FontSize="13"
                             FontWeight="Medium"
-                            Text="Display Settings" />
+                            Text="Mods Settings" />
                         <TextBlock
                             FontSize="12"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                            Text="Change how minecraft looks when it launches." />
+                            Text="Turn on and off certain mods for reasons." />
                     </StackPanel>
                 </ui:CardExpander.Header>
 
                 <StackPanel Orientation="Vertical" >
-                    <ui:CardControl Icon="{ui:SymbolIcon FullscreenMaximize24}" >
+                    <ui:CardControl Icon="{ui:SymbolIcon BatterySaver24}" >
                         <ui:CardControl.Header>
                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                 <TextBlock
                                     FontSize="13"
                                     FontWeight="Medium"
-                                    Text="Fullscreen" />
+                                    Text="Required Mods Only" />
                                 <TextBlock
                                     FontSize="12"
                                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                    Text="Minecraft launches in Fullscreen." />
+                                    Text="Disables all optional mods for maximum performance at the cost of visual fidelity." />
                             </StackPanel>
                         </ui:CardControl.Header>
 
@@ -104,6 +104,78 @@
                                     FontSize="13"
                                     FontWeight="Medium"
                                     Text="Window Height" />
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_height, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+
+                </StackPanel>
+            </ui:CardExpander>
+
+            <Grid Height="4"/>
+
+            <ui:CardExpander Icon="{ui:SymbolIcon ProjectionScreen28}">
+                <ui:CardExpander.Header>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Medium"
+                            Text="Display Settings" />
+                                <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Change how minecraft looks when it launches." />
+                    </StackPanel>
+                </ui:CardExpander.Header>
+
+                <StackPanel Orientation="Vertical" >
+                    <ui:CardControl Icon="{ui:SymbolIcon FullscreenMaximize24}" >
+                        <ui:CardControl.Header>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                        FontSize="13"
+                        FontWeight="Medium"
+                        Text="Fullscreen" />
+                                <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="Minecraft launches in Fullscreen." />
+                            </StackPanel>
+                        </ui:CardControl.Header>
+
+                        <ui:ToggleSwitch IsChecked="{Binding ViewModel.Display_isFullscreen, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+
+                    <TextBlock
+                        Margin="0,24,0,0"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Startup Resolution" />
+                                <TextBlock
+                        Margin="0,0,0,0"
+                        FontSize="12"                        
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="If fullscreen is disabled, this is the resolution the Minecraft window will launch in." />
+                    <ui:CardControl Margin="0,8,0,0" Icon="Whiteboard24">
+                        <ui:CardControl.Header>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                        FontSize="13"
+                        FontWeight="Medium"
+                        Text="Window Width" />
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_width, Mode=TwoWay}" />
+                    </ui:CardControl>
+
+                    <ui:CardControl Icon="Whiteboard24">
+                        <ui:CardControl.Header>
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                        FontSize="13"
+                        FontWeight="Medium"
+                        Text="Window Height" />
                             </StackPanel>
                         </ui:CardControl.Header>
                         <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_height, Mode=TwoWay}"/>

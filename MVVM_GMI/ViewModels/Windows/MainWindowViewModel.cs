@@ -63,6 +63,13 @@ namespace MVVM_GMI.ViewModels.Windows
 
             new NavigationViewItem()
             {
+                Content = "Docs",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
+                TargetPageType = typeof(Views.Pages.DocumentationPage),
+            },
+
+            new NavigationViewItem()
+            {
                 Content = "Settings",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
                 TargetPageType = typeof(Views.Pages.SettingsPage)

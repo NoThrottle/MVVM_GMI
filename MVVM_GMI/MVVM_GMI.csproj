@@ -20,14 +20,17 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Version>1.0.10.0</Version>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,8 +42,10 @@
     <PackageReference Include="CmlLib.Core" Version="3.3.8" />
     <PackageReference Include="Google.Cloud.Firestore" Version="3.4.0" />
     <PackageReference Include="MdXaml" Version="1.22.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2739.15" />
+    <PackageReference Include="MineStat" Version="3.1.2" />
     <PackageReference Include="System.Management" Version="8.0.0" />
-    <PackageReference Include="WPF-UI" Version="3.0.0-preview.13" />
+    <PackageReference Include="WPF-UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
   </ItemGroup>

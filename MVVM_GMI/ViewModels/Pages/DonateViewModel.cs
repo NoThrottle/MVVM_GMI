@@ -73,15 +73,15 @@ namespace MVVM_GMI.ViewModels.Pages
 
         async Task<Wpf.Ui.Controls.ContentDialogResult> ShowDialogAsync(string Title, string Content, string PrimaryButtonText, string SecondaryButtonText, string CloseButtonText)
         {
-            var x = await _contentDialogService.ShowSimpleDialogAsync(
-                    new SimpleContentDialogCreateOptions()
+            var x = await _contentDialogService.ShowAsync(
+                    new ContentDialog()
                     {
                         Title = Title,
                         Content = Content,
                         PrimaryButtonText = PrimaryButtonText,
                         SecondaryButtonText = SecondaryButtonText,
                         CloseButtonText = CloseButtonText
-                    }
+                    }, new CancellationToken()
                     );
 
             return x;

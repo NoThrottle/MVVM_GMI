@@ -44,17 +44,24 @@ namespace MVVM_GMI
 
                 services.AddSingleton<DashboardPage>();
                 services.AddSingleton<DashboardViewModel>();
-                    services.AddSingleton<MinecraftSettingsPage>();
-                    services.AddSingleton<MinecraftSettingsViewModel>();
+
+                services.AddSingleton<MinecraftSettingsPage>();
+                services.AddSingleton<MinecraftSettingsViewModel>();
 
                 services.AddSingleton<DonatePage>();
                 services.AddSingleton<DonateViewModel>();
+
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
+
                 services.AddSingleton<ProfilePage>();
                 services.AddSingleton<ProfileViewModel>();
+
                 services.AddSingleton<GameplayPage>();
                 services.AddSingleton<GameplayViewModel>();
+
+                services.AddSingleton<DocumentationPage>();
+                services.AddSingleton<DocumentationViewModel>();
 
                 services.AddSingleton<MinecraftService>();
                 services.AddSingleton<Authentication>();
