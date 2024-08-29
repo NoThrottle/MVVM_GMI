@@ -50,13 +50,20 @@ namespace MVVM_GMI.Services
 
             static int defaultRAM()
             {
-                if (SystemInfo.SystemRam() > 6000)
+
+                int UserRam = SystemInfo.SystemRam();
+
+                if (UserRam > 12000)
                 {
-                    return 2048;
+                    return 5120;
+                }
+                else if (UserRam > 8000)
+                {
+                    return 4096;
                 }
                 else
                 {
-                    return 1560;
+                    return 3072;
                 }
             }
 
