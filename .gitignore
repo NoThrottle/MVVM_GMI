@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /MVVM_GMI/Services/FIrestoreService.cs
 /MVVM_GMI/Helpers/LauncherProperties.cs
+/MVVM_GMI/Models/LauncherProperties.cs
