@@ -63,6 +63,9 @@ namespace MVVM_GMI
                 services.AddSingleton<DocumentationPage>();
                 services.AddSingleton<DocumentationViewModel>();
 
+                services.AddSingleton<ScreenshotGalleryPage>();
+                services.AddSingleton<ScreenshotGalleryViewModel>();
+
                 services.AddSingleton<MinecraftService>();
                 services.AddSingleton<Authentication>();
                 services.AddSingleton<ConfigurationService>();

@@ -102,7 +102,7 @@
                         Margin="16 0 0 0"
                         Padding="10"
                         FontSize="18"
-                        Command="{Binding ViewModel.OpenMinecraftSettingsCommand, Mode=OneWay}"
+                        Command="{Binding ViewModel.OpenScreenshotGallerySettingsCommand, Mode=OneWay}"
                         Icon="{ui:SymbolIcon Camera24, Filled=True, FontSize=18}"/>
 
                 </StackPanel>

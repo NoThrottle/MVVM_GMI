@@ -118,6 +118,13 @@ namespace MVVM_GMI.ViewModels.Pages
             _navigationService.Navigate(typeof(MinecraftSettingsPage));
         }
 
+        [RelayCommand]
+        private void OpenScreenshotGallerySettings()
+        {
+            _navigationService.Navigate(typeof(ScreenshotGalleryPage));
+        }
+
+
         bool Locked = false;
         [RelayCommand]
         void PressedPlay()
@@ -392,7 +399,19 @@ namespace MVVM_GMI.ViewModels.Pages
 
             foreach (var player in ms.PlayerList)
             {
-                PlayersOnline.Add(player);
+                if (PlayersOnline == null)
+                {
+                    PlayersOnline = new ObservableCollection<string>();
+                }
+
+                try
+                {
+                    PlayersOnline.Add(player);
+                }
+                catch
+                {
+                    //do nothing
+                }
             }
         }
     }
