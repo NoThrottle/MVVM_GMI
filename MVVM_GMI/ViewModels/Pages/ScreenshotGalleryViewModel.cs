@@ -37,18 +37,34 @@ namespace MVVM_GMI.ViewModels.Pages
         {
             if (!_isInitialized)
                 InitializeViewModel();
+
+            cancelSearch = false;
+            LoadImages();
         }
 
-        public void OnNavigatedFrom() { }
+        public void OnNavigatedFrom() 
+        {
+            cancelSearch = true;
+            Images1.Clear();
+        }
 
         private void InitializeViewModel()
         {
             _isInitialized = true;
-            LoadImages();
+            
         }
 
         [ObservableProperty]
         ObservableCollection<ScreenshotImage> _images1 = new ObservableCollection<ScreenshotImage>();
+
+        [RelayCommand]
+        private void GoBack()
+        {
+            _navigationService.GoBack();
+        }
+
+
+        private bool cancelSearch = false;
 
         private void LoadImages()
         {
@@ -60,6 +76,14 @@ namespace MVVM_GMI.ViewModels.Pages
 
                 foreach (var filePath in Directory.GetFiles(folderPath, "*.png"))
                 {
+
+                    if (cancelSearch)
+                    {
+                        cancelSearch = false;
+                        Images1.Clear();
+                        break;
+                    }
+
                     ScreenshotImage x = new ScreenshotImage() { 
                         Image = CreateThumbnail(filePath),
                         FilePath = filePath,
@@ -73,9 +97,10 @@ namespace MVVM_GMI.ViewModels.Pages
                         _images1.Add(x);
                     });
 
-                    Thread.Sleep(33); // Add a delay to prevent UI from freezing
+                    Thread.Sleep(5); // Add a delay to prevent UI from freezing
                 }
 
+                
             });
 
         }

@@ -20,12 +20,48 @@
 
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+
+            <ui:Button
+                    Icon="{ui:SymbolIcon ArrowLeft48, Filled=True}"
+                    FontSize="36"
+                    Appearance="Transparent"
+                    BorderBrush="Transparent"
+                    Command="{Binding ViewModel.GoBackCommand, Mode=OneWay}"
+                    Margin="0,0,8,0"
+                    />
+
+            <TextBlock
+                    Text="Your Screenshots"
+                    FontSize="32"
+                    FontWeight="Bold"
+                    VerticalAlignment="Center"
+                    />
+
+            <TextBlock
+                Text="Double click on an image to open it."
+                FontSize="12"
+                FontWeight="Light"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right"
+                Foreground="{DynamicResource ResourceKey=TextFillColorTertiaryBrush}"
+                Margin="16"
+                />
+            
+        </StackPanel>
+
         <ui:VirtualizingGridView           
             ItemsSource="{Binding ViewModel.Images1, Mode=TwoWay}"
             VirtualizingPanel.CacheLengthUnit="Item"
             CacheMode="BitmapCache"
             SpacingMode="StartAndEndOnly"
             RenderOptions.BitmapScalingMode="LowQuality"
+            Grid.Row="1"
             >
             <ui:VirtualizingGridView.ItemTemplate>
                 <DataTemplate DataType="models:ScreenshotImage">
