@@ -75,41 +75,6 @@
                         <ui:ToggleSwitch IsChecked="{Binding ViewModel.Display_isFullscreen, Mode=TwoWay}"/>
                     </ui:CardControl>
 
-
-                    <TextBlock
-                        Margin="0,24,0,0"
-                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                        Text="Startup Resolution" />
-                    <TextBlock
-                        Margin="0,0,0,0"
-                        FontSize="12"                        
-                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        Text="If fullscreen is disabled, this is the resolution the Minecraft window will launch in." />
-                    <ui:CardControl Margin="0,8,0,0" Icon="Whiteboard24">
-                        <ui:CardControl.Header>
-                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                <TextBlock
-                                    FontSize="13"
-                                    FontWeight="Medium"
-                                    Text="Window Width" />
-                            </StackPanel>
-                        </ui:CardControl.Header>
-                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_width, Mode=TwoWay}" />
-                    </ui:CardControl>
-
-                    <ui:CardControl Icon="Whiteboard24">
-                        <ui:CardControl.Header>
-                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                <TextBlock
-                                    FontSize="13"
-                                    FontWeight="Medium"
-                                    Text="Window Height" />
-                            </StackPanel>
-                        </ui:CardControl.Header>
-                        <ui:NumberBox Width="256" Minimum="100" Text="{Binding ViewModel.Display_height, Mode=TwoWay}"/>
-                    </ui:CardControl>
-
-
                 </StackPanel>
             </ui:CardExpander>
 

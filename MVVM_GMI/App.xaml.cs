@@ -88,9 +88,10 @@ namespace MVVM_GMI
         private void OnStartup(object sender, StartupEventArgs e)
         {
             FirestoreService.SetEnvironmentVariable();
-            //s.PropertiesExist();
 
             _host.Start();
+
+
         }
 
         /// <summary>

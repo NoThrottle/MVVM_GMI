@@ -1,4 +1,5 @@
 ﻿using MVVM_GMI.ViewModels.Windows;
+using System.Windows.Media;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -29,7 +30,12 @@ namespace MVVM_GMI.Views.Windows
 
             NavigationView.SetServiceProvider(serviceProvider);
 
-            
+            ApplicationAccentColorManager.Apply(
+                Color.FromArgb(0xFF, 0x00, 0x74, 0xD0),
+                ApplicationTheme.Dark,
+                false
+            );
+
         }
     }
 }

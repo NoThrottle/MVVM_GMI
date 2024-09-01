@@ -83,7 +83,6 @@ namespace MVVM_GMI.ViewModels.Pages
 
                     return await OnlineRequest.GetJsonAsync("https://pastebin.com/raw/jGgj4Mk5");
 
-
                 }).Result;
             }
             catch (Exception e)
@@ -92,10 +91,6 @@ namespace MVVM_GMI.ViewModels.Pages
                 Changelog = "No Internet";
             }
 
-
-            
-
-            
         }
 
         async Task CheckForUpdatesAsync()
@@ -137,6 +132,8 @@ namespace MVVM_GMI.ViewModels.Pages
                 Locked = true;
                 var z = new MinecraftService();
 
+                CrashDetectionService.Instance.CheckExistingCrashReports();
+
                 z.ProgressUpdated += (s) => UpdateUI(s);
                 z.TaskCompleted += (a) =>
                 {
@@ -147,6 +144,14 @@ namespace MVVM_GMI.ViewModels.Pages
                 };
 
                 await z.DefaultStartupAsync();
+
+                Application.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    if (CrashDetectionService.Instance.CheckCurrentCrashReports())
+                    {
+                        CrashDetectionService.Instance.UploadNewCrashReport(_dialogService);
+                    }
+                });
 
             });
         }
@@ -161,6 +166,9 @@ namespace MVVM_GMI.ViewModels.Pages
 
                 Locked = true;
                 var z = new MinecraftService();
+
+                CrashDetectionService.Instance.CheckExistingCrashReports();
+
 
                 z.ProgressUpdated += (s) => UpdateUI(s);
                 z.TaskCompleted += (a) =>
@@ -182,6 +190,15 @@ namespace MVVM_GMI.ViewModels.Pages
                 };
 
                 await z.QuickLaunchAsync();
+
+                Application.Current.Dispatcher.Invoke((Action) delegate
+                {
+                    if (CrashDetectionService.Instance.CheckCurrentCrashReports())
+                    {
+                        CrashDetectionService.Instance.UploadNewCrashReport(_dialogService);
+                    }
+                });
+
 
             });
         }
@@ -264,7 +281,7 @@ namespace MVVM_GMI.ViewModels.Pages
         }
 
 
-        //-----UI------
+        #region Player List and Status
 
         [ObservableProperty]
         ObservableCollection<string> _playersOnline = new ObservableCollection<string>();
@@ -414,5 +431,7 @@ namespace MVVM_GMI.ViewModels.Pages
                 }
             }
         }
+
+        #endregion
     }
 }

@@ -68,7 +68,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
         private void LoadImages()
         {
-            string folderPath = System.IO.Path.Combine(new ConfigurationService.Launcher().MinecraftPath, "screenshots"); // Replace with your folder path
+            string folderPath = System.IO.Path.Combine(ConfigurationService.Instance.fromLauncher.MinecraftPath, "screenshots"); // Replace with your folder path
             if (!Directory.Exists(folderPath))
                 return;
 
