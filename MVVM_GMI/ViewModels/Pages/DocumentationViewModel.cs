@@ -21,7 +21,7 @@ namespace MVVM_GMI.ViewModels.Pages
                 InitializeViewModel();
 
 
-            if (LastVisitedURL == "")
+            if (LastVisitedURL == "" || !LastVisitedURL.Contains("https://docs.nothrottle.com"))
             {
                 Source = "https://docs.nothrottle.com/";
             }

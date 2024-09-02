@@ -37,30 +37,39 @@ namespace MVVM_GMI.Views.Pages
         public void CreateWebviewWithSource(Uri Source)
         {
 
-            WebView2 webview = new WebView2()
+            try
             {
-                Source = Source,
-                ZoomFactor = 0.9,
-                Name = "Docs_WebView",               
-       
-            };
-
-            RegisterName(webview.Name, webview);
-            this.WebViewContainer.Children.Add(webview);
-
-            webview.CoreWebView2InitializationCompleted += (sender, e) =>
-            {
-                if (e.IsSuccess)
+                WebView2 webview = new WebView2()
                 {
-                    var coreWebView2 = webview.CoreWebView2;
-                    // Configure CoreWebView2 settings
-                    coreWebView2.Settings.IsStatusBarEnabled = false;
-                    coreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-                    coreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
-                    coreWebView2.Settings.AreDevToolsEnabled = false;
+                    Source = Source,
+                    ZoomFactor = 0.9,
+                    Name = "Docs_WebView",
 
-                }
-            };
+                };
+
+                RegisterName(webview.Name, webview);
+                this.WebViewContainer.Children.Add(webview);
+
+                webview.CoreWebView2InitializationCompleted += (sender, e) =>
+                {
+                    if (e.IsSuccess)
+                    {
+                        var coreWebView2 = webview.CoreWebView2;
+                        // Configure CoreWebView2 settings
+                        coreWebView2.Settings.IsStatusBarEnabled = false;
+                        coreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+                        coreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+                        coreWebView2.Settings.AreDevToolsEnabled = false;
+
+                    }
+                };
+
+            }
+            catch
+            {
+                CenterText.Text = "An Error occurred, you have to restart the launcher to fix it.";
+            }
+
 
         }
 
