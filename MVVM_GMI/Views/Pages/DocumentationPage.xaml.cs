@@ -44,11 +44,14 @@ namespace MVVM_GMI.Views.Pages
                     Source = Source,
                     ZoomFactor = 0.9,
                     Name = "Docs_WebView",
+                    DefaultBackgroundColor = System.Drawing.Color.Transparent
 
                 };
 
                 RegisterName(webview.Name, webview);
                 this.WebViewContainer.Children.Add(webview);
+
+                
 
                 webview.CoreWebView2InitializationCompleted += (sender, e) =>
                 {
@@ -60,6 +63,7 @@ namespace MVVM_GMI.Views.Pages
                         coreWebView2.Settings.AreDefaultContextMenusEnabled = false;
                         coreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
                         coreWebView2.Settings.AreDevToolsEnabled = false;
+                        
 
                     }
                 };
