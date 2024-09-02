@@ -14,18 +14,37 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    mc:Ignorable="d">
+    ScrollViewer.CanContentScroll="True"
+    Margin="-32,0,-32,0"
+    mc:Ignorable="d"  
+    >
 
-    <Grid VerticalAlignment="Top">
+    <Page.Resources>
+        <LinearGradientBrush
+            x:Key="HeaderBackgroundOpacityMask"
+            StartPoint="0,0"
+            EndPoint="0,1">
+            <GradientStop Color="#AAFFFFFF" Offset="0"/>
+            <GradientStop Color="#FFFFFFFF" Offset="0.667"/>
+            <GradientStop Color="#00FFFFFF" Offset="1"/>
+        </LinearGradientBrush>
+    </Page.Resources>
 
-        <Grid>
+    <Grid>
 
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            
+        <Rectangle Height="700" OpacityMask="{StaticResource HeaderBackgroundOpacityMask}" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#1b3c5c" Offset="0.0" />
+                    <GradientStop Color="#272727" Offset="1.0" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <StackPanel Margin="8">
+                          
             <Grid Height="460"  Grid.Row="0">
+
                 <Border CornerRadius="8,8,8,8" Height="400" VerticalAlignment="Top">
                     <Border.Background>
                         <ImageBrush Stretch="UniformToFill" ImageSource="pack://application:,,,/Assets/default_dark.png" />
@@ -187,8 +206,8 @@
                                 
                                     Upcoming Features:<LineBreak/>
                                     - Personal mod manager<LineBreak/>
-                                    - Game output terminal<LineBreak/>
-                                    - Screenshot gallery<LineBreak/>
+                                    - Shader packs manager<LineBreak/>
+                                    - Skin changer and viewer<LineBreak/>
                                     - and many more! <LineBreak/>
                                     <LineBreak/>
                          
@@ -235,11 +254,12 @@
                 </WrapPanel>
 
             </Grid>
-                
-
-                
 
 
-        </Grid>
+
+
+
+        </StackPanel>
+       
     </Grid>
 </Page>

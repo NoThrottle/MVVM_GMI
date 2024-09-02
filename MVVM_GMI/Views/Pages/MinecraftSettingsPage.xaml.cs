@@ -14,5 +14,6 @@ namespace MVVM_GMI.Views.Pages
 
             InitializeComponent();
         }
+
     }
 }

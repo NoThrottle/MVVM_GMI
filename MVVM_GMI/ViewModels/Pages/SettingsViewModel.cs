@@ -36,17 +36,10 @@ namespace MVVM_GMI.ViewModels.Pages
         private void InitializeViewModel()
         {
             CurrentTheme = Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme();
-            AppVersion = $"HighSkyMC Launcher - {GetAssemblyVersion()}";
+            AppVersion = $"HighSkyMC Launcher - {LauncherProperties.LauncherVersionReadable}";
 
             _isInitialized = true;
         }
-
-        private string GetAssemblyVersion()
-        {
-            return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString()
-                ?? String.Empty;
-        }
-
 
         [ObservableProperty]
         private int _simDownloads = ConfigurationService.Instance.fromLauncher.SimultaneousDownloads;

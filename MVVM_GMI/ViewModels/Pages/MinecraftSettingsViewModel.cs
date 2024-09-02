@@ -2,6 +2,7 @@
 using MVVM_GMI.Services;
 using MVVM_GMI.Views.Pages;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Security.Policy;
 using System.Windows.Navigation;
@@ -26,19 +27,13 @@ namespace MVVM_GMI.ViewModels.Pages
 
         public void OnNavigatedTo()
         {
-            if (!_isInitialized)
-                InitializeViewModel();
-        }
-
-        public void OnNavigatedFrom() { }
-
-        private void InitializeViewModel()
-        {
             InitializeValues();
-            _isInitialized = true;
         }
 
+        public void OnNavigatedFrom() {
 
+            SaveValues();
+        }
 
         [ObservableProperty]
         private string _display_isFullscreen;
@@ -69,10 +64,14 @@ namespace MVVM_GMI.ViewModels.Pages
             Process.Start("explorer", "ms-settings:display-advancedgraphics");
         }
 
+        [ObservableProperty]
+        public IconElement _icon = new SymbolIcon(SymbolRegular.ArrowLeft48, filled: true);
+
         [RelayCommand]
         private void GoBack()
         {
             SaveValues();
+            Icon = new SymbolIcon(SymbolRegular.ArrowLeft48, filled: true);
             _navigationService.GoBack();
         }
 
@@ -80,11 +79,11 @@ namespace MVVM_GMI.ViewModels.Pages
         async Task ResetMod()
         {
 
-            var x = await ShowDialogAsync("Are you sure?","This action will delete your entire mods folder, forcing a reinstall when you next play. Do you want to proceed?","Yes","","No");
-            
+            var x = await ShowDialogAsync("Are you sure?", "This action will delete your entire mods folder, forcing a reinstall when you next play. Do you want to proceed?", "Yes", "", "No");
+
             if (x == ContentDialogResult.Primary)
             {
-                Directory.Delete(Path.Combine(from.Instance.fromLauncher.MinecraftPath,"mods"),true);
+                Directory.Delete(Path.Combine(from.Instance.fromLauncher.MinecraftPath, "mods"), true);
                 from.Instance.fromLauncher.DidStarterAction = false;
                 from.Instance.fromLauncher.ModUpdateIndex = 0;
             }
@@ -118,6 +117,7 @@ namespace MVVM_GMI.ViewModels.Pages
 
         private void SaveValues()
         {
+
             from.Instance.fromMinecraft.StartFullscreen = bool.Parse(Display_isFullscreen);
             from.Instance.fromMinecraft.StartingWidth = Display_width;
             from.Instance.fromMinecraft.StartingHeight = Display_height;

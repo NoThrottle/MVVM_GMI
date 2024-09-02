@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.Wpf;
 using MVVM_GMI.Messages;
 using MVVM_GMI.ViewModels.Pages;
 using System.Windows.Data;
 using Wpf.Ui.Controls;
+using Microsoft.Web.WebView2.Wpf;
 
 namespace MVVM_GMI.Views.Pages
 {
@@ -41,12 +41,27 @@ namespace MVVM_GMI.Views.Pages
             {
                 Source = Source,
                 ZoomFactor = 0.9,
-                Name = "Docs_WebView", 
+                Name = "Docs_WebView",               
        
             };
 
             RegisterName(webview.Name, webview);
             this.WebViewContainer.Children.Add(webview);
+
+            webview.CoreWebView2InitializationCompleted += (sender, e) =>
+            {
+                if (e.IsSuccess)
+                {
+                    var coreWebView2 = webview.CoreWebView2;
+                    // Configure CoreWebView2 settings
+                    coreWebView2.Settings.IsStatusBarEnabled = false;
+                    coreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+                    coreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+                    coreWebView2.Settings.AreDevToolsEnabled = false;
+
+                }
+            };
+
         }
 
         public async void DestroyWebView()

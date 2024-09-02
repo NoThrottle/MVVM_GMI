@@ -15,7 +15,9 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    mc:Ignorable="d">
+    Margin="0,32,0,0"
+    mc:Ignorable="d"
+    >
 
     <Grid>
 
@@ -24,7 +26,7 @@
             <StackPanel Orientation="Horizontal">
 
                 <ui:Button
-                    Icon="{ui:SymbolIcon ArrowLeft48, Filled=True}"
+                    Icon="{Binding ViewModel.Icon}"
                     FontSize="36"
                     Appearance="Transparent"
                     BorderBrush="Transparent"
@@ -109,7 +111,7 @@
                             </StackPanel>
                         </ui:CardControl.Header>
 
-                        <ui:ToggleSwitch IsChecked="{Binding ViewModel.Display_isFullscreen, Mode=TwoWay}"/>
+                        <ui:ToggleSwitch IsChecked="{Binding ViewModel.Display_isFullscreen, Mode=TwoWay}"  />
                     </ui:CardControl>
 
 
@@ -185,8 +187,8 @@
                             <ColumnDefinition Width="28"/>
                         </Grid.ColumnDefinitions>
 
-                        <Slider Grid.Column="0" Margin="0,16,16,16" TickFrequency="1024" Minimum="1024" Maximum="{Binding ViewModel.Ram_maximum, Mode=OneWay}" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}" IsSnapToTickEnabled="True" TickPlacement="BottomRight"/>
-                        <ui:NumberBox Grid.Column="1" Minimum="1024" ClearButtonEnabled="False" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}"/>
+                        <Slider Grid.Column="0" Margin="0,16,16,16" TickFrequency="1024" Minimum="1024" Maximum="{Binding ViewModel.Ram_maximum, Mode=OneWay}" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}" IsSnapToTickEnabled="True" TickPlacement="BottomRight"  />
+                        <ui:NumberBox Grid.Column="1" Minimum="1024" ClearButtonEnabled="False" Value="{Binding ViewModel.Ram_current, Mode=TwoWay}"  />
                         <TextBlock Grid.Column="2" Text="MB" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                     </Grid>
@@ -247,7 +249,7 @@
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         Text="Modifies the properties of the JVM. Leave empty for Default.&#x0a;Might override any of the settings set above." />
 
-                    <ui:TextBox ClearButtonEnabled="True" PlaceholderText="Leave empty for default" Margin="0,8,0,8" Text="{Binding ViewModel.JvmArguments, Mode=TwoWay}"/>
+                    <ui:TextBox ClearButtonEnabled="True" PlaceholderText="Leave empty for default" Margin="0,8,0,8" Text="{Binding ViewModel.JvmArguments, Mode=TwoWay}"  />
                 </StackPanel>
             </ui:CardExpander>
 

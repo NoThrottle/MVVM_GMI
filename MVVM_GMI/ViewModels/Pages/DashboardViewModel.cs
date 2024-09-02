@@ -384,19 +384,19 @@ namespace MVVM_GMI.ViewModels.Pages
                 ServerHealthText = "Fast";
                 ServerHealthColor = "#4caf50";
             }
-            else if (ping <= 200)
+            else if (ping <= 220)
             {
-                ServerHealthText = "Fair";
+                ServerHealthText = "Decent";
                 ServerHealthColor = "#ffeb3b";
             }
-            else if (ping <= 250)
+            else if (ping <= 270)
             {
-                ServerHealthText = "Slow";
+                ServerHealthText = "High Ping";
                 ServerHealthColor = "#ff9800";
             }
-            else if (ping > 250)
+            else if (ping > 270)
             {
-                ServerHealthText = "Laggy";
+                ServerHealthText = "Very High Ping";
                 ServerHealthColor = "#f44336";
             }
         }
