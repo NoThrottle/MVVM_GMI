@@ -5,6 +5,9 @@ using MVVM_GMI.ViewModels.Pages;
 using System.Windows.Data;
 using Wpf.Ui.Controls;
 using Microsoft.Web.WebView2.Wpf;
+using System.Security.Policy;
+using MVVM_GMI.Services;
+using System.IO;
 
 namespace MVVM_GMI.Views.Pages
 {
@@ -34,24 +37,31 @@ namespace MVVM_GMI.Views.Pages
         }
 
 
-        public void CreateWebviewWithSource(Uri Source)
+        public async Task CreateWebviewWithSource(Uri Source)
         {
 
             try
             {
                 WebView2 webview = new WebView2()
                 {
-                    Source = Source,
+                    
                     ZoomFactor = 0.9,
                     Name = "Docs_WebView",
                     DefaultBackgroundColor = System.Drawing.Color.Transparent
 
                 };
 
-                RegisterName(webview.Name, webview);
-                this.WebViewContainer.Children.Add(webview);
+                var userDataFolder = Path.Combine(ConfigurationService.Instance.fromLauncher.LauncherPath, "webViewCache");
+                Directory.CreateDirectory(userDataFolder);
+
+                var env = await CoreWebView2Environment.CreateAsync(null, userDataFolder);
 
                 
+
+
+
+                RegisterName(webview.Name, webview);
+                this.WebViewContainer.Children.Add(webview);
 
                 webview.CoreWebView2InitializationCompleted += (sender, e) =>
                 {
@@ -65,8 +75,14 @@ namespace MVVM_GMI.Views.Pages
                         coreWebView2.Settings.AreDevToolsEnabled = false;
                         
 
+
                     }
                 };
+
+                await webview.EnsureCoreWebView2Async(env);
+
+
+                webview.Source = new UriBuilder(Source).Uri;
 
             }
             catch
@@ -75,15 +91,26 @@ namespace MVVM_GMI.Views.Pages
             }
 
 
-        }
+        }   
 
         public async void DestroyWebView()
         {
-            var webView = this.WebViewContainer.FindName("Docs_WebView") as WebView2;
-            var url = await webView.ExecuteScriptAsync("document.location.href;");
-            this.ViewModel.ChangeLastVisitedURL(url.Replace("\"",""));
-            webView.UnregisterName(webView.Name);
-            this.WebViewContainer.Children.Remove(webView);
+
+            try
+            {
+                var webView = this.WebViewContainer.FindName("Docs_WebView") as WebView2;
+                var url = await webView.ExecuteScriptAsync("document.location.href;");
+                this.ViewModel.ChangeLastVisitedURL(url.Replace("\"", ""));
+                webView.UnregisterName(webView.Name);
+                this.WebViewContainer.Children.Remove(webView);
+            }
+            catch
+            {
+                CenterText.Text = "An Error occurred, you have to restart the launcher to fix it.";
+
+            }
+
+
         }
     }
 }

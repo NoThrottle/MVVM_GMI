@@ -29,7 +29,7 @@
         
 
         <TextBlock Name="CenterText" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center">
-            Documentation will should load soon. <LineBreak/>
+            Documentation should load soon. <LineBreak/>
             If it takes too long, check your internet connection.
         </TextBlock>
         

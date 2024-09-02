@@ -4,6 +4,7 @@
     <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
     <WebView2UseWinRT>False</WebView2UseWinRT>
     <WV2WinRTPlatformReferencesLevel>explicit</WV2WinRTPlatformReferencesLevel>
+    <WebView2LoaderPreference>Dynamic</WebView2LoaderPreference>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -25,7 +26,7 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>1.0.10.0</Version>
+    <Version>1.0.10.2</Version>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
@@ -94,6 +95,33 @@
     <Resource Include="Assets\UI\DonationQR_Bank.png" />
     <Resource Include="Assets\UI\DonationQR_GCash.png" />
     <Resource Include="Assets\wpfui-icon-1024.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

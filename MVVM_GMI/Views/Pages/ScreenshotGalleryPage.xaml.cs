@@ -1,15 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.Wpf;
-using MVVM_GMI.Messages;
-using MVVM_GMI.Services;
-using MVVM_GMI.ViewModels.Pages;
+﻿using MVVM_GMI.ViewModels.Pages;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using Wpf.Ui.Controls;
 
 namespace MVVM_GMI.Views.Pages
